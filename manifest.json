@@ -1,7 +1,7 @@
 {
-  "name": "Sistem Pelaporan Teknisi",
-  "short_name": "Pelaporan",
-  "start_url": "login.html",
+  "name": "Aplikasi Laporan Teknisi",
+  "short_name": "LaporTeknisi",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
