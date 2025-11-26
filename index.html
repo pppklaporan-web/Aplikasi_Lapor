@@ -1,78 +1,50 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Login Aplikasi Laporan</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="manifest" href="manifest.json">
-<script>
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-}
-</script>
-
-<style>
-body {
-    font-family: Arial;
-    background: #e9f0ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-.container {
-    width: 350px;
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px #b9c6e0;
-}
-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 12px;
-}
-button {
-    width: 100%;
-    padding: 12px;
-    background: #007bff;
-    color: white;
-    border: 0;
-    border-radius: 7px;
-    font-size: 16px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplikasi Lapor - Login</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 <div class="container">
-<h2 style="text-align:center;">Login Aplikasi</h2>
+  <h2>Login</h2>
 
-<input id="user" placeholder="Username">
-<input id="pass" type="password" placeholder="Password">
+  <label>Nama Pengguna</label>
+  <input id="usernameInput" placeholder="Masukkan nama Anda">
 
-<button onclick="login()">Login</button>
+  <label>Pilih Akses</label>
+  <select id="roleSelect">
+    <option value="viewer">Viewer / Publik</option>
+    <option value="teknisi">Teknisi</option>
+    <option value="admin">Admin</option>
+  </select>
 
-<p id="info" style="text-align:center;color:red;"></p>
+  <button onclick="login()">Masuk</button>
+
+  <p style="margin-top:20px;text-align:center">
+    Atau buka dashboard publik:<br>
+    <a href="dashboard_public.html">Dashboard Publik →</a>
+  </p>
 </div>
 
 <script>
-function login() {
-    let u = user.value.trim();
-    let p = pass.value.trim();
+function login(){
+  const user = document.getElementById("usernameInput").value.trim();
+  const role = document.getElementById("roleSelect").value;
 
-    if (u === "admin" && p === "admin123") {
-        location.href = "dashboard.html";
-    } 
-    else if (u === "teknisi" && p === "teknisi123") {
-        location.href = "laporan.html";
-    }
-    else {
-        info.innerHTML = "Username / Password salah!";
-    }
+  if(!user){
+    alert("Nama harus diisi");
+    return;
+  }
+
+  localStorage.setItem("username", user);
+  localStorage.setItem("lap_role", role);
+
+  if(role === "viewer") location.href = "dashboard_public.html";
+  else location.href = "dashboard.html";
 }
 </script>
-
 </body>
 </html>
