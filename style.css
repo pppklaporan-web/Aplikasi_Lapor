@@ -1,29 +1,27 @@
 body{
-font-family: Arial;
-background:#f1f1f1;
+  margin:0;
+  font-family:Inter, sans-serif;
+  background:#e6eaef;
 }
-.login-container, .form-container{
-width: 350px;
-margin:auto;
-background:white;
-padding:20px;
-margin-top:40px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,.2);
+
+.container{
+  max-width:500px;
+  margin:40px auto;
+  background:#e0e5ec;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:9px 9px 18px #b8bec7,-9px -9px 18px #ffffff;
 }
+
 input, select, textarea{
-width:100%;
-padding:8px;
-margin:5px 0 15px;
-border-radius:5px;
-border:1px solid #aaa;
+  width:100%;padding:10px;margin:6px 0 16px;
+  border:0;border-radius:10px;
+  background:#f5f7fa;
 }
+
 button{
-width:100%;
-padding:10px;
-background:#007bff;
-color:white;
-border:none;
-border-radius:5px;
-cursor:pointer;
+  width:100%;padding:12px;border-radius:10px;
+  background:#1c82e3;color:white;font-size:16px;
+  border:0;cursor:pointer;
+  margin-top:10px;
 }
