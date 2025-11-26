@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+</head>
+<body>
+<div class="form-container">
+<h2>Form Laporan Kendala</h2>
+
+
+<label>Tanggal</label>
+<input type="text" id="tgl" readonly>
+
+
+<label>Jam</label>
+<input type="time" id="jam">
+
+
+<label>Lokasi / Unit Kerja</label>
+<input type="text" id="lokasi">
+
+
+<label>Kategori Kendala</label>
+<select id="kategori">
+<option>Jaringan</option>
+<option>Internet</option>
+<option>PC/Laptop</option>
+<option>Printer</option>
+<option>Aplikasi</option>
+<option>Listrik</option>
+<option>CCTV</option>
+</select>
+
+
+<label>Deskripsi Kendala</label>
+<textarea id="deskripsi"></textarea>
+
+
+<label>Foto Bukti</label>
+<input type="file" id="foto">
+
+
+<button onclick="kirim()">Kirim Laporan</button>
+<p id="msg"></p>
+</div>
+
+
+<script>
+document.getElementById('tgl').value = new Date().toLocaleDateString('id-ID');
+
+
+function kirim(){
+const formData = new FormData();
+formData.append("tgl", document.getElementById('tgl').value);
+formData.append("jam", document.getElementById('jam').value);
+formData.append("lokasi", document.getElementById('lokasi').value);
+formData.append("kategori", document.getElementById('kategori').value);
+formData.append("deskripsi", document.getElementById('deskripsi').value);
+formData.append("foto", document.getElementById('foto').files[0]);
+
+
+fetch("https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec",{
+method:"POST",
+body:formData
+})
+.then(r=>r.text())
+.then(res=>{
+document.getElementById('msg').textContent = res;
+})
+.catch(err=>{
+document.getElementById('msg').textContent = "Gagal mengirim";
+});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+body{
+font-family: Arial;
+background:#f1f1f1;
+}
+.login-container, .form-container{
+width: 350px;
+margin:auto;
+background:white;
+padding:20px;
+margin-top:40px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,.2);
+}
+input, select, textarea{
+width:100%;
+padding:8px;
+margin:5px 0 15px;
+border-radius:5px;
+border:1px solid #aaa;
+}
+button{
+width:100%;
+padding:10px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
