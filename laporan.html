@@ -1,88 +1,94 @@
 <!DOCTYPE html>
+<html lang="id">
 <head>
-<!-- Tambahkan di sini -->
+<meta charset="UTF-8">
+<title>Form Laporan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#007bff">
 <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("service-worker.js");
-        }
-</script>
-    <!-- Selesai ditambahkan -->
-
-    <title>Login Sistem Pelaporan</title>
-    <link rel="stylesheet" href="style.css">
-<title>Login Sistem Pelaporan</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="form-container">
-<h2>Form Laporan Kendala</h2>
-
-
-<label>Tanggal</label>
-<input type="text" id="tgl" readonly>
-
-
-<label>Jam</label>
-<input type="time" id="jam">
-
-
-<label>Lokasi / Unit Kerja</label>
-<input type="text" id="lokasi">
-
-
-<label>Kategori Kendala</label>
-<select id="kategori">
-<option>Jaringan</option>
-<option>Internet</option>
-<option>PC/Laptop</option>
-<option>Printer</option>
-<option>Aplikasi</option>
-<option>Listrik</option>
-<option>CCTV</option>
-</select>
-
-
-<label>Deskripsi Kendala</label>
-<textarea id="deskripsi"></textarea>
-
-
-<label>Foto Bukti</label>
-<input type="file" id="foto">
-
-
-<button onclick="kirim()">Kirim Laporan</button>
-<p id="msg"></p>
-</div>
-
-
-<script>
-document.getElementById('tgl').value = new Date().toLocaleDateString('id-ID');
-
-
-function kirim(){
-const formData = new FormData();
-formData.append("tgl", document.getElementById('tgl').value);
-formData.append("jam", document.getElementById('jam').value);
-formData.append("lokasi", document.getElementById('lokasi').value);
-formData.append("kategori", document.getElementById('kategori').value);
-formData.append("deskripsi", document.getElementById('deskripsi').value);
-formData.append("foto", document.getElementById('foto').files[0]);
-
-
-fetch("https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec",{
-method:"POST",
-body:formData
-})
-.then(r=>r.text())
-.then(res=>{
-document.getElementById('msg').textContent = res;
-})
-.catch(err=>{
-document.getElementById('msg').textContent = "Gagal mengirim";
-});
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
 }
 </script>
+
+<style>
+body { font-family: Arial; background:#f2f5ff; padding:18px; }
+.container {
+    max-width:450px; margin:auto; background:white; padding:20px;
+    border-radius:12px; box-shadow:0 0 10px #cfd8f3;
+}
+input,select,textarea {
+    width:100%; padding:10px; margin-top:8px; margin-bottom:15px;
+}
+button {
+    width:100%; padding:12px; background:#007bff; color:white;
+    border:0; border-radius:8px; font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Form Laporan Kendala</h2>
+
+<form id="laporForm">
+
+<label>Tanggal</label>
+<input type="date" name="tgl" required>
+
+<script>
+document.querySelector("input[name='tgl']").value = new Date().toISOString().slice(0,10);
+</script>
+
+<label>Jam</label>
+<input type="time" name="jam" required>
+
+<label>Lokasi</label>
+<input type="text" name="lokasi" required>
+
+<label>Kategori</label>
+<select name="kategori" required>
+<option>Jaringan</option>
+<option>Komputer</option>
+<option>Printer</option>
+<option>Aplikasi</option>
+<option>Lainnya</option>
+</select>
+
+<label>Deskripsi</label>
+<textarea name="deskripsi" rows="3" required></textarea>
+
+<label>Foto Bukti</label>
+<input type="file" name="foto" accept="image/*">
+
+<button>Kirim Laporan</button>
+</form>
+
+<p id="status"></p>
+
+</div>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+
+document.getElementById("laporForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    let fd = new FormData(laporForm);
+
+    status.innerHTML = "Mengirim...";
+
+    try {
+        let r = await fetch(GAS_URL, { method:"POST", body:fd });
+        let t = await r.text();
+        status.innerHTML = t;
+        laporForm.reset();
+    } catch(err){
+        status.innerHTML = "Gagal: " + err;
+    }
+});
+</script>
+
 </body>
 </html>
