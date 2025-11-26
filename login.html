@@ -2,37 +2,77 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Sistem Pelaporan</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="login-container">
-<h2>Login</h2>
-<input type="text" id="username" placeholder="Username">
-<input type="password" id="password" placeholder="Password">
-<button onclick="login()">Masuk</button>
-<p id="error"></p>
-</div>
+<title>Login Aplikasi Laporan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-
+<link rel="manifest" href="manifest.json">
 <script>
-function login(){
-const user = document.getElementById('username').value;
-const pass = document.getElementById('password').value;
-
-
-if(user === "admin" && pass === "admin123"){
-localStorage.setItem("user","admin");
-window.location.href = "dashboard.html";
-}
-else if(user === "teknisi" && pass === "teknisi123"){
-localStorage.setItem("user","teknisi");
-window.location.href = "laporan.html";
-} else {
-document.getElementById('error').textContent = "Username atau password salah";
-}
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
 }
 </script>
+
+<style>
+body {
+    font-family: Arial;
+    background: #e9f0ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.container {
+    width: 350px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #b9c6e0;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: 0;
+    border-radius: 7px;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h2 style="text-align:center;">Login Aplikasi</h2>
+
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p id="info" style="text-align:center;color:red;"></p>
+</div>
+
+<script>
+function login() {
+    let u = user.value.trim();
+    let p = pass.value.trim();
+
+    if (u === "admin" && p === "admin123") {
+        location.href = "dashboard.html";
+    } 
+    else if (u === "teknisi" && p === "teknisi123") {
+        location.href = "laporan.html";
+    }
+    else {
+        info.innerHTML = "Username / Password salah!";
+    }
+}
+</script>
+
 </body>
 </html>
