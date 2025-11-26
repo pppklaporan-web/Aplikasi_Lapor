@@ -1,28 +1,22 @@
-const CACHE = 'laporan-cache-v1';
-const FILES = [
-  './',
-  './index.html',
-  './laporan.html',
-  './dashboard.html',
-  './manifest.json',
-  './style.css',
-  './icon-192.png',
-  './icon-512.png'
-];
-
-self.addEventListener('install', evt => {
-  evt.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(FILES))
+self.addEventListener("install", e=>{
+  e.waitUntil(
+    caches.open("lapor-cache-v1").then(c=>{
+      return c.addAll([
+        "/",
+        "/index.html",
+        "/dashboard.html",
+        "/dashboard_public.html",
+        "/laporan.html",
+        "/style.css",
+        "/nama.js",
+        "/manifest.json"
+      ]);
+    })
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('activate', evt => {
-  evt.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('fetch', evt => {
-  evt.respondWith(
-    caches.match(evt.request).then(res => res || fetch(evt.request))
+self.addEventListener("fetch", e=>{
+  e.respondWith(
+    caches.match(e.request).then(res=>res || fetch(e.request))
   );
 });
