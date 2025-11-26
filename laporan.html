@@ -1,171 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <title>Form Laporan — Aplikasi Lapor</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#e0e5ec">
-  <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
-  </script>
-
-  <style>
-    :root{
-      --bg:#e6eaef; --card:#e0e5ec; --shadow1:#b8bec7; --shadow2:#ffffff;
-      --accent:#1c82e3; --muted:#6b7280;
-      --radius:16px;
-      --max-width:720px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg,var(--bg),#f7f9fc);
-      color:#222; -webkit-font-smoothing:antialiased;
-      padding:24px;
-    }
-
-    .wrap{max-width:var(--max-width); margin:0 auto;}
-
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    header h1{font-size:18px;margin:0}
-    .btn-ghost{background:transparent;border:0;padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--muted)}
-    
-    /* Card neumorphism */
-    .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:20px;
-      box-shadow: 9px 9px 18px var(--shadow1), -9px -9px 18px var(--shadow2);
-    }
-
-    form .row{display:flex;gap:12px}
-    form .row .col{flex:1}
-
-    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type="date"], input[type="time"], input[type="text"], select, textarea{
-      width:100%; padding:12px; border-radius:12px; border:0;
-      background:var(--card);
-      box-shadow: inset 6px 6px 12px var(--shadow1), inset -6px -6px 12px var(--shadow2);
-      font-size:15px; color:#111;
-    }
-    textarea{min-height:110px; resize:vertical}
-
-    .file-input{
-      padding:12px; border-radius:12px; border: 2px dashed rgba(0,0,0,0.06);
-      background:linear-gradient(180deg, rgba(255,255,255,0.4), rgba(255,255,255,0.2));
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .file-input input[type=file]{background:transparent;border:0}
-
-    .submit-btn{
-      margin-top:12px;
-      width:100%; padding:14px; border-radius:12px; border:0; font-weight:600;
-      background:linear-gradient(180deg,var(--accent),#0f66b2); color:white; cursor:pointer;
-      box-shadow: 6px 6px 12px rgba(12,44,86,0.12);
-      transition: transform .08s ease;
-    }
-    .submit-btn:active{transform: translateY(1px)}
-
-    .muted{color:var(--muted); font-size:13px; margin-top:8px}
-    .status{margin-top:10px;font-weight:600}
-
-    @media (max-width:640px){
-      form .row{flex-direction:column}
-      header{gap:8px}
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lapor Kendala</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Form Laporan Kendala</h1>
-      <div>
-        <button class="btn-ghost" onclick="logout()">Logout</button>
-      </div>
-    </header>
+<div class="container">
+  <h2>Lapor Kendala</h2>
 
-    <main class="card" role="main">
-      <form id="laporForm">
-        <div class="row">
-          <div class="col">
-            <label for="tgl">Tanggal</label>
-            <input id="tgl" name="tgl" type="date" required>
-          </div>
-          <div class="col">
-            <label for="jam">Jam</label>
-            <input id="jam" name="jam" type="time" required>
-          </div>
-        </div>
+  <label>Lokasi</label>
+  <input id="lokasi" placeholder="Contoh: Lantai 2 - Ruang Server">
 
-        <label for="lokasi">Lokasi / Unit Kerja</label>
-        <input id="lokasi" name="lokasi" type="text" placeholder="Contoh: Lantai 2 - Ruang Server" required>
+  <label>Kategori</label>
+  <select id="kategori">
+    <option value="Internet">Internet</option>
+    <option value="Komputer">Komputer</option>
+    <option value="Aplikasi">Aplikasi</option>
+    <option value="Listrik">Listrik</option>
+    <option value="Lainnya">Lainnya</option>
+  </select>
 
-        <label for="kategori">Kategori Kendala</label>
-        <select id="kategori" name="kategori" required>
-          <option value="">-- Pilih --</option>
-          <option>Jaringan</option>
-          <option>Komputer</option>
-          <option>Printer</option>
-          <option>Aplikasi</option>
-          <option>Lainnya</option>
-        </select>
+  <label>Deskripsi</label>
+  <textarea id="deskripsi" placeholder="Jelaskan kendalanya"></textarea>
 
-        <label for="deskripsi">Deskripsi Kendala</label>
-        <textarea id="deskripsi" name="deskripsi" placeholder="Tuliskan kronologi singkat" required></textarea>
+  <label>Upload Foto (opsional)</label>
+  <input type="file" id="foto" accept="image/*">
 
-        <label>Foto Bukti</label>
-        <div class="file-input">
-          <span class="muted">Pilih file (jpg/png) — opsional</span>
-          <input id="foto" name="foto" type="file" accept="image/*">
-        </div>
+  <button onclick="kirim()">Kirim Laporan</button>
 
-        <button class="submit-btn" type="submit">Kirim Laporan</button>
-
-        <div id="status" class="status muted" aria-live="polite"></div>
-      </form>
-    </main>
-  </div>
+  <p style="text-align:center;margin-top:20px">
+    <a href="dashboard_public.html">Lihat Dashboard Publik</a>
+  </p>
+</div>
 
 <script>
-  // Proteksi route: jika tidak login (teknisi) redirect ke index
-  if(localStorage.getItem('lap_user') && localStorage.getItem('lap_user') !== 'teknisi') {
-    // jika bukan teknisi, arahkan ke login
-    // jangan redirect jika none (biarkan)
+const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+
+async function kirim(){
+  const lokasi = document.getElementById("lokasi").value.trim();
+  const kategori = document.getElementById("kategori").value;
+  const deskripsi = document.getElementById("deskripsi").value.trim();
+  const fotoFile = document.getElementById("foto").files[0];
+
+  if(!lokasi || !deskripsi){
+    alert("Lokasi dan Deskripsi wajib diisi!");
+    return;
   }
-  // default tanggal
-  document.getElementById('tgl').value = new Date().toISOString().slice(0,10);
 
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+  let fotoBase64 = "";
 
-  document.getElementById('laporForm').addEventListener('submit', async function(e){
-    e.preventDefault();
-    const statusEl = document.getElementById('status');
-    statusEl.textContent = 'Mengirim...';
+  if(fotoFile){
+    fotoBase64 = await toBase64(fotoFile);
+  }
 
-    const fd = new FormData(this);
+  const data = {
+    lokasi, kategori, deskripsi, foto: fotoBase64
+  };
 
-    try {
-      const res = await fetch(GAS_URL, { method:'POST', body:fd });
-      const text = await res.text();
-      statusEl.textContent = text || 'Laporan terkirim';
-      // reset except date
-      document.getElementById('jam').value = '';
-      document.getElementById('lokasi').value = '';
-      document.getElementById('kategori').value = '';
-      document.getElementById('deskripsi').value = '';
-      document.getElementById('foto').value = '';
-    } catch(err) {
-      statusEl.textContent = 'Gagal mengirim. Periksa koneksi.';
-      console.error(err);
-    }
+  await fetch(GAS_URL, {
+    method:"POST",
+    body: JSON.stringify(data)
   });
 
-  function logout(){
-    localStorage.removeItem('lap_user');
-    location.href = 'index.html';
-  }
+  alert("Laporan berhasil dikirim!");
+  location.reload();
+}
+
+function toBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 </script>
 </body>
 </html>
