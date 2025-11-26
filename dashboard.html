@@ -1,70 +1,158 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard Laporan</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <title>Dashboard Laporan — Aplikasi Lapor</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<link rel="manifest" href="manifest.json">
-<script>
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-}
-</script>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#e0e5ec">
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+  </script>
 
-<style>
-body { font-family: Arial; background:#eef2ff; padding: 20px; }
-table { width: 100%; border-collapse: collapse; background:white; display:block; overflow-x:auto; }
-th,td { padding:10px; border:1px solid #ccc; }
-th { background:#007bff; color:white; }
-img { width:80px; border-radius:6px; }
-</style>
+  <style>
+    :root{
+      --bg:#e6eaef; --card:#e0e5ec; --shadow1:#b8bec7; --shadow2:#ffffff;
+      --accent:#1c82e3; --muted:#6b7280; --radius:16px;
+      --max-width:1100px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, 'Segoe UI', Roboto, Arial, sans-serif;background:linear-gradient(180deg,var(--bg),#f7f9fc);padding:20px;color:#111}
+    .wrap{max-width:var(--max-width);margin:0 auto}
+
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    header h1{font-size:20px;margin:0}
+    .btn-ghost{background:transparent;border:0;padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--muted)}
+
+    .stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+    .stat{flex:1;min-width:160px;background:var(--card);border-radius:12px;padding:14px;box-shadow:9px 9px 18px var(--shadow1), -9px -9px 18px var(--shadow2)}
+    .stat h3{margin:0;font-size:18px}
+    .stat p{margin:6px 0 0;color:var(--muted)}
+
+    /* card list */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .report-card{
+      background:var(--card);border-radius:14px;padding:14px;box-shadow:9px 9px 18px var(--shadow1), -9px -9px 18px var(--shadow2);
+      display:flex;gap:12px;align-items:flex-start;
+    }
+    .thumb{width:92px;height:72px;border-radius:8px;background:#f3f6fa;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+
+    .rbody{flex:1}
+    .rmeta{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+    .rmeta span{font-size:13px;color:var(--muted)}
+    .title{font-weight:700;margin:0 0 6px}
+    .desc{margin:0;color:#333;font-size:14px}
+    .badge{padding:6px 10px;border-radius:12px;font-weight:600;font-size:13px}
+    .badge.open{background:#fff8e1;color:#a67c00;border:1px solid #f0e0a0}
+    .badge.progress{background:#e8f7ff;color:#07619b;border:1px solid #bfe7ff}
+    .badge.done{background:#e9fbe9;color:#1b7a28;border:1px solid #cfeecf}
+
+    /* responsive */
+    @media (max-width:640px){
+      header{flex-direction:column;gap:8px;align-items:flex-start}
+      .rmeta{flex-direction:column;align-items:flex-start;gap:6px}
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <header>
+      <h1>Dashboard Laporan</h1>
+      <div>
+        <button class="btn-ghost" onclick="location.href='index.html'">Logout</button>
+      </div>
+    </header>
 
-<h2>Dashboard Laporan</h2>
+    <section class="stats">
+      <div class="stat">
+        <h3 id="total">-</h3>
+        <p>Total laporan</p>
+      </div>
+      <div class="stat">
+        <h3 id="open">-</h3>
+        <p>Open</p>
+      </div>
+      <div class="stat">
+        <h3 id="done">-</h3>
+        <p>Selesai</p>
+      </div>
+    </section>
 
-<table>
-<thead>
-<tr>
-<th>Tgl</th>
-<th>Jam</th>
-<th>Lokasi</th>
-<th>Kategori</th>
-<th>Deskripsi</th>
-<th>Foto</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody id="data"></tbody>
-</table>
+    <section class="card">
+      <h3 style="margin-top:0">Daftar Laporan</h3>
+      <div class="grid" id="grid"></div>
+    </section>
+  </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+  // protect route: admin only
+  // if not admin, you may want to redirect - left permissive for demo
+  // if(localStorage.getItem('lap_user') !== 'admin') location.replace('index.html');
 
-async function load() {
-    let r = await fetch(GAS_URL);
-    let d = await r.json();
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
 
-    let html = "";
-    d.forEach(x => {
-        html += `
-        <tr>
-            <td>${x.tgl}</td>
-            <td>${x.jam}</td>
-            <td>${x.lokasi}</td>
-            <td>${x.kategori}</td>
-            <td>${x.deskripsi}</td>
-            <td>${x.foto ? `<img src="${x.foto}">` : "-"}</td>
-            <td>${x.status}</td>
-        </tr>`;
-    });
-    document.getElementById("data").innerHTML = html;
-}
+  async function loadData(){
+    try{
+      const res = await fetch(GAS_URL);
+      const data = await res.json();
 
-load();
+      // stats
+      document.getElementById('total').textContent = data.length;
+      const openCount = data.filter(d=> (d.status||'Open').toLowerCase()==='open').length;
+      const doneCount = data.filter(d=> (d.status||'Open').toLowerCase()==='selesai' || (d.status||'Open').toLowerCase()==='done').length;
+      document.getElementById('open').textContent = openCount;
+      document.getElementById('done').textContent = doneCount;
+
+      // grid cards
+      const grid = document.getElementById('grid'); grid.innerHTML = '';
+      data.reverse().forEach(item => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'report-card';
+
+        const thumb = document.createElement('div'); thumb.className = 'thumb';
+        if(item.foto){
+          const img = document.createElement('img'); img.src = item.foto; img.alt = 'foto';
+          thumb.appendChild(img);
+        } else {
+          thumb.innerHTML = '<svg width="48" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#f5f7fb"/></svg>';
+        }
+
+        const rbody = document.createElement('div'); rbody.className = 'rbody';
+        const meta = document.createElement('div'); meta.className = 'rmeta';
+        const dt = document.createElement('span'); dt.textContent = (item.tgl||'') + ' • ' + (item.jam||'');
+        const loc = document.createElement('span'); loc.textContent = item.lokasi || '';
+        meta.appendChild(dt); meta.appendChild(loc);
+
+        const title = document.createElement('p'); title.className='title'; title.textContent = item.kategori || '—';
+        const desc = document.createElement('p'); desc.className='desc'; desc.textContent = item.deskripsi || '';
+
+        const foot = document.createElement('div'); foot.style.marginTop = '10px';
+        const badge = document.createElement('span'); badge.className = 'badge';
+        const s = (item.status||'Open').toLowerCase();
+        if(s === 'open') { badge.className += ' open'; badge.textContent = 'Open'; }
+        else if(s.includes('selesai') || s.includes('done')) { badge.className += ' done'; badge.textContent = 'Selesai'; }
+        else { badge.className += ' progress'; badge.textContent = item.status || 'Progress'; }
+
+        foot.appendChild(badge);
+
+        rbody.appendChild(meta);
+        rbody.appendChild(title);
+        rbody.appendChild(desc);
+        rbody.appendChild(foot);
+
+        wrapper.appendChild(thumb);
+        wrapper.appendChild(rbody);
+
+        grid.appendChild(wrapper);
+      });
+    } catch(err){
+      console.error(err);
+    }
+  }
+
+  loadData();
 </script>
-
 </body>
 </html>
