@@ -1,50 +1,395 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aplikasi Lapor - Login</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Aplikasi Laporan — Login & Dashboard (Mobile)</title>
+  <meta name="theme-color" content="#0d47a1">
+  <style>
+    :root{--bg:#f4f6fb;--card:#ffffff;--primary:#0d47a1;--accent:#1565c0;--muted:#6b7280}
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial}
+    body{margin:0;background:var(--bg);color:#0b1220;-webkit-font-smoothing:antialiased}
+
+    /* App shell */
+    .app{max-width:760px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+    header{background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+    header h1{font-size:16px;margin:0}
+    main{flex:1;padding:14px}
+    .card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 6px 18px rgba(13,71,161,0.06)}
+    input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid #e6eef8;font-size:14px}
+    button{background:var(--primary);color:#fff;border:none;padding:10px 12px;border-radius:10px;font-weight:600;cursor:pointer}
+    button.ghost{background:transparent;color:var(--primary);border:1px solid rgba(13,71,161,0.12)}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Login */
+    .center{display:flex;align-items:center;justify-content:center}
+
+    /* List */
+    .list-item{display:flex;justify-content:space-between;align-items:flex-start;padding:12px;border-radius:10px;border:1px solid #eef4ff;margin-bottom:8px}
+    .meta{font-size:13px;color:var(--muted);margin-top:6px}
+    .badge{padding:6px 8px;border-radius:999px;font-weight:700;font-size:12px}
+    .badge.pending{background:#fff3cd;color:#8a6d02}
+    .badge.taken{background:#dbeafe;color:#1e3a8a}
+    .badge.working{background:#fff4e6;color:#7a4d00}
+    .badge.done{background:#d1fae5;color:#065f46}
+
+    /* Footer nav */
+    .nav{display:flex;gap:8px;margin-top:8px}
+    .nav button{flex:1}
+
+    /* Responsive small */
+    @media(min-width:760px){
+      body{background:#eef4ff}
+      .app{box-shadow:0 12px 40px rgba(13,71,161,0.06);margin:24px auto;border-radius:16px;overflow:hidden}
+      header{border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+    }
+  </style>
 </head>
-
 <body>
-<div class="container">
-  <h2>Login</h2>
+  <div class="app">
+    <header>
+      <h1 id="appTitle">Aplikasi Laporan</h1>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="userInfo" class="muted">Belum login</div>
+        <button id="logoutBtn" class="ghost" style="display:none">Logout</button>
+      </div>
+    </header>
 
-  <label>Nama Pengguna</label>
-  <input id="usernameInput" placeholder="Masukkan nama Anda">
+    <main id="main">
+      <!-- LOGIN CARD -->
+      <div id="loginCard" class="card">
+        <h3>Masuk</h3>
+        <div class="muted">Gunakan akun admin atau teknisi.</div>
+        <div style="height:8px"></div>
+        <input id="username" placeholder="Username (mis. admin)" />
+        <div style="height:8px"></div>
+        <input id="password" type="password" placeholder="Password" />
+        <div style="height:12px"></div>
+        <button id="btnLogin">Masuk</button>
+        <div style="height:8px"></div>
+        <div class="muted">Demo creds: admin/admin123 | teknisi1/tek123</div>
+      </div>
 
-  <label>Pilih Akses</label>
-  <select id="roleSelect">
-    <option value="viewer">Viewer / Publik</option>
-    <option value="teknisi">Teknisi</option>
-    <option value="admin">Admin</option>
-  </select>
+      <!-- DASHBOARD PELAPOR (jika peran pelapor ditambah nanti) -->
+      <div id="pelaporCard" class="card" style="display:none">
+        <h3>Buat Laporan</h3>
+        <input id="r_pelapor" placeholder="Nama Anda" />
+        <div style="height:8px"></div>
+        <input id="r_divisi" placeholder="Divisi / Lokasi" />
+        <div style="height:8px"></div>
+        <input id="r_judul" placeholder="Judul singkat" />
+        <div style="height:8px"></div>
+        <textarea id="r_deskripsi" rows="4" placeholder="Deskripsi masalah..."></textarea>
+        <div style="height:8px"></div>
+        <input id="r_file" type="file" accept="image/*" />
+        <div style="height:8px"></div>
+        <button id="btnSendReport">Kirim Laporan</button>
+      </div>
 
-  <button onclick="login()">Masuk</button>
+      <!-- ADMIN Card -->
+      <div id="adminCard" class="card" style="display:none">
+        <h3>Panel Admin</h3>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <select id="filterStatusAdmin">
+            <option value="all">Semua Status</option>
+            <option value="Menunggu">Menunggu</option>
+            <option value="Diambil">Diambil</option>
+            <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+          <button id="btnRefreshAdmin" class="ghost">Refresh</button>
+        </div>
+        <div id="adminList" style="max-height:48vh;overflow:auto"></div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <input id="exportMonth" type="month" />
+          <button id="btnExportPDF">Export PDF</button>
+        </div>
+      </div>
 
-  <p style="margin-top:20px;text-align:center">
-    Atau buka dashboard publik:<br>
-    <a href="dashboard_public.html">Dashboard Publik →</a>
-  </p>
-</div>
+      <!-- TEKNISI Card -->
+      <div id="techCard" class="card" style="display:none">
+        <h3>Dashboard Teknisi</h3>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button id="btnMyTasks" class="ghost">Tugas Saya</button>
+          <button id="btnAllTasks" class="ghost">Semua</button>
+        </div>
+        <div id="techList" style="max-height:52vh;overflow:auto"></div>
+      </div>
+
+    </main>
+
+    <footer style="padding:10px 14px;background:transparent">
+      <div class="muted center">Powered by — Template Mobile UI</div>
+    </footer>
+  </div>
 
 <script>
-function login(){
-  const user = document.getElementById("usernameInput").value.trim();
-  const role = document.getElementById("roleSelect").value;
+/* ========= CONFIG ========= */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec';
 
-  if(!user){
-    alert("Nama harus diisi");
-    return;
+/* ========= HELPERS ========= */
+function el(id){return document.getElementById(id)}
+function show(id){el(id).style.display='block'}
+function hide(id){el(id).style.display='none'}
+function notify(msg){alert(msg)}
+
+/* ========= AUTH (simple) ========= */
+const state = { user:null };
+
+el('btnLogin').addEventListener('click', async ()=>{
+  const username = el('username').value.trim();
+  const password = el('password').value.trim();
+  if(!username||!password) return notify('Masukkan username & password');
+
+  // call GAS login
+  try{
+    const res = await apiPost({action:'login', username, password});
+    if(res.success){
+      state.user = {username:res.username, role:res.role};
+      localStorage.setItem('appUser', JSON.stringify(state.user));
+      setupUIForRole(res.role);
+      notify('Login berhasil sebagai '+res.role);
+    } else {
+      notify(res.message || 'Login gagal');
+    }
+  }catch(e){console.error(e);notify('Gagal koneksi ke server')}
+});
+
+el('logoutBtn').addEventListener('click', ()=>{ localStorage.removeItem('appUser'); location.reload(); });
+
+function tryRestoreLogin(){
+  const u = localStorage.getItem('appUser');
+  if(u){ state.user = JSON.parse(u); setupUIForRole(state.user.role); }
+}
+
+/* ========= API helpers ========= */
+async function apiPost(body){
+  const res = await fetch(GAS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  return res.json();
+}
+
+/* ========= UI flows ========= */
+function setupUIForRole(role){
+  hide('loginCard');
+  el('userInfo').innerText = state.user.username + ' ('+role+')';
+  show('logoutBtn');
+
+  if(role==='admin'){
+    show('adminCard'); hide('techCard'); hide('pelaporCard');
+    loadAdminList();
+  } else if(role==='teknisi'){
+    show('techCard'); hide('adminCard'); hide('pelaporCard');
+    loadTechList();
+  } else if(role==='pelapor'){
+    show('pelaporCard'); hide('adminCard'); hide('techCard');
+  }
+}
+
+/* ========= PELAPOR: create report ========= */
+el('btnSendReport').addEventListener('click', async ()=>{
+  const pelapor = el('r_pelapor').value.trim();
+  const divisi = el('r_divisi').value.trim();
+  const judul = el('r_judul').value.trim();
+  const deskripsi = el('r_deskripsi').value.trim();
+  const file = el('r_file').files[0];
+  if(!pelapor||!divisi||!judul||!deskripsi) return notify('Isi semua field wajib');
+
+  let fileData = null; let mimeType = null; let fileName = null;
+  if(file){
+    const base64 = await toBase64(file);
+    fileData = base64.split(',')[1];
+    mimeType = file.type; fileName = file.name;
   }
 
-  localStorage.setItem("username", user);
-  localStorage.setItem("lap_role", role);
+  const body = { action:'addLaporan', pelapor, divisi, judul, deskripsi, fileData, mimeType, fileName };
+  const res = await apiPost(body);
+  if(res.success) { notify('Laporan terkirim'); el('r_pelapor').value=''; el('r_divisi').value=''; el('r_judul').value=''; el('r_deskripsi').value=''; el('r_file').value=''; }
+  else notify('Gagal: '+(res.message||'error'));
+});
 
-  if(role === "viewer") location.href = "dashboard_public.html";
-  else location.href = "dashboard.html";
+function toBase64(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=err=>rej(err); r.readAsDataURL(file); }); }
+
+/* ========= ADMIN: load list & export pdf ========= */
+async function loadAdminList(){
+  const res = await apiPost({action:'getLaporan'});
+  if(!res.success) return notify('Gagal ambil data');
+  const data = res.data;
+  const wrap = el('adminList'); wrap.innerHTML='';
+
+  data.forEach((r,idx)=>{
+    const div = document.createElement('div'); div.className='list-item';
+    const left = document.createElement('div'); left.style.maxWidth='70%';
+    left.innerHTML = `<div style="font-weight:700">${escapeHtml(r.judul)}</div><div class="meta">${escapeHtml(r.pelapor)} • ${escapeHtml(r.divisi)}</div><div class="meta">${new Date(r.timestamp).toLocaleString()}</div><div style="margin-top:8px">${escapeHtml(r.deskripsi)}</div>`;
+    const right = document.createElement('div');
+    const badge = document.createElement('div'); badge.className='badge '+(r.status?r.status.toLowerCase().replace(/\s/g,''):'pending'); badge.innerText = r.status || 'Menunggu';
+    right.appendChild(badge);
+    if(r.foto) right.innerHTML += `<div style="margin-top:8px"><a href="${r.foto}" target="_blank">Lihat Foto</a></div>`;
+
+    div.appendChild(left); div.appendChild(right);
+    wrap.appendChild(div);
+  });
 }
+
+el('btnRefreshAdmin').addEventListener('click', loadAdminList);
+
+el('btnExportPDF').addEventListener('click', async ()=>{
+  const month = el('exportMonth').value; if(!month) return notify('Pilih bulan');
+  // call exportPDF
+  try{
+    const res = await fetch(GAS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'exportPDF', bulan: month}) });
+    if(!res.ok) throw new Error('Gagal export');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `Laporan_${month}.pdf`; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){ console.error(e); notify('Export gagal'); }
+});
+
+/* ========= TEKNISI: list & update status ========= */
+let techFilterMine = false;
+el('btnMyTasks').addEventListener('click', ()=>{ techFilterMine=true; loadTechList(); });
+el('btnAllTasks').addEventListener('click', ()=>{ techFilterMine=false; loadTechList(); });
+
+async function loadTechList(){
+  const res = await apiPost({action:'getLaporan'});
+  if(!res.success) return notify('Gagal ambil data');
+  const data = res.data;
+  const wrap = el('techList'); wrap.innerHTML='';
+  const me = state.user.username;
+
+  data.forEach((r,idx)=>{
+    if(techFilterMine && r.teknisi !== me) return;
+    const div = document.createElement('div'); div.className='list-item';
+    const left = document.createElement('div'); left.style.maxWidth='60%';
+    left.innerHTML = `<div style="font-weight:700">${escapeHtml(r.judul)}</div><div class="meta">${escapeHtml(r.pelapor)} • ${escapeHtml(r.divisi)}</div><div class="meta">${escapeHtml(r.deskripsi)}</div>`;
+    const right = document.createElement('div');
+    const status = (r.status||'Menunggu');
+    const badge = document.createElement('div'); badge.className='badge '+(status.toLowerCase().replace(/\s/g,'')); badge.innerText = status;
+    right.appendChild(badge);
+
+    // actions depending on status
+    const actions = document.createElement('div'); actions.style.marginTop='8px';
+    if(status==='Menunggu'){
+      const btn = document.createElement('button'); btn.innerText='Ambil'; btn.addEventListener('click', ()=>updateStatus(r.judul,'Diambil'));
+      actions.appendChild(btn);
+    }
+    if(status==='Diambil'){
+      const btn = document.createElement('button'); btn.innerText='Mulai'; btn.addEventListener('click', ()=>updateStatus(r.judul,'Sedang Dikerjakan'));
+      actions.appendChild(btn);
+    }
+    if(status==='Sedang Dikerjakan'){
+      const btn = document.createElement('button'); btn.innerText='Selesai'; btn.addEventListener('click', ()=>updateStatus(r.judul,'Selesai'));
+      actions.appendChild(btn);
+    }
+
+    // add note input
+    const note = document.createElement('textarea'); note.rows=2; note.placeholder='Catatan teknisi (opsional)'; note.style.width='100%'; note.style.marginTop='8px';
+    actions.appendChild(note);
+    const noteBtn = document.createElement('button'); noteBtn.innerText='Simpan Catatan'; noteBtn.style.marginTop='6px'; noteBtn.addEventListener('click', ()=>updateStatus(r.judul,status, note.value));
+    actions.appendChild(noteBtn);
+
+    right.appendChild(actions);
+    div.appendChild(left); div.appendChild(right);
+    wrap.appendChild(div);
+  });
+}
+
+async function updateStatus(judul, status, catatan=''){
+  const body = { action:'updateStatus', judul, status, teknisi: state.user.username, catatan };
+  const res = await apiPost(body);
+  if(res.success) { notify('Status diperbarui'); loadTechList(); loadAdminList(); } else notify('Gagal update');
+}
+
+/* ========= UTIL ========= */
+function escapeHtml(str){ if(!str && str!==0) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// restore
+tryRestoreLogin();
+
 </script>
 </body>
 </html>
+
+<!-- Halaman Pelapor: Form Laporan -->
+<section id="pelapor-page" class="page hidden">
+  <h2 class="title">Buat Laporan Kendala</h2>
+
+  <form id="pelaporForm" class="form">
+
+    <label>Nama Pegawai</label>
+    <input type="text" id="namaPegawai" placeholder="Masukkan Nama" required />
+
+    <label>Unit / Ruangan</label>
+    <input type="text" id="unitRuangan" placeholder="Contoh: Keuangan / Ruang 12" required />
+
+    <label>Jenis Kendala</label>
+    <select id="jenisKendala" required>
+      <option value="">Pilih...</option>
+      <option value="Komputer">Komputer</option>
+      <option value="Printer">Printer</option>
+      <option value="Internet">Internet</option>
+      <option value="Aplikasi">Aplikasi</option>
+      <option value="Lainnya">Lainnya</option>
+    </select>
+
+    <label>Deskripsi Kendala</label>
+    <textarea id="deskripsiKendala" placeholder="Tuliskan detail masalah..." required></textarea>
+
+    <label>Upload Foto Bukti</label>
+    <input type="file" id="fotoBukti" accept="image/*" capture="camera" />
+
+    <button type="submit" class="btn-primary">KIRIM LAPORAN</button>
+  </form>
+</section>
+
+<script>
+// === HANDLE FORM PELAPOR ===
+const GAS_URL = "YOUR_GAS_WEB_APP_URL"; // ganti dengan GAS URL anda
+
+const pelaporForm = document.getElementById("pelaporForm");
+
+pelaporForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const nama = document.getElementById("namaPegawai").value;
+  const unit = document.getElementById("unitRuangan").value;
+  const jenis = document.getElementById("jenisKendala").value;
+  const desk = document.getElementById("deskripsiKendala").value;
+
+  const fileInput = document.getElementById("fotoBukti").files[0];
+  let base64Image = "";
+
+  if (fileInput) {
+    base64Image = await toBase64(fileInput);
+  }
+
+  const payload = {
+    action: "addLaporan",
+    namaPegawai: nama,
+    unit: unit,
+    jenisKendala: jenis,
+    deskripsi: desk,
+    file: base64Image
+  };
+
+  const res = await fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
+  const json = await res.json();
+  alert(json.message || "Laporan berhasil dikirim!");
+
+  pelaporForm.reset();
+});
+
+// Konversi file ke base64
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+}
+</script>
