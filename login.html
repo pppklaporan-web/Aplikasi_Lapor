@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Sistem Pelaporan</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="login-container">
+<h2>Login</h2>
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Masuk</button>
+<p id="error"></p>
+</div>
+
+
+<script>
+function login(){
+const user = document.getElementById('username').value;
+const pass = document.getElementById('password').value;
+
+
+if(user === "admin" && pass === "admin123"){
+localStorage.setItem("user","admin");
+window.location.href = "dashboard.html";
+}
+else if(user === "teknisi" && pass === "teknisi123"){
+localStorage.setItem("user","teknisi");
+window.location.href = "laporan.html";
+} else {
+document.getElementById('error').textContent = "Username atau password salah";
+}
+}
+</script>
+</body>
+</html>
