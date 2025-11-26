@@ -4,198 +4,169 @@
   <meta charset="utf-8">
   <title>Dashboard Laporan — Aplikasi Lapor</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#e0e5ec">
-  <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
-  </script>
 
   <style>
     :root{
-      --bg:#e6eaef; --card:#e0e5ec; --shadow1:#b8bec7; --shadow2:#ffffff;
-      --accent:#1c82e3; --muted:#6b7280; --radius:16px;
+      --bg:#e6eaef; --card:#e0e5ec; --shadow1:#b8bec7;
+      --shadow2:#ffffff; --accent:#1c82e3; --muted:#6b7280;
       --max-width:1100px;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter, 'Segoe UI', Roboto, Arial, sans-serif;background:linear-gradient(180deg,var(--bg),#f7f9fc);padding:20px;color:#111}
+    body{
+      margin:0;font-family:Inter,sans-serif;
+      background:linear-gradient(180deg,var(--bg),#f7f9fc);
+      padding:20px;color:#111;
+    }
     .wrap{max-width:var(--max-width);margin:0 auto}
+    header{display:flex;justify-content:space-between;margin-bottom:20px}
 
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    header h1{font-size:20px;margin:0}
-    .btn-ghost{background:transparent;border:0;padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--muted)}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:16px;
+    }
 
-    .stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-    .stat{flex:1;min-width:160px;background:var(--card);border-radius:12px;padding:14px;box-shadow:9px 9px 18px var(--shadow1), -9px -9px 18px var(--shadow2)}
-    .stat h3{margin:0;font-size:18px}
-    .stat p{margin:6px 0 0;color:var(--muted)}
-
-    /* card list */
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-    .report-card{
-      background:var(--card);border-radius:14px;padding:14px;box-shadow:9px 9px 18px var(--shadow1), -9px -9px 18px var(--shadow2);
+    .card{
+      background:var(--card);padding:14px;border-radius:14px;
+      box-shadow:9px 9px 18px var(--shadow1),-9px -9px 18px var(--shadow2);
       display:flex;gap:12px;align-items:flex-start;
     }
-    .thumb{width:92px;height:72px;border-radius:8px;background:#f3f6fa;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+    .thumb{
+      width:92px;height:72px;border-radius:8px;background:#f3f6fa;
+      overflow:hidden;display:flex;align-items:center;justify-content:center
+    }
     .thumb img{width:100%;height:100%;object-fit:cover}
 
-    .rbody{flex:1}
-    .rmeta{display:flex;gap:10px;align-items:center;margin-bottom:8px}
-    .rmeta span{font-size:13px;color:var(--muted)}
-    .title{font-weight:700;margin:0 0 6px}
-    .desc{margin:0;color:#333;font-size:14px}
-
-    .badge{padding:6px 10px;border-radius:12px;font-weight:600;font-size:13px}
+    .badge{
+      padding:6px 10px;border-radius:12px;font-weight:600;font-size:13px
+    }
     .badge.open{background:#fff8e1;color:#a67c00;border:1px solid #f0e0a0}
     .badge.done{background:#e9fbe9;color:#1b7a28;border:1px solid #cfeecf}
     .badge.progress{background:#e8f7ff;color:#07619b;border:1px solid #bfe7ff}
 
-    .btn-small{
-      padding:7px 12px;
-      background:var(--accent);
-      border:0;
-      color:white;
-      border-radius:8px;
-      cursor:pointer;
-      font-size:13px;
-      margin-left:10px;
+    .btn{
+      padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer;margin-right:6px
     }
-
-    .btn-small:disabled{
-      opacity:0.4;
-      cursor:default;
-    }
-
-    @media (max-width:640px){
-      header{flex-direction:column;gap:8px;align-items:flex-start}
-      .rmeta{flex-direction:column;align-items:flex-start;gap:6px}
-    }
+    .primary{background:var(--accent);color:white;border:0}
+    .secondary{background:transparent;color:var(--accent);border:1px solid rgba(0,0,0,.1)}
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Dashboard Laporan</h1>
-      <div>
-        <button class="btn-ghost" onclick="location.href='index.html'">Logout</button>
-      </div>
-    </header>
+<div class="wrap">
+  <header>
+    <h2>Dashboard Admin & Teknisi</h2>
+    <button onclick="logout()" class="secondary">Logout</button>
+  </header>
 
-    <section class="stats">
-      <div class="stat">
-        <h3 id="total">-</h3>
-        <p>Total laporan</p>
-      </div>
-      <div class="stat">
-        <h3 id="open">-</h3>
-        <p>Open</p>
-      </div>
-      <div class="stat">
-        <h3 id="done">-</h3>
-        <p>Selesai</p>
-      </div>
-    </section>
-
-    <section class="card">
-      <h3 style="margin-top:0">Daftar Laporan</h3>
-      <div class="grid" id="grid"></div>
-    </section>
-  </div>
+  <div class="grid" id="grid"></div>
+</div>
 
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec"; // <-- GANTI DENGAN URL APPS SCRIPT ANDA
 
-  // --- UPDATE STATUS ---
-  async function updateStatus(id, status){
-    await fetch(GAS_URL + "?id=" + id + "&status=" + status, {
-      method: "PUT"
+  function logout(){
+    localStorage.clear();
+    location.href = "index.html";
+  }
+
+  async function updateStatus(id, status, teknisi=""){
+    await fetch(`${GAS_URL}?id=${id}&status=${status}&teknisi=${teknisi}`,{method:"PUT"});
+  }
+
+  async function load(){
+    const res = await fetch(GAS_URL);
+    const data = await res.json();
+
+    const role = localStorage.getItem("lap_role");
+    const username = localStorage.getItem("username") || "";
+
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    data.reverse().forEach((item, idx)=>{
+      const rowId = data.length - idx;
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const foto =
+        item.foto
+        ? `<img src="${item.foto}">`
+        : `<div style="color:#aaa">No Foto</div>`;
+
+      card.innerHTML = `
+        <div class="thumb">${foto}</div>
+        <div style="flex:1">
+          <p><strong>${item.kategori}</strong></p>
+          <p style="color:#777">${item.tgl} • ${item.jam}</p>
+          <p><em>${item.lokasi}</em></p>
+          <p>${item.deskripsi}</p>
+
+          <span class="badge ${item.status.toLowerCase()}">
+            ${item.status} ${item.teknisi ? "• "+item.teknisi : ""}
+          </span>
+          <div style="height:8px"></div>
+          <div class="action"></div>
+        </div>
+      `;
+
+      const act = card.querySelector(".action");
+
+      // Tombol Info
+      const info = document.createElement("button");
+      info.className = "btn secondary";
+      info.textContent = "Info";
+      info.onclick = () => {
+        alert(
+          (item.teknisi ? `Teknisi: ${item.teknisi}\n`:"") +
+          (item.waktu_progress ? `Progress: ${item.waktu_progress}\n`:"") +
+          (item.waktu_selesai ? `Selesai: ${item.waktu_selesai}\n`:"")
+        );
+      };
+      act.appendChild(info);
+
+      // Tombol Ambil
+      const ambil = document.createElement("button");
+      ambil.className = "btn secondary";
+      ambil.textContent = "Ambil Pekerjaan";
+
+      if(item.status !== "Open" || role !== "teknisi") ambil.style.display = "none";
+
+      ambil.onclick = async()=>{
+        await updateStatus(rowId,"Progress",username);
+        load();
+      };
+      act.appendChild(ambil);
+
+      // Tombol Selesai
+      const done = document.createElement("button");
+      done.className = "btn primary";
+      done.textContent = "Selesai";
+
+      if(item.status === "Open") done.disabled = true;
+      if(item.status === "Selesai") done.disabled = true;
+
+      if(item.status === "Progress"){
+        if(role === "admin") done.disabled = false;
+        else if(item.teknisi === username) done.disabled = false;
+        else done.disabled = true;
+      }
+
+      done.onclick = async()=>{
+        await updateStatus(rowId,"Selesai",username);
+        load();
+      };
+      act.appendChild(done);
+
+      grid.appendChild(card);
     });
   }
 
-  async function loadData(){
-    try{
-      const res = await fetch(GAS_URL);
-      const data = await res.json();
-
-      // Stats
-      document.getElementById('total').textContent = data.length;
-      document.getElementById('open').textContent = data.filter(d=>d.status==="Open").length;
-      document.getElementById('done').textContent = data.filter(d=>d.status==="Selesai").length;
-
-      // Cards
-      const grid = document.getElementById('grid');
-      grid.innerHTML = "";
-      data.reverse().forEach((item, idx) => {
-        
-        // ID baris (tanpa header)
-        const rowId = data.length - idx;
-
-        const card = document.createElement('div');
-        card.className = 'report-card';
-
-        // Foto
-        const thumb = document.createElement('div');
-        thumb.className = 'thumb';
-        thumb.innerHTML = item.foto ? `<img src="${item.foto}">` : `<div style="color:#aaa">No Foto</div>`;
-
-        const body = document.createElement('div');
-        body.className = 'rbody';
-
-        // Meta
-        const meta = document.createElement('div');
-        meta.className = 'rmeta';
-        meta.innerHTML = `<span>${item.tgl} • ${item.jam}</span><span>${item.lokasi}</span>`;
-
-        const title = document.createElement('p');
-        title.className = "title";
-        title.textContent = item.kategori;
-
-        const desc = document.createElement('p');
-        desc.className = "desc";
-        desc.textContent = item.deskripsi;
-
-        // Status & Tombol
-        const foot = document.createElement('div');
-        foot.style.marginTop = "10px";
-
-        const badge = document.createElement('span');
-        badge.className = "badge " + (item.status === "Open" ? "open" : "done");
-        badge.textContent = item.status;
-
-        const btn = document.createElement('button');
-        btn.className = "btn-small";
-        btn.textContent = "Tandai Selesai";
-
-        if(item.status === "Selesai"){
-          btn.disabled = true;
-        }
-
-        btn.onclick = async () =>{
-          await updateStatus(rowId, "Selesai");
-          loadData(); // refresh
-        }
-
-        foot.appendChild(badge);
-        foot.appendChild(btn);
-
-        // compose
-        body.appendChild(meta);
-        body.appendChild(title);
-        body.appendChild(desc);
-        body.appendChild(foot);
-
-        card.appendChild(thumb);
-        card.appendChild(body);
-
-        grid.appendChild(card);
-      });
-
-    }catch(err){
-      console.error(err);
-    }
-  }
-
-  loadData();
+  load();
+  setInterval(load,12000);
 </script>
 </body>
 </html>
