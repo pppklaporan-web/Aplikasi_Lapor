@@ -1,82 +1,295 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lapor Kendala</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Laporan Kendala - Pelapor</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0b63d6;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    button:active {
+      opacity: 0.8;
+    }
+  </style>
 </head>
-
 <body>
+
 <div class="container">
-  <h2>Lapor Kendala</h2>
+  <h2>Form Laporan Kendala</h2>
 
-  <label>Lokasi</label>
-  <input id="lokasi" placeholder="Contoh: Lantai 2 - Ruang Server">
+  <form id="formPelapor">
 
-  <label>Kategori</label>
-  <select id="kategori">
-    <option value="Internet">Internet</option>
-    <option value="Komputer">Komputer</option>
-    <option value="Aplikasi">Aplikasi</option>
-    <option value="Listrik">Listrik</option>
-    <option value="Lainnya">Lainnya</option>
-  </select>
+    <label>Nama Pegawai</label>
+    <input type="text" id="namaPegawai" required />
 
-  <label>Deskripsi</label>
-  <textarea id="deskripsi" placeholder="Jelaskan kendalanya"></textarea>
+    <label>Unit / Ruangan</label>
+    <input type="text" id="unitRuangan" required />
 
-  <label>Upload Foto (opsional)</label>
-  <input type="file" id="foto" accept="image/*">
+    <label>Jenis Kendala</label>
+    <select id="jenisKendala" required>
+      <option value="">Pilih...</option>
+      <option value="Komputer">Komputer</option>
+      <option value="Printer">Printer</option>
+      <option value="Internet">Internet</option>
+      <option value="Aplikasi">Aplikasi</option>
+      <option value="Lainnya">Lainnya</option>
+    </select>
 
-  <button onclick="kirim()">Kirim Laporan</button>
+    <label>Deskripsi Kendala</label>
+    <textarea id="deskripsiKendala" required></textarea>
 
-  <p style="text-align:center;margin-top:20px">
-    <a href="dashboard_public.html">Lihat Dashboard Publik</a>
-  </p>
+    <label>Upload Foto Bukti</label>
+    <input type="file" id="fotoBukti" accept="image/*" capture="camera" />
+
+    <button type="submit">KIRIM LAPORAN</button>
+  </form>
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+const GAS_URL = "YOUR_GAS_WEB_APP_URL"; // Ganti dengan URL Web App GAS Anda
 
-async function kirim(){
-  const lokasi = document.getElementById("lokasi").value.trim();
-  const kategori = document.getElementById("kategori").value;
-  const deskripsi = document.getElementById("deskripsi").value.trim();
-  const fotoFile = document.getElementById("foto").files[0];
+// Konversi file ke base64
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+  });
+}
 
-  if(!lokasi || !deskripsi){
-    alert("Lokasi dan Deskripsi wajib diisi!");
-    return;
-  }
+// Event submit form
+const formPelapor = document.getElementById("formPelapor");
 
-  let fotoBase64 = "";
+formPelapor.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  if(fotoFile){
-    fotoBase64 = await toBase64(fotoFile);
+  const nama = document.getElementById("namaPegawai").value;
+  const unit = document.getElementById("unitRuangan").value;
+  const jenis = document.getElementById("jenisKendala").value;
+  const desk = document.getElementById("deskripsiKendala").value;
+
+  const fileInput = document.getElementById("fotoBukti").files[0];
+  let base64Image = "";
+
+  if (fileInput) {
+    base64Image = await toBase64(fileInput);
   }
 
   const data = {
-    lokasi, kategori, deskripsi, foto: fotoBase64
+    action: "addLaporan",
+    namaPegawai: nama,
+    unit: unit,
+    jenisKendala: jenis,
+    deskripsi: desk,
+    file: base64Image
   };
 
-  await fetch(GAS_URL, {
-    method:"POST",
+  const res = await fetch(GAS_URL, {
+    method: "POST",
     body: JSON.stringify(data)
   });
 
-  alert("Laporan berhasil dikirim!");
-  location.reload();
+  const json = await res.json();
+  alert(json.message || "Laporan berhasil dikirim!");
+
+  formPelapor.reset();
+});
+</script>
+
+</body>
+</html>
+
+<!-- PWA: manifest.json, service-worker and instructions -->
+
+<!-- 1) manifest.json -->
+<!-- Save file as manifest.json at your hosting root -->
+
+/* manifest.json */
+{
+  "name": "Aplikasi Laporan Kendala",
+  "short_name": "LaporKendala",
+  "description": "Aplikasi pelaporan kendala untuk pegawai, admin, dan teknisi.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d47a1",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
 }
 
-function toBase64(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = ()=>resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+<!-- 2) service-worker.js -->
+<!-- Save file as service-worker.js at your hosting root -->
+
+/* service-worker.js */
+const CACHE_NAME = 'lapor-cache-v1';
+const OFFLINE_URL = 'offline.html';
+
+// Resources to cache on install — add your HTML/CSS/JS files here
+const PRECACHE_URLS = [
+  '/',
+  '/index.html',
+  '/all_in_one_mobile_app.html',
+  '/pelapor_form_page.html',
+  '/style.css',
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.map(key => { if (key !== CACHE_NAME) return caches.delete(key); })
+    ))
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request)
+        .then(response => {
+          // optionally cache new requests
+          return response;
+        })
+        .catch(() => caches.match(OFFLINE_URL));
+    })
+  );
+});
+
+<!-- 3) offline.html (simple fallback) -->
+<!-- Save file as offline.html at hosting root -->
+
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offline - Aplikasi Laporan</title>
+  <style>body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:20px;background:#f4f6fb;color:#0b1220}main{max-width:600px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.06)}</style>
+</head>
+<body>
+  <main>
+    <h2>Anda Sedang Offline</h2>
+    <p>Sepertinya Anda sedang tidak terhubung ke internet. Aplikasi akan mencoba memuat data cache.</p>
+    <p>Silakan cek koneksi dan coba lagi.</p>
+  </main>
+</body>
+</html>
+
+<!-- 4) Icons -->
+<!-- Create icons/icon-192.png and icons/icon-512.png (square). You can generate them from any logo. Recommended sizes: 192x192 and 512x512 PNG. Add also a favicon (favicon.ico or icons/favicon-32.png). -->
+
+<!-- 5) Small snippet to add into your HTML <head> and just before </body> -->
+
+<!-- Add inside <head> of your HTML pages -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0d47a1">
+<link rel="icon" href="/icons/icon-192.png">
+
+<!-- Add service worker registration just before closing </body> -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(function(reg) { console.log('ServiceWorker terdaftar:', reg); })
+      .catch(function(err) { console.log('ServiceWorker gagal daftar:', err); });
   });
 }
 </script>
-</body>
-</html>
+
+<!-- 6) Deployment checklist -->
+
+1. Tempatkan semua file (index.html / all_in_one_mobile_app.html / pelapor_form_page.html / manifest.json / service-worker.js / offline.html / icons/*) di root hosting Anda.
+2. Pastikan path di manifest.json cocok (contoh: /icons/icon-192.png).
+3. Jika host Anda menggunakan subfolder, sesuaikan start_url dan paths di manifest & service-worker precache.
+4. Pastikan hosting menggunakan HTTPS (PWA membutuhkan HTTPS for service worker).
+5. Tes di Chrome DevTools -> Application -> Manifest, dan Service Workers.
+
+<!-- 7) Optional: Add install prompt UX -->
+<script>
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // show your custom install button
+  const btn = document.createElement('button'); btn.innerText = 'Install Aplikasi'; document.body.appendChild(btn);
+  btn.addEventListener('click', async () => {
+    btn.remove();
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    console.log('User choice:', choice.outcome);
+    deferredPrompt = null;
+  });
+});
+</script>
+
+<!-- 8) Need me to generate icons or embed them? -->
+<!-- If you want, saya bisa buatkan logo + icons (192 & 512) sederhana dan kirim base64 sehingga Anda tinggal simpan. Mau saya buatkan icon juga? -->
+
