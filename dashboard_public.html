@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard Publik — Aplikasi Lapor</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#e0e5ec">
+
+  <style>
+    :root{
+      --bg:#e6eaef; --card:#e0e5ec; --shadow1:#b8bec7; --shadow2:#ffffff;
+      --accent:#1c82e3; --muted:#6b7280; --radius:16px; --max-width:1100px;
+    }
+    body{
+      margin:0; font-family:Inter, sans-serif;
+      background:linear-gradient(180deg,var(--bg),#f7f9fc);
+      padding:20px; color:#111;
+    }
+    .wrap{max-width:var(--max-width);margin:0 auto}
+    header{display:flex;justify-content:center;margin-bottom:18px}
+    header h1{margin:0;font-size:22px}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:16px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:14px;
+      padding:16px;
+      box-shadow:9px 9px 18px var(--shadow1), -9px -9px 18px var(--shadow2)
+    }
+
+    .thumb{
+      width:100%; height:160px; object-fit:cover;
+      border-radius:8px; margin-bottom:8px;
+      background:#f3f6fa;
+    }
+
+    .badge{
+      padding:6px 10px; border-radius:12px; font-weight:600; font-size:13px;
+    }
+    .open{background:#fff8e1;color:#a67c00;border:1px solid #f0e0a0}
+    .progress{background:#e8f7ff;color:#07619b;border:1px solid #bfe7ff}
+    .done{background:#e9fbe9;color:#1b7a28;border:1px solid #cfeecf}
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <header>
+    <h1>Dashboard Publik Laporan Kendala</h1>
+  </header>
+
+  <div id="grid" class="grid"></div>
+</div>
+
+<script>
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec"; // <-- GANTI DENGAN URL APPS SCRIPT ANDA
+
+  async function load(){
+    const res = await fetch(GAS_URL);
+    const data = await res.json();
+    const grid = document.getElementById('grid');
+    grid.innerHTML = "";
+
+    data.reverse().forEach(item =>{
+      const div = document.createElement('div');
+      div.className = 'card';
+
+      const foto = item.foto
+        ? `<img src="${item.foto}" class="thumb">`
+        : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;color:#aaa">Tanpa Foto</div>`;
+
+      div.innerHTML = `
+        ${foto}
+        <p><strong>${item.kategori}</strong></p>
+        <p style="color:var(--muted)">${item.tgl} • ${item.jam}</p>
+        <p><em>${item.lokasi}</em></p>
+        <p>${item.deskripsi}</p>
+
+        <span class="badge ${item.status.toLowerCase()}">
+          ${item.status} ${item.teknisi ? "• "+item.teknisi : ""}
+        </span>
+      `;
+      grid.appendChild(div);
+    });
+  }
+
+  load();
+  setInterval(load, 12000);
+</script>
+</body>
+</html>
