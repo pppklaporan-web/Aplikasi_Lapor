@@ -2,28 +2,37 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Panel Teknisi</title>
 <link rel="stylesheet" href="style.css">
+<style>
+table { width:100%; border-collapse: collapse; margin-top:10px; }
+th, td { border:1px solid #ccc; padding:6px; text-align:left; }
+select, button { padding:6px; margin-right:4px; border-radius:6px; }
+</style>
 </head>
 <body>
 <main>
 <h1>Panel Teknisi</h1>
+
 <label>Nama Teknisi
-<input type="text" id="namaTeknisi">
-<button id="addTech">Tambah Nama</button>
+  <input type="text" id="namaTeknisi" placeholder="Ketik nama / pilih">
+  <button id="addTech">Tambah Nama</button>
 </label>
+
 <table id="tblLaporan">
-<thead>
-<tr>
-<th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
-<th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th><th>Aksi</th>
-</tr>
-</thead>
-<tbody></tbody>
+  <thead>
+    <tr>
+      <th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
+      <th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th><th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
 </table>
+
 <div id="statusMsg"></div>
 </main>
+
 <script>
 const GAS_URL="https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
 const tblBody=document.querySelector('#tblLaporan tbody');
@@ -31,21 +40,22 @@ const statusMsg=document.getElementById('statusMsg');
 const namaTeknisiInput=document.getElementById('namaTeknisi');
 
 async function loadLaporan(){
-  const resp=await fetch(GAS_URL+'?action=list');
-  const j=await resp.json();
+  const resp = await fetch(GAS_URL+'?action=list');
+  const j = await resp.json();
   if(!j.success){ statusMsg.textContent="Error load laporan"; return; }
   tblBody.innerHTML='';
   j.data.forEach(r=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`
-      <td>${r.rowId}</td><td>${r.nama}</td><td>${r.divisi}</td><td>${r.jenis}</td>
-      <td>${r.deskripsi}</td>
-      <td>${r.fotoUrl?'<a href="'+r.fotoUrl+'" target="_blank">Lihat</a>':''}</td>
-      <td>${r.status}</td><td>${r.teknisi}</td>
+      <td>${r.rowId}</td><td>${r.Nama}</td><td>${r.Divisi}</td><td>${r.Jenis}</td>
+      <td>${r.Deskripsi}</td>
+      <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
+      <td>${r.Status}</td>
+      <td>${r.Teknisi}</td>
       <td>
         <select class="statusSel">
-          <option value="Proses" ${r.status==='Proses'?'selected':''}>Proses</option>
-          <option value="Selesai" ${r.status==='Selesai'?'selected':''}>Selesai</option>
+          <option value="Proses" ${r.Status==='Proses'?'selected':''}>Proses</option>
+          <option value="Selesai" ${r.Status==='Selesai'?'selected':''}>Selesai</option>
         </select>
         <button class="btnUpdate">Update</button>
       </td>`;
@@ -54,26 +64,34 @@ async function loadLaporan(){
     const btn=tr.querySelector('.btnUpdate');
     const sel=tr.querySelector('.statusSel');
     btn.onclick=async ()=>{
-      const data={action:'update',rowId:r.rowId,status:sel.value,teknisi:namaTeknisiInput.value};
-      const resp=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      const payload={action:'update', rowId:r.rowId, status:sel.value, teknisi:namaTeknisiInput.value};
+      const resp = await fetch(GAS_URL,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify(payload)
+      });
       const j=await resp.json();
-      statusMsg.textContent=j.success?'Update berhasil':'Error: '+j.error;
-      loadLaporan();
+      if(j.success){ statusMsg.textContent='Update berhasil'; loadLaporan(); }
+      else statusMsg.textContent='Error: '+j.error;
     };
   });
 }
 
 document.getElementById('addTech').onclick=async()=>{
-  const nama=namaTeknisiInput.value.trim();
+  const nama = namaTeknisiInput.value.trim();
   if(!nama) return alert('Isi nama teknisi');
-  const resp=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addtech',nama})});
-  const j=await resp.json();
-  alert(j.success?'Teknisi ditambahkan':'Gagal: '+j.error);
-  loadLaporan(); namaTeknisiInput.value='';
+  const resp = await fetch(GAS_URL,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({action:'addtech',nama})
+  });
+  const j = await resp.json();
+  if(j.success){ alert('Teknisi ditambahkan'); loadLaporan(); namaTeknisiInput.value=''; }
+  else alert('Gagal: '+j.error);
 };
 
-loadLaporan(); setInterval(loadLaporan,10000);
+loadLaporan();
+setInterval(loadLaporan,10000);
 </script>
 </body>
 </html>
-
