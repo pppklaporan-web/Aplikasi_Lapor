@@ -2,13 +2,19 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Panel Teknisi</title>
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<script>
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('service-worker.js');
+  }
+</script>
 <style>
 table { width:100%; border-collapse: collapse; margin-top:10px; }
 th, td { border:1px solid #ccc; padding:6px; text-align:left; }
-select, button { padding:6px; margin-right:4px; border-radius:6px; }
+select, button, input { padding:6px; margin-right:4px; border-radius:6px; }
 </style>
 </head>
 <body>
@@ -16,8 +22,8 @@ select, button { padding:6px; margin-right:4px; border-radius:6px; }
 <h1>Panel Teknisi</h1>
 
 <label>Nama Teknisi
-  <input type="text" id="namaTeknisi" placeholder="Ketik nama / pilih">
-  <button id="addTech">Tambah Nama</button>
+  <input list="listTeknisi" id="namaTeknisi" placeholder="Pilih atau ketik nama teknisi" />
+  <datalist id="listTeknisi"></datalist>
 </label>
 
 <table id="tblLaporan">
@@ -34,10 +40,25 @@ select, button { padding:6px; margin-right:4px; border-radius:6px; }
 </main>
 
 <script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
+const GAS_URL="https://script.google.com/macros/s/YOUR_DEPLOYED_GAS_URL/exec";
+
 const tblBody=document.querySelector('#tblLaporan tbody');
 const statusMsg=document.getElementById('statusMsg');
 const namaTeknisiInput=document.getElementById('namaTeknisi');
+
+async function loadTeknisiList(){
+  const resp = await fetch(GAS_URL+'?action=techs');
+  const j = await resp.json();
+  if(j.success){
+    const dl = document.getElementById('listTeknisi');
+    dl.innerHTML='';
+    j.techs.forEach(n=>{
+      const opt=document.createElement('option');
+      opt.value=n;
+      dl.appendChild(opt);
+    });
+  }
+}
 
 async function loadLaporan(){
   const resp = await fetch(GAS_URL+'?action=list');
@@ -47,11 +68,14 @@ async function loadLaporan(){
   j.data.forEach(r=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`
-      <td>${r.rowId}</td><td>${r.Nama}</td><td>${r.Divisi}</td><td>${r.Jenis}</td>
+      <td>${r.rowId}</td>
+      <td>${r.Nama}</td>
+      <td>${r.Divisi}</td>
+      <td>${r.Jenis}</td>
       <td>${r.Deskripsi}</td>
       <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
       <td>${r.Status}</td>
-      <td>${r.Teknisi}</td>
+      <td>${r.Teknisi||''}</td>
       <td>
         <select class="statusSel">
           <option value="Proses" ${r.Status==='Proses'?'selected':''}>Proses</option>
@@ -63,33 +87,23 @@ async function loadLaporan(){
 
     const btn=tr.querySelector('.btnUpdate');
     const sel=tr.querySelector('.statusSel');
-    btn.onclick=async ()=>{
-      const payload={action:'update', rowId:r.rowId, status:sel.value, teknisi:namaTeknisiInput.value};
-      const resp = await fetch(GAS_URL,{
+    btn.onclick=async()=>{
+      const teknisi=namaTeknisiInput.value.trim();
+      if(!teknisi){ alert('Isi nama teknisi'); return; }
+      const data={action:'update',rowId:r.rowId,status:sel.value,teknisi};
+      const resp=await fetch(GAS_URL,{
         method:'POST',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:JSON.stringify(payload)
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
       });
       const j=await resp.json();
-      if(j.success){ statusMsg.textContent='Update berhasil'; loadLaporan(); }
+      if(j.success){ statusMsg.textContent='Update berhasil'; loadLaporan(); loadTeknisiList(); }
       else statusMsg.textContent='Error: '+j.error;
     };
   });
 }
 
-document.getElementById('addTech').onclick=async()=>{
-  const nama = namaTeknisiInput.value.trim();
-  if(!nama) return alert('Isi nama teknisi');
-  const resp = await fetch(GAS_URL,{
-    method:'POST',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:JSON.stringify({action:'addtech',nama})
-  });
-  const j = await resp.json();
-  if(j.success){ alert('Teknisi ditambahkan'); loadLaporan(); namaTeknisiInput.value=''; }
-  else alert('Gagal: '+j.error);
-};
-
+loadTeknisiList();
 loadLaporan();
 setInterval(loadLaporan,10000);
 </script>
