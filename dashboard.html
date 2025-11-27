@@ -1,39 +1,54 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard Laporan</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Laporan</title>
+<link rel="stylesheet" href="style.css">
+<style>
+table { width:100%; border-collapse:collapse; }
+th, td { border:1px solid #ccc; padding:6px; }
+</style>
 </head>
 <body>
-  <main class="container">
-    <h1>Dashboard Laporan</h1>
-    <div id="board">Memuat...</div>
-  </main>
+<main>
+<h1>Dashboard Publik</h1>
+<table id="tblDash">
+  <thead>
+    <tr>
+      <th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th><th>Deskripsi</th>
+      <th>Foto</th><th>Status</th><th>Teknisi</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+</main>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+const tblBody=document.querySelector('#tblDash tbody');
 
-async function load(){
-  const r = await fetch(GAS_URL + '?action=list');
-  const j = await r.json();
-  const data = j.data || [];
-  const el = document.getElementById('board');
-  if(!data.length){ el.innerHTML = '<p>Belum ada laporan.</p>'; return; }
-  el.innerHTML = '<table class="table"><thead><tr><th>No</th><th>Tanggal</th><th>Nama</th><th>Divisi</th><th>Kendala</th><th>Teknisi</th><th>Status</th></tr></thead><tbody>'
-  + data.map((row,i)=>`<tr>
-    <td>${i+1}</td>
-    <td>${row.tanggal} ${row.jam}</td>
-    <td>${row.nama}</td>
-    <td>${row.divisi}</td>
-    <td>${row.jenis}<br/><small>${row.deskripsi}</small></td>
-    <td>${row.teknisi || '-'}</td>
-    <td>${row.status || 'Masuk'}</td>
-  </tr>`).join('') + '</tbody></table>';
+async function loadDash(){
+  const resp=await fetch(GAS_URL+'?action=list');
+  const j=await resp.json();
+  if(!j.success) return;
+  tblBody.innerHTML='';
+  j.data.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${r.rowId}</td>
+      <td>${r.nama}</td>
+      <td>${r.divisi}</td>
+      <td>${r.jenis}</td>
+      <td>${r.deskripsi}</td>
+      <td>${r.fotoUrl?'<a href="'+r.fotoUrl+'" target="_blank">Lihat</a>':''}</td>
+      <td>${r.status}</td>
+      <td>${r.teknisi}</td>`;
+    tblBody.appendChild(tr);
+  });
 }
-load();
-setInterval(load, 30_000); // refresh 30 detik
+loadDash();
+setInterval(loadDash,10000);
 </script>
 </body>
 </html>
