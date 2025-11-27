@@ -7,6 +7,5 @@ button{background:#0b63d6;color:#fff;border:none;cursor:pointer}
 button:hover{background:#094a9c}
 .row{display:flex;gap:10px}
 .row button{flex:1}
-.laporan-item{border:1px solid #ddd;padding:8px;margin:8px 0;border-radius:6px;background:#fafafa}
 .status{margin-top:10px;color:green;font-weight:bold}
-img{margin-top:5px;border-radius:4px}
+img{margin-top:5px;border-radius:4px;max-width:150px}
