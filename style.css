@@ -1,0 +1,7 @@
+body{font-family:sans-serif;margin:10px}
+h1{color:#0b63d6}
+input, select, textarea, button{padding:6px;margin:4px 0;border-radius:6px}
+button{cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ccc;padding:6px;text-align:left}
+a{color:#0b63d6;text-decoration:none}
