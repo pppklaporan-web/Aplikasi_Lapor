@@ -2,41 +2,54 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard Laporan</title>
 <link rel="stylesheet" href="style.css">
+<style>
+table { width:100%; border-collapse: collapse; margin-top:10px; }
+th, td { border:1px solid #ccc; padding:6px; text-align:left; }
+</style>
 </head>
 <body>
 <main>
 <h1>Dashboard Laporan</h1>
-<table id="tblDashboard">
-<thead>
-<tr>
-<th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
-<th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th>
-</tr>
-</thead>
-<tbody></tbody>
+<table id="tblDash">
+  <thead>
+    <tr>
+      <th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
+      <th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
 </table>
 </main>
+
 <script>
 const GAS_URL="https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
-const tblBody=document.querySelector('#tblDashboard tbody');
-async function loadDashboard(){
-  const resp=await fetch(GAS_URL+'?action=list');
-  const j=await resp.json();
+const tblBody=document.querySelector('#tblDash tbody');
+
+async function loadDash(){
+  const resp = await fetch(GAS_URL+'?action=list');
+  const j = await resp.json();
   if(!j.success) return;
   tblBody.innerHTML='';
   j.data.forEach(r=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${r.rowId}</td><td>${r.nama}</td><td>${r.divisi}</td><td>${r.jenis}</td>
-      <td>${r.deskripsi}</td><td>${r.fotoUrl?'<a href="'+r.fotoUrl+'" target="_blank">Lihat</a>':''}</td>
-      <td>${r.status}</td><td>${r.teknisi}</td>`;
+    tr.innerHTML=`
+      <td>${r.rowId}</td>
+      <td>${r.Nama}</td>
+      <td>${r.Divisi}</td>
+      <td>${r.Jenis}</td>
+      <td>${r.Deskripsi}</td>
+      <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
+      <td>${r.Status}</td>
+      <td>${r.Teknisi}</td>`;
     tblBody.appendChild(tr);
   });
 }
-loadDashboard(); setInterval(loadDashboard,10000);
+
+loadDash();
+setInterval(loadDash,15000);
 </script>
 </body>
 </html>
-
