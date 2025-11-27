@@ -1,4 +1,5 @@
-const GAS_URL = 'PASTE_GAS_WEBAPP_URL_DISINI'; // Ganti dengan URL Web App baru
+// Ganti URL ini dengan URL deploy terbaru dari GAS Web App
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec';
 
 function dataURLfromFile(file){
   return new Promise((res, rej)=>{
@@ -16,10 +17,20 @@ async function postData(url, payload){
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify(payload)
   });
-  return await resp.json();
+  const text = await resp.text();
+  try{
+    return JSON.parse(text);
+  } catch(e){
+    throw 'Response bukan JSON: '+text;
+  }
 }
 
 async function getData(url){
   const resp = await fetch(url);
-  return await resp.json();
+  const text = await resp.text();
+  try{
+    return JSON.parse(text);
+  } catch(e){
+    throw 'Response bukan JSON: '+text;
+  }
 }
