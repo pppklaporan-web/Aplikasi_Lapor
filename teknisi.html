@@ -2,14 +2,17 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Teknisi</title>
 <link rel="stylesheet" href="style.css">
 <script>
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('service-worker.js'); }
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('service-worker.js');
+  }
 </script>
 <style>
-table { width:100%; border-collapse: collapse; margin-top:10px; }
+body { font-family:sans-serif; padding:10px; }
+table { width:100%; border-collapse:collapse; margin-top:10px; }
 th, td { border:1px solid #ccc; padding:6px; text-align:left; }
 select, button, input { padding:6px; margin-right:4px; border-radius:6px; }
 </style>
@@ -18,114 +21,108 @@ select, button, input { padding:6px; margin-right:4px; border-radius:6px; }
 <main>
 <h1>Panel Teknisi</h1>
 
-<label>Nama Teknisi
-  <input list="listTeknisi" id="namaTeknisi" placeholder="Pilih atau ketik nama teknisi">
-  <datalist id="listTeknisi"></datalist>
+<label>Nama Teknisi:
+  <input type="text" id="namaTeknisi" placeholder="Ketik nama atau pilih dari daftar"/>
+  <button id="addTech">Tambah Nama</button>
 </label>
 
 <table id="tblLaporan">
-  <thead>
-    <tr>
-      <th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
-      <th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th><th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
+<thead>
+<tr>
+<th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
+<th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th><th>Aksi</th>
+</tr>
+</thead>
+<tbody></tbody>
 </table>
 
 <div id="statusMsg"></div>
 </main>
 
 <script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec"; // ganti dengan GAS URL mu
 
 const tblBody=document.querySelector('#tblLaporan tbody');
 const statusMsg=document.getElementById('statusMsg');
 const namaTeknisiInput=document.getElementById('namaTeknisi');
 
-async function loadTeknisiList(){
-  const resp = await fetch(GAS_URL+'?action=techs');
-  const j = await resp.json();
-  if(j.success){
-    const dl = document.getElementById('listTeknisi');
-    dl.innerHTML='';
-    j.techs.forEach(n=>{
-      const opt=document.createElement('option');
-      opt.value=n;
-      dl.appendChild(opt);
-    });
-  }
-}
-
 async function loadLaporan(){
-  const resp = await fetch(GAS_URL+'?action=list');
-  const j = await resp.json();
-  if(!j.success){ statusMsg.textContent="Error load laporan"; return; }
-  tblBody.innerHTML='';
+  statusMsg.textContent='Memuat data...';
+  try{
+    const resp=await fetch(GAS_URL+'?action=list');
+    const j=await resp.json();
+    if(!j.success){ statusMsg.textContent='Gagal load laporan'; return; }
 
-  const teknisiName = namaTeknisiInput.value.trim();
-  j.data.forEach(r=>{
-    // Tampilkan yang belum selesai atau yang diambil teknisi ini
-    if(r.Status==='Selesai') return;
-    if(r.Teknisi && r.Teknisi!==teknisiName) return; // hindari pekerjaan teknisi lain
-
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+    tblBody.innerHTML='';
+    j.data.forEach(r=>{
+      // tampilkan semua laporan yang belum selesai
+      if(r.Status==='Selesai') return;
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
       <td>${r.rowId}</td>
       <td>${r.Nama}</td>
       <td>${r.Divisi}</td>
       <td>${r.Jenis}</td>
       <td>${r.Deskripsi}</td>
       <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
-      <td>${r.Status}</td>
-      <td>${r.Teknisi||''}</td>
       <td>
-        ${r.Teknisi ? 
-          `<select class="statusSel">
-             <option value="Proses" ${r.Status==='Proses'?'selected':''}>Proses</option>
-             <option value="Selesai" ${r.Status==='Selesai'?'selected':''}>Selesai</option>
-           </select>
-           <button class="btnUpdate">Update</button>`
-        : `<button class="btnAmbil">Ambil Pekerjaan</button>`}
-      </td>`;
-    tblBody.appendChild(tr);
+        <select class="statusSel">
+          <option value="Proses" ${r.Status==='Proses'?'selected':''}>Proses</option>
+          <option value="Selesai" ${r.Status==='Selesai'?'selected':''}>Selesai</option>
+        </select>
+      </td>
+      <td>${r.Teknisi}</td>
+      <td><button class="btnUpdate">Update</button></td>`;
+      tblBody.appendChild(tr);
 
-    if(r.Teknisi){
       const btn=tr.querySelector('.btnUpdate');
       const sel=tr.querySelector('.statusSel');
+
       btn.onclick=async()=>{
-        if(!teknisiName){ alert('Isi nama teknisi'); return; }
-        const data={action:'update',rowId:r.rowId,status:sel.value,teknisi:teknisiName};
+        const data={
+          action:'update',
+          rowId:r.rowId,
+          teknisi:namaTeknisiInput.value.trim() || r.Teknisi,
+          status:sel.value
+        };
         const resp=await fetch(GAS_URL,{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify(data)
         });
-        const j=await resp.json();
-        if(j.success){ statusMsg.textContent='Update berhasil'; loadLaporan(); loadTeknisiList(); }
-        else statusMsg.textContent='Error: '+j.error;
+        const res=await resp.json();
+        if(res.success){
+          statusMsg.textContent='Update berhasil';
+          loadLaporan();
+        } else {
+          statusMsg.textContent='Error: '+res.error;
+        }
       };
-    } else {
-      const btnAmbil=tr.querySelector('.btnAmbil');
-      btnAmbil.onclick=async()=>{
-        if(!teknisiName){ alert('Isi nama teknisi'); return; }
-        const data={action:'update',rowId:r.rowId,status:'Proses',teknisi:teknisiName};
-        const resp=await fetch(GAS_URL,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(data)
-        });
-        const j=await resp.json();
-        if(j.success){ statusMsg.textContent='Pekerjaan diambil'; loadLaporan(); loadTeknisiList(); }
-        else statusMsg.textContent='Error: '+j.error;
-      };
-    }
-  });
+    });
+    statusMsg.textContent='Selesai load data';
+  }catch(err){
+    statusMsg.textContent='Error: '+err;
+  }
 }
 
-loadTeknisiList();
+// tambah nama teknisi ke daftar di GAS
+document.getElementById('addTech').onclick=async()=>{
+  const nama=namaTeknisiInput.value.trim();
+  if(!nama) return alert('Isi nama teknisi');
+  try{
+    const resp=await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'addtech',nama})
+    });
+    const j=await resp.json();
+    if(j.success){ alert('Teknisi ditambahkan'); namaTeknisiInput.value=''; loadLaporan(); }
+    else alert('Gagal: '+j.error);
+  }catch(err){ alert('Error: '+err); }
+};
+
 loadLaporan();
-setInterval(loadLaporan,10000);
+setInterval(loadLaporan,15000); // refresh tiap 15 detik
 </script>
 </body>
 </html>
