@@ -30,6 +30,11 @@ button {
 }
 .ambil { background: #28a745; }
 .selesai { background: #dc3545; }
+input {
+  padding: 8px;
+  width: 60%;
+  margin-bottom: 10px;
+}
 </style>
 
 </head>
@@ -39,8 +44,7 @@ button {
 
 <div class="card">
   <label><b>Nama Teknisi:</b></label><br>
-  <input type="text" id="namaTeknisi" placeholder="Isi nama teknisi" style="width:60%;padding:8px">
-  <button onclick="simpanNama()">Simpan</button>
+  <input type="text" id="namaTeknisi" placeholder="Isi nama teknisi">
 </div>
 
 <div class="card">
@@ -65,49 +69,49 @@ button {
 const API_URL = "https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
 
 // ===========================
-// 1. SIMPAN + MUAT NAMA TEKNISI
+// LOAD NAMA TEKNISI OTOMATIS
 // ===========================
-function simpanNama(){
-  const nama = document.getElementById("namaTeknisi").value.trim();
-  localStorage.setItem("namaTeknisi", nama);
-  alert("Nama teknisi disimpan!");
-}
-document.getElementById("namaTeknisi").value = localStorage.getItem("namaTeknisi") || "";
+document.getElementById("namaTeknisi").value =
+  localStorage.getItem("namaTeknisi") || "";
 
 
 // ===========================
 // 2. MUAT DATA LAPORAN
 // ===========================
 async function loadLaporan(){
-  const res = await fetch(API_URL + "?action=list");
-  const json = await res.json();
+  try {
+    const res = await fetch(API_URL + "?action=list");
+    const json = await res.json();
 
-  const tbody = document.querySelector("#tabelLaporan tbody");
-  tbody.innerHTML = "";
+    const tbody = document.querySelector("#tabelLaporan tbody");
+    tbody.innerHTML = "";
 
-  json.data.forEach(row => {
-    if(row.Status === "Selesai") return; // jangan tampilkan selesai
+    json.data.forEach(row => {
+      if(row.Status === "Selesai") return;
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${row.rowId}</td>
-      <td>${row.Nama}</td>
-      <td>${row.Jenis}</td>
-      <td>${row.Deskripsi}</td>
-      <td>${row.Teknisi}</td>
-      <td>${row.Status}</td>
-      <td>
-        ${
-          row.Status === "Masuk"
-          ? `<button class="ambil" onclick="ambil('${row.rowId}')">Ambil</button>`
-          : row.Status === "Proses"
-            ? `<button class="selesai" onclick="selesai('${row.rowId}')">Selesai</button>`
-            : ""
-        }
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.rowId}</td>
+        <td>${row.Nama}</td>
+        <td>${row.Jenis}</td>
+        <td>${row.Deskripsi}</td>
+        <td>${row.Teknisi}</td>
+        <td>${row.Status}</td>
+        <td>
+          ${
+            row.Status === "Masuk"
+            ? `<button class="ambil" onclick="ambil('${row.rowId}')">Ambil</button>`
+            : row.Status === "Proses"
+              ? `<button class="selesai" onclick="selesai('${row.rowId}')">Selesai</button>`
+              : ""
+          }
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Error load:", err);
+  }
 }
 
 
@@ -115,8 +119,13 @@ async function loadLaporan(){
 // 3. AMBIL PEKERJAAN
 // ===========================
 async function ambil(rowId){
-  const teknisi = localStorage.getItem("namaTeknisi");
-  if(!teknisi) return alert("Isi nama teknisi dulu!");
+  const teknisi = document.getElementById("namaTeknisi").value.trim();
+
+  if(!teknisi){
+    return alert("Isi nama teknisi dulu!");
+  }
+
+  localStorage.setItem("namaTeknisi", teknisi);
 
   await fetch(API_URL, {
     method: "POST",
@@ -137,8 +146,13 @@ async function ambil(rowId){
 // 4. SELESAIKAN PEKERJAAN
 // ===========================
 async function selesai(rowId){
-  const teknisi = localStorage.getItem("namaTeknisi");
-  if(!teknisi) return alert("Isi nama teknisi dulu!");
+  const teknisi = document.getElementById("namaTeknisi").value.trim();
+
+  if(!teknisi){
+    return alert("Isi nama teknisi dulu!");
+  }
+
+  localStorage.setItem("namaTeknisi", teknisi);
 
   await fetch(API_URL, {
     method: "POST",
@@ -155,9 +169,9 @@ async function selesai(rowId){
 }
 
 
-// Auto load setiap 10 detik
+// Auto load setiap 5 detik
 loadLaporan();
-setInterval(loadLaporan, 10000);
+setInterval(loadLaporan, 5000);
 </script>
 
 </body>
