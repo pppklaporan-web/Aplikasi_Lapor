@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Panel Teknisi</title>
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <script>
-  if('serviceWorker' in navigator){
+if('serviceWorker' in navigator){
   navigator.serviceWorker.register('service-worker.js');
-  }
-</script>  
+}
+</script>
 <style>
 table { width:100%; border-collapse: collapse; margin-top:10px; }
 th, td { border:1px solid #ccc; padding:6px; text-align:left; }
-select, button { padding:6px; margin-right:4px; border-radius:6px; }
+select, button, input { padding:6px; margin-right:4px; border-radius:6px; }
 </style>
 </head>
 <body>
@@ -40,61 +40,58 @@ select, button { padding:6px; margin-right:4px; border-radius:6px; }
 </main>
 
 <script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbycJc7oMgPazk-IPfeE7F7GaFsMK9NWZM6bylP91rP8kgtqP07XH6goyqGltE32jIl6/exec";
+const tblBody = document.querySelector('#tblLaporan tbody');
+const statusMsg = document.getElementById('statusMsg');
+const namaTeknisiInput = document.getElementById('namaTeknisi');
 
-const tblBody=document.querySelector('#tblLaporan tbody');
-const statusMsg=document.getElementById('statusMsg');
-const namaTeknisiInput=document.getElementById('namaTeknisi');
+function loadLaporan(){
+  google.script.run.withSuccessHandler(renderLaporan).apiGetLaporan();
+}
 
-async function loadLaporan(){
-  const resp=await fetch(GAS_URL+'?action=list');
-  const j=await resp.json();
-  if(!j.success){ statusMsg.textContent="Error load laporan"; return; }
-  tblBody.innerHTML='';
-  j.data.forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+function renderLaporan(data){
+  tblBody.innerHTML = '';
+  data.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td>${r.rowId}</td>
-      <td>${r.nama}</td>
-      <td>${r.divisi}</td>
-      <td>${r.jenis}</td>
-      <td>${r.deskripsi}</td>
-      <td>${r.fotoUrl?'<a href="'+r.fotoUrl+'" target="_blank">Lihat</a>':''}</td>
-      <td>${r.status}</td>
-      <td>${r.teknisi}</td>
+      <td>${r.Nama}</td>
+      <td>${r.Divisi}</td>
+      <td>${r.Jenis}</td>
+      <td>${r.Deskripsi}</td>
+      <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
+      <td>${r.Status}</td>
+      <td>${r.Teknisi}</td>
       <td>
         <select class="statusSel">
-          <option value="Proses" ${r.status==='Proses'?'selected':''}>Proses</option>
-          <option value="Selesai" ${r.status==='Selesai'?'selected':''}>Selesai</option>
+          <option value="Proses" ${r.Status==='Proses'?'selected':''}>Proses</option>
+          <option value="Selesai" ${r.Status==='Selesai'?'selected':''}>Selesai</option>
         </select>
         <button class="btnUpdate">Update</button>
       </td>`;
     tblBody.appendChild(tr);
 
-    const btn=tr.querySelector('.btnUpdate');
-    const sel=tr.querySelector('.statusSel');
-    btn.onclick=async ()=>{
-      const data={action:'update',rowId:r.rowId,status:sel.value,teknisi:namaTeknisiInput.value};
-      const resp=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-      const j=await resp.json();
-      if(j.success){ statusMsg.textContent='Update berhasil'; loadLaporan(); }
-      else statusMsg.textContent='Error: '+j.error;
+    const btn = tr.querySelector('.btnUpdate');
+    const sel = tr.querySelector('.statusSel');
+    btn.onclick = () => {
+      google.script.run.withSuccessHandler(resp=>{
+        if(resp.success){ statusMsg.textContent='Update berhasil'; loadLaporan(); }
+        else statusMsg.textContent='Error: '+resp.error;
+      }).apiUpdateLaporan(r.rowId, sel.value, namaTeknisiInput.value);
     };
   });
 }
 
-document.getElementById('addTech').onclick=async()=>{
-  const nama=namaTeknisiInput.value.trim();
+document.getElementById('addTech').onclick = () => {
+  const nama = namaTeknisiInput.value.trim();
   if(!nama) return alert('Isi nama teknisi');
-  const resp=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addtech',nama})});
-  const j=await resp.json();
-  if(j.success){ alert('Teknisi ditambahkan'); loadLaporan(); namaTeknisiInput.value=''; }
-  else alert('Gagal: '+j.error);
+  google.script.run.withSuccessHandler(resp=>{
+    if(resp.success){ alert('Teknisi ditambahkan'); loadLaporan(); namaTeknisiInput.value=''; }
+    else alert('Gagal: '+resp.error);
+  }).apiAddTeknisi(nama);
 };
 
 loadLaporan();
-setInterval(loadLaporan,10000); // auto-refresh tiap 10 detik
+setInterval(loadLaporan,10000); // refresh tiap 10 detik
 </script>
 </body>
 </html>
-
