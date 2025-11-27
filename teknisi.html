@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Panel Teknisi</title>
 <link rel="stylesheet" href="style.css" />
+<link rel="manifest" href="manifest.json">
+<script>
+  if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
+  }
+</script>  
 <style>
 table { width:100%; border-collapse: collapse; margin-top:10px; }
 th, td { border:1px solid #ccc; padding:6px; text-align:left; }
@@ -91,3 +97,4 @@ setInterval(loadLaporan,10000); // auto-refresh tiap 10 detik
 </script>
 </body>
 </html>
+
