@@ -2,47 +2,61 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-<script>
-  if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('service-worker.js');
-  }
-</script>  
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard Laporan</title>
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+<style>
+table { width:100%; border-collapse: collapse; margin-top:10px; }
+th, td { border:1px solid #ccc; padding:6px; text-align:left; }
+</style>
 </head>
 <body>
-  <main class="container">
-    <h1>Dashboard Laporan</h1>
-    <div id="dashboardList"></div>
-  </main>
-<script src="app.js"></script>
-<script>
-async function loadDashboard(){
-  const resp = await getData(GAS_URL+'?action=list');
-  const container = document.getElementById('dashboardList');
-  container.innerHTML = '';
+<main>
+<h1>Dashboard Laporan</h1>
 
-  if(resp.success && resp.data.length){
-    resp.data.forEach(l => {
-      const div = document.createElement('div');
-      div.className='laporan-item';
-      div.innerHTML=`
-        <b>${l.nama} (${l.divisi})</b> [${l.jenis}]<br>
-        ${l.deskripsi}<br>
-        Teknisi: ${l.teknisi}<br>
-        Status: ${l.status}<br>
-        <img src="${l.fotoUrl}" style="max-width:150px"><br>
-      `;
-      container.appendChild(div);
-    });
-  } else container.textContent='Belum ada laporan.';
+<table id="tblDashboard">
+  <thead>
+    <tr>
+      <th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
+      <th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const tblBody = document.querySelector('#tblDashboard tbody');
+
+function loadDashboard(){
+  google.script.run.withSuccessHandler(renderDashboard).apiGetLaporan();
+}
+
+function renderDashboard(data){
+  tblBody.innerHTML = '';
+  data.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.rowId}</td>
+      <td>${r.Nama}</td>
+      <td>${r.Divisi}</td>
+      <td>${r.Jenis}</td>
+      <td>${r.Deskripsi}</td>
+      <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
+      <td>${r.Status}</td>
+      <td>${r.Teknisi}</td>`;
+    tblBody.appendChild(tr);
+  });
 }
 
 loadDashboard();
+setInterval(loadDashboard,10000); // refresh tiap 10 detik
 </script>
+</main>
 </body>
 </html>
-
-
