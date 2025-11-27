@@ -1,128 +1,202 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Teknisi</title>
-<link rel="stylesheet" href="style.css">
-<script>
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('service-worker.js');
-  }
-</script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Panel Teknisi — Sederhana</title>
+<link rel="stylesheet" href="style.css" />
 <style>
-body { font-family:sans-serif; padding:10px; }
-table { width:100%; border-collapse:collapse; margin-top:10px; }
-th, td { border:1px solid #ccc; padding:6px; text-align:left; }
-select, button, input { padding:6px; margin-right:4px; border-radius:6px; }
+  body{font-family:sans-serif;padding:12px;background:#f7f9fc}
+  main{max-width:980px;margin:0 auto;background:#fff;padding:16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+  h1{color:#0b63d6;margin:0 0 12px}
+  .form-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+  .form-row input[type="text"], .form-row select {padding:8px;border:1px solid #ddd;border-radius:6px}
+  .form-row button{padding:8px 12px;border-radius:6px;border:none;background:#0b63d6;color:#fff;cursor:pointer}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;font-size:14px}
+  tr.clickable{cursor:pointer}
+  tr.selected{background:#eef6ff}
+  .hint{font-size:13px;color:#666;margin-top:8px}
+  #statusMsg{margin-top:10px;color:#0b63d6}
+  @media (max-width:640px){
+    .form-row{flex-direction:column;align-items:stretch}
+  }
 </style>
 </head>
 <body>
 <main>
-<h1>Panel Teknisi</h1>
+  <h1>Panel Teknisi (Sederhana)</h1>
 
-<label>Nama Teknisi:
-  <input type="text" id="namaTeknisi" placeholder="Ketik nama atau pilih dari daftar"/>
-  <button id="addTech">Tambah Nama</button>
-</label>
+  <div class="form-row">
+    <label>
+      Nama:
+      <input type="text" id="namaTeknisi" placeholder="Nama teknisi (ketik atau pilih baris)" />
+    </label>
 
-<table id="tblLaporan">
-<thead>
-<tr>
-<th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
-<th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th><th>Aksi</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+    <label>
+      Status:
+      <select id="statusPilihan">
+        <option value="Proses">Proses</option>
+        <option value="Selesai">Selesai</option>
+      </select>
+    </label>
 
-<div id="statusMsg"></div>
+    <button id="btnSimpan">Simpan</button>
+    <button id="btnClear" style="background:#ccc;color:#000">Bersihkan</button>
+  </div>
+
+  <div class="hint">Klik baris laporan untuk memilih. Setelah memilih, ubah Nama / Status lalu klik Simpan.</div>
+
+  <table id="tblLaporan" aria-label="Daftar laporan">
+    <thead>
+      <tr>
+        <th>ID</th><th>Nama Pelapor</th><th>Divisi</th><th>Jenis</th><th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="statusMsg"></div>
 </main>
 
 <script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec"; // ganti dengan GAS URL mu
+/* ===== UBAH INI MENJADI URL GAS WEBAPP kamu ===== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
 
-const tblBody=document.querySelector('#tblLaporan tbody');
-const statusMsg=document.getElementById('statusMsg');
-const namaTeknisiInput=document.getElementById('namaTeknisi');
+/* Elemen */
+const tblBody = document.querySelector('#tblLaporan tbody');
+const statusMsg = document.getElementById('statusMsg');
+const namaTeknisiInput = document.getElementById('namaTeknisi');
+const statusSelect = document.getElementById('statusPilihan');
+const btnSimpan = document.getElementById('btnSimpan');
+const btnClear = document.getElementById('btnClear');
 
+let selectedRowId = null; // rowId (sheet row number) yang sedang dipilih
+
+/* Ambil dan render laporan (hanya yang belum Selesai) */
 async function loadLaporan(){
-  statusMsg.textContent='Memuat data...';
+  statusMsg.textContent = 'Memuat laporan...';
   try{
-    const resp=await fetch(GAS_URL+'?action=list');
-    const j=await resp.json();
-    if(!j.success){ statusMsg.textContent='Gagal load laporan'; return; }
+    const resp = await fetch(GAS_URL + '?action=list');
+    const j = await resp.json();
+    if(!j.success){ statusMsg.textContent = 'Gagal memuat laporan'; return; }
 
-    tblBody.innerHTML='';
-    j.data.forEach(r=>{
-      // tampilkan semua laporan yang belum selesai
-      if(r.Status==='Selesai') return;
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-      <td>${r.rowId}</td>
-      <td>${r.Nama}</td>
-      <td>${r.Divisi}</td>
-      <td>${r.Jenis}</td>
-      <td>${r.Deskripsi}</td>
-      <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
-      <td>
-        <select class="statusSel">
-          <option value="Proses" ${r.Status==='Proses'?'selected':''}>Proses</option>
-          <option value="Selesai" ${r.Status==='Selesai'?'selected':''}>Selesai</option>
-        </select>
-      </td>
-      <td>${r.Teknisi}</td>
-      <td><button class="btnUpdate">Update</button></td>`;
+    tblBody.innerHTML = '';
+    j.data.forEach(item => {
+      // tampilkan semua yang bukan Selesai
+      if(item.status === 'Selesai' || item.Status === 'Selesai') return;
+
+      // buat cell, toleransi untuk properti kecil-kecilan (nama field bisa Caps berbeda)
+      const rowId = item.rowId || item.rowId;
+      const nama = item.nama || item.Nama || '';
+      const divisi = item.divisi || item.Divisi || '';
+      const jenis = item.jenis || item.Jenis || '';
+      const deskripsi = item.deskripsi || item.Deskripsi || '';
+      const foto = item.fotoUrl || item.FotoUrl || '';
+      const status = item.status || item.Status || '';
+      const teknisi = item.teknisi || item.Teknisi || '';
+
+      const tr = document.createElement('tr');
+      tr.classList.add('clickable');
+      tr.dataset.rowId = rowId;
+      tr.innerHTML = `
+        <td>${rowId}</td>
+        <td>${escapeHtml(nama)}</td>
+        <td>${escapeHtml(divisi)}</td>
+        <td>${escapeHtml(jenis)}</td>
+        <td>${escapeHtml(deskripsi)}</td>
+        <td>${foto ? `<a href="${foto}" target="_blank" rel="noreferrer">Lihat</a>` : ''}</td>
+        <td>${escapeHtml(status)}</td>
+        <td>${escapeHtml(teknisi)}</td>
+      `;
+      tr.onclick = () => onSelectRow(tr, { rowId, nama, divisi, jenis, deskripsi, foto, status, teknisi });
       tblBody.appendChild(tr);
-
-      const btn=tr.querySelector('.btnUpdate');
-      const sel=tr.querySelector('.statusSel');
-
-      btn.onclick=async()=>{
-        const data={
-          action:'update',
-          rowId:r.rowId,
-          teknisi:namaTeknisiInput.value.trim() || r.Teknisi,
-          status:sel.value
-        };
-        const resp=await fetch(GAS_URL,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(data)
-        });
-        const res=await resp.json();
-        if(res.success){
-          statusMsg.textContent='Update berhasil';
-          loadLaporan();
-        } else {
-          statusMsg.textContent='Error: '+res.error;
-        }
-      };
     });
-    statusMsg.textContent='Selesai load data';
+
+    statusMsg.textContent = 'Daftar laporan dimuat';
   }catch(err){
-    statusMsg.textContent='Error: '+err;
+    statusMsg.textContent = 'Error memuat: ' + err;
   }
 }
 
-// tambah nama teknisi ke daftar di GAS
-document.getElementById('addTech').onclick=async()=>{
-  const nama=namaTeknisiInput.value.trim();
-  if(!nama) return alert('Isi nama teknisi');
-  try{
-    const resp=await fetch(GAS_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'addtech',nama})
-    });
-    const j=await resp.json();
-    if(j.success){ alert('Teknisi ditambahkan'); namaTeknisiInput.value=''; loadLaporan(); }
-    else alert('Gagal: '+j.error);
-  }catch(err){ alert('Error: '+err); }
-};
+/* Saat baris diklik -> isi form & tandai baris */
+function onSelectRow(tr, data){
+  // hapus class selected dari semua baris
+  document.querySelectorAll('#tblLaporan tbody tr').forEach(r => r.classList.remove('selected'));
+  tr.classList.add('selected');
 
+  selectedRowId = data.rowId;
+  // isi input: nama teknisi diutamakan dari input jika ada, tapi kita set default teknisi saat klik
+  namaTeknisiInput.value = data.teknisi || namaTeknisiInput.value || '';
+  // set status dropdown sesuai item (jika ada)
+  statusSelect.value = data.status || data.Status || 'Proses';
+  statusMsg.textContent = 'Baris dipilih: ID ' + data.rowId;
+}
+
+/* Tombol bersihkan */
+btnClear.addEventListener('click', (e)=>{
+  e.preventDefault();
+  selectedRowId = null;
+  namaTeknisiInput.value = '';
+  statusSelect.value = 'Proses';
+  document.querySelectorAll('#tblLaporan tbody tr').forEach(r=>r.classList.remove('selected'));
+  statusMsg.textContent = 'Form dibersihkan';
+});
+
+/* Tombol simpan -> update ke GAS */
+btnSimpan.addEventListener('click', async (e)=>{
+  e.preventDefault();
+  if(!selectedRowId){
+    alert('Pilih laporan terlebih dahulu (klik baris).');
+    return;
+  }
+  const teknisi = namaTeknisiInput.value.trim();
+  if(!teknisi){
+    alert('Isi nama teknisi.');
+    return;
+  }
+  const statusVal = statusSelect.value;
+
+  statusMsg.textContent = 'Menyimpan...';
+  try{
+    const payload = { action: 'update', rowId: selectedRowId, teknisi, status: statusVal };
+    const resp = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const j = await resp.json();
+    if(j.success){
+      statusMsg.textContent = 'Berhasil disimpan.';
+      // refresh list dan pertahankan selection jika row masih ada
+      await loadLaporan();
+      // highlight baris terbaru (cari row yang dipilih)
+      const newRow = document.querySelector(`#tblLaporan tbody tr[data-row-id="${selectedRowId}"]`);
+      if(newRow) {
+        newRow.classList.add('selected');
+      } else {
+        // jika perubahan membuat status jadi Selesai sehingga row hilang, bersihkan form
+        selectedRowId = null;
+        namaTeknisiInput.value = '';
+        statusSelect.value = 'Proses';
+      }
+    } else {
+      statusMsg.textContent = 'Gagal: ' + (j.error || 'Unknown');
+    }
+  }catch(err){
+    statusMsg.textContent = 'Error simpan: ' + err;
+  }
+});
+
+/* helper escape untuk cell */
+function escapeHtml(s){
+  if(!s) return '';
+  return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+
+/* init */
 loadLaporan();
-setInterval(loadLaporan,15000); // refresh tiap 15 detik
+setInterval(loadLaporan,15000); // auto refresh tiap 15 detik
 </script>
 </body>
 </html>
