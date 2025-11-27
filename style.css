@@ -1,7 +1,6 @@
-body{font-family:sans-serif;margin:10px}
+body{font-family:sans-serif;margin:10px;padding:0;background:#f9f9f9}
 h1{color:#0b63d6}
-input, select, textarea, button{padding:6px;margin:4px 0;border-radius:6px}
-button{cursor:pointer}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border:1px solid #ccc;padding:6px;text-align:left}
-a{color:#0b63d6;text-decoration:none}
+input, select, textarea, button{margin:4px 0;width:100%;max-width:300px;display:block}
+button{cursor:pointer;background:#0b63d6;color:#fff;border:none;padding:6px 12px}
+button:hover{background:#0954a2}
+table{background:#fff}
