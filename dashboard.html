@@ -11,6 +11,12 @@
     <h1>Dashboard Laporan</h1>
     <div id="dashboardList"></div>
   </main>
+<link rel="manifest" href="manifest.json">
+<script>
+  if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
+  }
+</script>
 
 <script src="app.js"></script>
 <script>
@@ -39,3 +45,4 @@ loadDashboard();
 </script>
 </body>
 </html>
+
