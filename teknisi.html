@@ -1,178 +1,369 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Teknisi</title>
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Panel Teknisi — Login & Jobs</title>
+<link rel="stylesheet" href="style.css"/>
 <style>
-body { font-family: Arial, sans-serif; padding: 15px; background: #f4f4f4; }
-h2 { text-align: center; }
-.card {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-table { width: 100%; border-collapse: collapse; background: white; }
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-th { background: #007bff; color: white; }
-button {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-.ambil { background: #28a745; }
-.selesai { background: #dc3545; }
-input {
-  padding: 8px;
-  width: 60%;
-  margin-bottom: 10px;
-}
+:root{--primary:#0b63d6;--ok:#16a34a;--danger:#dc2626;--muted:#6b7280}
+body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:12px;background:#f6f9ff}
+.card{background:#fff;border-radius:10px;padding:14px;box-shadow:0 6px 18px rgba(11,99,214,0.06);margin-bottom:12px}
+h1{color:var(--primary);margin:0 0 8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input[type="text"], input[type="password"], select {padding:8px;border-radius:8px;border:1px solid #e6eefc}
+button{padding:8px 12px;border-radius:8px;border:0;background:var(--primary);color:#fff;cursor:pointer}
+button.secondary{background:#64748b}
+.table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+.table th, .table td{padding:8px;border-bottom:1px solid #eef2ff;text-align:left}
+.table th{background:#0d4ea6;color:#fff}
+.badge{padding:4px 8px;border-radius:6px;color:#fff;font-weight:600}
+.badge-masuk{background:#0ea5e9}
+.badge-proses{background:var(--primary)}
+.badge-selesai{background:var(--ok)}
+.tr-done{background:#ecfdf5}
+.tick{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--ok);color:#fff;text-align:center;line-height:18px;margin-right:6px;font-weight:700}
+.small{font-size:13px;color:var(--muted)}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+@media (max-width:640px){ .row{flex-direction:column;align-items:stretch} .controls{flex-direction:column;align-items:stretch} }
 </style>
-
 </head>
 <body>
 
-<h2>Dashboard Teknisi</h2>
+<main class="card" style="max-width:1100px;margin:18px auto">
+  <h1>Panel Teknisi</h1>
 
-<div class="card">
-  <label><b>Nama Teknisi:</b></label><br>
-  <input type="text" id="namaTeknisi" placeholder="Isi nama teknisi">
-</div>
+  <!-- LOGIN / CREATE -->
+  <section id="authSection" class="card">
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px">
+        <div class="small">Login Teknisi</div>
+        <input id="loginUser" type="text" placeholder="Username" /><br><br>
+        <input id="loginPass" type="password" placeholder="Password" />
+        <div class="small" style="margin-top:6px">atau buat akun baru di bawah</div>
+        <div style="margin-top:8px">
+          <button id="btnLogin">Login</button>
+          <button id="btnLogout" class="secondary" style="display:none">Logout</button>
+        </div>
+      </div>
 
-<div class="card">
-  <h3>Daftar Pekerjaan</h3>
-  <table id="tabelLaporan">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nama</th>
-        <th>Jenis</th>
-        <th>Deskripsi</th>
-        <th>Teknisi</th>
-        <th>Status</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+      <div style="flex:1;min-width:240px;border-left:1px dashed #eef2ff;padding-left:12px">
+        <div class="small">Buat Akun Teknisi</div>
+        <input id="newUser" type="text" placeholder="Username baru" /><br><br>
+        <input id="newPass" type="password" placeholder="Password" /><br><br>
+        <input id="newNama" type="text" placeholder="Nama teknisi" /><br><br>
+        <button id="btnCreate">Buat Akun</button>
+      </div>
+
+      <div style="min-width:200px">
+        <div class="small">Teknisi aktif:</div>
+        <div id="loggedName" class="small" style="font-weight:700">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTROLS -->
+  <section class="card">
+    <div class="controls">
+      <div>
+        <label class="small">Filter</label><br>
+        <select id="filter">
+          <option value="all">Semua (Masuk + Proses)</option>
+          <option value="masuk">Masuk (Belum Diambil)</option>
+          <option value="proses">Proses (Diambil)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">Tampilkan untuk</label><br>
+        <select id="viewFor">
+          <option value="all">Semua teknisi</option>
+          <option value="me">Hanya saya</option>
+        </select>
+      </div>
+
+      <div style="margin-left:auto">
+        <button id="btnRefresh" class="secondary">Refresh</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOB LIST -->
+  <section class="card">
+    <h2 style="font-size:16px;margin:0 0 8px">Daftar Pekerjaan</h2>
+    <div class="small">Klik <strong>Ambil</strong> untuk menugaskan pekerjaan ke akun yang login. Setelah selesai, klik <strong>Selesai</strong>. Pekerjaan selesai akan hilang dari list teknisi.</div>
+
+    <table class="table" id="tblJobs">
+      <thead>
+        <tr><th style="width:70px">ID</th><th>Pelapor</th><th style="width:120px">Jenis</th><th>Deskripsi</th><th style="width:160px">Teknisi</th><th style="width:120px">Status</th><th style="width:140px">Aksi</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+</main>
 
 <script>
+/* CONFIG */
 const API_URL = "https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
 
-// ===========================
-// LOAD NAMA TEKNISI OTOMATIS
-// ===========================
-document.getElementById("namaTeknisi").value =
-  localStorage.getItem("namaTeknisi") || "";
+/* UI nodes */
+const loginUser = document.getElementById('loginUser');
+const loginPass = document.getElementById('loginPass');
+const btnLogin = document.getElementById('btnLogin');
+const btnLogout = document.getElementById('btnLogout');
+const loggedNameEl = document.getElementById('loggedName');
 
+const newUser = document.getElementById('newUser');
+const newPass = document.getElementById('newPass');
+const newNama = document.getElementById('newNama');
+const btnCreate = document.getElementById('btnCreate');
 
-// ===========================
-// 2. MUAT DATA LAPORAN
-// ===========================
-async function loadLaporan(){
-  try {
-    const res = await fetch(API_URL + "?action=list");
-    const json = await res.json();
+const filter = document.getElementById('filter');
+const viewFor = document.getElementById('viewFor');
+const btnRefresh = document.getElementById('btnRefresh');
 
-    const tbody = document.querySelector("#tabelLaporan tbody");
-    tbody.innerHTML = "";
+const tblBody = document.querySelector('#tblJobs tbody');
 
-    json.data.forEach(row => {
-      if(row.Status === "Selesai") return;
+const LS_USER = 'lapor_login_user';
+const LS_NAMA = 'lapor_login_nama';
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${row.rowId}</td>
-        <td>${row.Nama}</td>
-        <td>${row.Jenis}</td>
-        <td>${row.Deskripsi}</td>
-        <td>${row.Teknisi}</td>
-        <td>${row.Status}</td>
-        <td>
-          ${
-            row.Status === "Masuk"
-            ? `<button class="ambil" onclick="ambil('${row.rowId}')">Ambil</button>`
-            : row.Status === "Proses"
-              ? `<button class="selesai" onclick="selesai('${row.rowId}')">Selesai</button>`
-              : ""
-          }
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } catch (err) {
-    console.error("Error load:", err);
+/* init: load logged in user from storage */
+let loggedUser = localStorage.getItem(LS_USER) || null;
+let loggedNama = localStorage.getItem(LS_NAMA) || null;
+updateAuthUI();
+
+function updateAuthUI(){
+  if(loggedUser){
+    loggedNameEl.textContent = loggedNama || loggedUser;
+    loginUser.style.display = 'none';
+    loginPass.style.display = 'none';
+    btnLogin.style.display = 'none';
+    btnLogout.style.display = 'inline-block';
+  } else {
+    loggedNameEl.textContent = '—';
+    loginUser.style.display = '';
+    loginPass.style.display = '';
+    btnLogin.style.display = 'inline-block';
+    btnLogout.style.display = 'none';
   }
 }
 
-
-// ===========================
-// 3. AMBIL PEKERJAAN
-// ===========================
-async function ambil(rowId){
-  const teknisi = document.getElementById("namaTeknisi").value.trim();
-
-  if(!teknisi){
-    return alert("Isi nama teknisi dulu!");
+/* Helper: POST with text/plain to reduce preflight */
+async function postJSON(payload){
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload),
+    cache: 'no-store'
+  });
+  const text = await resp.text();
+  try{
+    return JSON.parse(text);
+  } catch(e){
+    throw new Error('Response bukan JSON — cek redeploy GAS & console');
   }
+}
 
-  localStorage.setItem("namaTeknisi", teknisi);
+/* LOGIN */
+btnLogin.addEventListener('click', async ()=>{
+  const user = loginUser.value.trim();
+  const pass = loginPass.value;
+  if(!user || !pass){ alert('Isi username & password'); return; }
 
-  await fetch(API_URL, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      action: "update",
-      rowId: rowId,
-      teknisi: teknisi,
-      status: "Proses"
-    })
+  try{
+    const j = await postJSON({action:'login', username:user, password:pass});
+    if(j.success){
+      loggedUser = user;
+      loggedNama = j.namaTeknisi || user;
+      localStorage.setItem(LS_USER, loggedUser);
+      localStorage.setItem(LS_NAMA, loggedNama);
+      updateAuthUI();
+      alert('Login sukses. Selamat bekerja, ' + loggedNama);
+      await refresh();
+    } else {
+      alert('Login gagal: ' + (j.error||'invalid'));
+    }
+  }catch(err){
+    alert('Error login: ' + err.message);
+  }
+});
+
+/* LOGOUT */
+btnLogout.addEventListener('click', ()=>{
+  loggedUser = null;
+  loggedNama = null;
+  localStorage.removeItem(LS_USER);
+  localStorage.removeItem(LS_NAMA);
+  updateAuthUI();
+});
+
+/* CREATE ACCOUNT */
+btnCreate.addEventListener('click', async ()=>{
+  const u = newUser.value.trim(), p = newPass.value, n = newNama.value.trim();
+  if(!u || !p || !n) return alert('Isi username, password, dan nama teknisi');
+  try{
+    const j = await postJSON({action:'addAccount', username:u, password:p, namaTeknisi:n});
+    if(j.success){ alert('Akun dibuat'); newUser.value=''; newPass.value=''; newNama.value=''; }
+    else alert('Gagal: ' + (j.error||'unknown'));
+  }catch(err){ alert('Error: ' + err.message); }
+});
+
+/* FETCH & RENDER JOBS */
+async function fetchJobs(){
+  const r = await fetch(API_URL + '?action=list', {cache:'no-store'});
+  const txt = await r.text();
+  let data;
+  try{ data = JSON.parse(txt); } catch(e){ throw new Error('GAS tidak merespon JSON'); }
+  if(!data.success) throw new Error(data.error || 'gagal load');
+  return data.data;
+}
+
+function renderJobs(rows){
+  tblBody.innerHTML = '';
+  const f = filter.value;
+  const view = viewFor.value;
+  const me = localStorage.getItem(LS_NAMA) || loggedNama || '';
+
+  const visible = rows.filter(r => {
+    const status = (r.Status || '').toString();
+    if(status.toLowerCase() === 'selesai') return false; // hide selesai
+    if(f === 'masuk' && status.toLowerCase() !== 'masuk') return false;
+    if(f === 'proses' && status.toLowerCase() !== 'proses') return false;
+    if(view === 'me' && me && ( (r.Teknisi||'').toString() !== me)) return false;
+    return true;
   });
 
-  loadLaporan();
-}
-
-
-// ===========================
-// 4. SELESAIKAN PEKERJAAN
-// ===========================
-async function selesai(rowId){
-  const teknisi = document.getElementById("namaTeknisi").value.trim();
-
-  if(!teknisi){
-    return alert("Isi nama teknisi dulu!");
+  if(visible.length === 0){
+    tblBody.innerHTML = '<tr><td colspan="7" class="small">Tidak ada pekerjaan.</td></tr>';
+    return;
   }
 
-  localStorage.setItem("namaTeknisi", teknisi);
+  visible.forEach(r=>{
+    const id = r.rowId;
+    const pelapor = escapeHtml(r.Nama || '');
+    const jenis = escapeHtml(r.Jenis || '');
+    const desk = escapeHtml(r.Deskripsi || '');
+    const teknisi = escapeHtml(r.Teknisi || '');
+    const status = (r.Status || '').toString();
 
-  await fetch(API_URL, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      action: "update",
-      rowId: rowId,
-      teknisi: teknisi,
-      status: "Selesai"
-    })
+    const tr = document.createElement('tr');
+    if(status.toLowerCase() === 'selesai') tr.classList.add('tr-done');
+
+    tr.innerHTML = `
+      <td>${id}</td>
+      <td>${pelapor}</td>
+      <td>${jenis}</td>
+      <td>${desk}</td>
+      <td>${teknisi}</td>
+      <td>${statusBadge(status)}</td>
+      <td></td>
+    `;
+
+    const actionsTd = tr.lastElementChild;
+
+    // if not assigned -> show Ambil
+    if(!teknisi || teknisi.trim()===''){
+      const btn = document.createElement('button');
+      btn.className = 'btn-ambil';
+      btn.textContent = 'Ambil';
+      btn.onclick = ()=> doAssign(id, 'Proses');
+      actionsTd.appendChild(btn);
+    } else {
+      // show Selesai if status=Proses and assigned to me OR show label (disable)
+      if(status.toLowerCase() === 'proses'){
+        // only allow finish if assigned to current logged nama OR if viewFor=all allow anyone to finish? We'll allow only assigned person
+        const meName = localStorage.getItem(LS_NAMA) || loggedNama || '';
+        if(meName && meName === (r.Teknisi || '')){
+          const btn = document.createElement('button');
+          btn.className = 'btn-selesai';
+          btn.textContent = 'Selesai';
+          btn.onclick = ()=> doAssign(id, 'Selesai');
+          actionsTd.appendChild(btn);
+        } else {
+          actionsTd.textContent = 'Sedang dikerjakan';
+        }
+      } else {
+        actionsTd.textContent = '-';
+      }
+    }
+
+    tblBody.appendChild(tr);
   });
-
-  loadLaporan();
 }
 
+function statusBadge(status){
+  const s = (status||'').toString().toLowerCase();
+  if(s === 'masuk') return `<span class="badge badge-masuk">Masuk</span>`;
+  if(s === 'proses') return `<span class="badge badge-proses">Proses</span>`;
+  if(s === 'selesai') return `<span class="badge badge-selesai">Selesai</span>`;
+  return `<span class="small muted">${escapeHtml(status)}</span>`;
+}
 
-// Auto load setiap 5 detik
-loadLaporan();
-setInterval(loadLaporan, 5000);
+function escapeHtml(t){ if(!t && t!==0) return ''; return String(t).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* Assign or finish (update) — uses postJSON with text/plain style */
+async function doAssign(rowId, newStatus){
+  const namaTeknisi = localStorage.getItem(LS_NAMA) || loggedNama || '';
+  if(!namaTeknisi) { alert('Silakan login terlebih dahulu (atau isi nama)'); return; }
+
+  try{
+    // disable UI briefly
+    btnRefresh.disabled = true;
+    const j = await postJSON({ action:'update', rowId: String(rowId), teknisi: namaTeknisi, status: newStatus });
+    if(j.success){
+      // notif ringan
+      await loadAndRender();
+    } else {
+      alert('Gagal update: ' + (j.error||'unknown'));
+    }
+  }catch(err){
+    alert('Error: ' + err.message);
+  } finally {
+    btnRefresh.disabled = false;
+  }
+}
+
+async function postJSON(payload){
+  const resp = await fetch(API_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload),
+    cache:'no-store'
+  });
+  const text = await resp.text();
+  try{ return JSON.parse(text); } catch(e){ throw new Error('Invalid JSON from GAS'); }
+}
+
+/* Load & render wrapper */
+async function loadAndRender(){
+  try{
+    const rows = await fetchJobs();
+    renderJobs(rows);
+  } catch(err){
+    console.error(err);
+    alert('Gagal memuat pekerjaan: ' + err.message);
+  }
+}
+
+async function fetchJobs(){
+  const r = await fetch(API_URL + '?action=list', { cache:'no-store' });
+  const text = await r.text();
+  let j;
+  try{ j = JSON.parse(text); } catch(e){ throw new Error('GAS response tidak valid JSON'); }
+  if(!j.success) throw new Error(j.error || 'Load gagal');
+  return j.data;
+}
+
+/* events */
+btnRefresh.addEventListener('click', ()=> loadAndRender());
+filter.addEventListener('change', ()=> loadAndRender());
+viewFor.addEventListener('change', ()=> loadAndRender());
+
+/* initial load */
+loadAndRender();
+setInterval(loadAndRender, 15000);
+
 </script>
-
 </body>
 </html>
