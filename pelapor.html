@@ -4,48 +4,117 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Form Lapor Kendala — Kantor</title>
-<link rel="stylesheet" href="style.css" />
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  label {
+    display: block;
+    margin-bottom: 15px;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  #previewBox {
+    display: none;
+    margin-top: 10px;
+    text-align: center;
+  }
+  #previewImg {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+  .alert {
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 15px;
+    display: none;
+    text-align: center;
+  }
+  .alert.success { background: #d4edda; color: #155724; }
+  .alert.error { background: #f8d7da; color: #721c24; }
+  .loading {
+    margin-top: 10px;
+    text-align: center;
+    display: none;
+  }
+</style>
 </head>
+
 <body>
 <div class="container">
-<header class="header">
-<h1>Laporkan Kendala</h1>
-<p class="muted">Buka di perangkat apa saja — isi form, foto, dan submit.</p>
-</header>
+<h2>Laporkan Kendala</h2>
 
-<main class="card">
-<form id="reportForm" enctype="multipart/form-data">
+<div class="card">
+<form id="reportForm">
 
 <label>Nama Pelapor
-<input type="text" name="nama" id="nama" required />
+  <input type="text" id="nama" required>
 </label>
 
 <label>Ruangan / Divisi
-<input type="text" name="ruangan" id="ruangan" required />
+  <input type="text" id="ruangan" required>
 </label>
 
 <label>Keterangan Kendala
-<textarea name="keterangan" id="keterangan" rows="4" required></textarea>
+  <textarea id="keterangan" rows="4" required></textarea>
 </label>
 
 <label>Foto Bukti (opsional)
-<input type="file" name="file" id="foto" accept="image/*" />
+  <input type="file" id="foto" accept="image/*">
 </label>
 
-<div class="actions">
-<button type="submit">Kirim Laporan</button>
+<div id="previewBox">
+  <small>Preview Foto:</small>
+  <img id="previewImg">
 </div>
 
-<div id="statusMsg" class="muted"></div>
+<button type="submit" id="btnSubmit">Kirim Laporan</button>
+
+<div class="loading" id="loading">Mengirim laporan...</div>
+
+<div class="alert success" id="alertSuccess">Laporan berhasil dikirim!</div>
+<div class="alert error" id="alertError">Terjadi kesalahan.</div>
 
 </form>
-</main>
-
-<footer class="footer">
-<small>Versi uji coba — data disimpan ke Google Sheets & Drive.</small>
-</footer>
 </div>
 
-<script src="script/pelapor.js"></script>
+</div>
+
+<script src="pelapor.js"></script>
 </body>
 </html>
