@@ -1,55 +1,60 @@
-<!DOCTYPE html>
+<!-- dashboard.html -->
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard Laporan</title>
-<link rel="stylesheet" href="style.css">
-<style>
-table { width:100%; border-collapse: collapse; margin-top:10px; }
-th, td { border:1px solid #ccc; padding:6px; text-align:left; }
-</style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dashboard Teknisi — Laporan Kendala</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
+<div class="container">
+<header class="header">
+<h1>Dashboard Teknisi</h1>
+<p class="muted">Semua laporan terkumpul — klik nama laporan untuk update status.</p>
+</header>
+
+
 <main>
-<h1>Dashboard Laporan</h1>
-<table id="tblDash">
-  <thead>
-    <tr>
-      <th>ID</th><th>Nama</th><th>Divisi</th><th>Jenis</th>
-      <th>Deskripsi</th><th>Foto</th><th>Status</th><th>Teknisi</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<div id="reportsList" class="grid"></div>
 </main>
 
-<script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbwfjO3BiO1sd3cIV5i3jYMF5ORmsGb4zJEmjmTnMpUhbTxClZ5xIqjrEJtw5Vj9RZi6Rw/exec";
-const tblBody=document.querySelector('#tblDash tbody');
 
-async function loadDash(){
-  const resp = await fetch(GAS_URL+'?action=list');
-  const j = await resp.json();
-  if(!j.success) return;
-  tblBody.innerHTML='';
-  j.data.forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${r.rowId}</td>
-      <td>${r.Nama}</td>
-      <td>${r.Divisi}</td>
-      <td>${r.Jenis}</td>
-      <td>${r.Deskripsi}</td>
-      <td>${r.FotoUrl?'<a href="'+r.FotoUrl+'" target="_blank">Lihat</a>':''}</td>
-      <td>${r.Status}</td>
-      <td>${r.Teknisi}</td>`;
-    tblBody.appendChild(tr);
-  });
-}
+<footer class="footer">
+<small>Tanpa login (mode uji coba). Nanti bisa migrasi ke Firebase Auth.</small>
+</footer>
+</div>
 
-loadDash();
-setInterval(loadDash,15000);
-</script>
+
+<template id="cardTpl">
+<article class="card report-card">
+<div class="card-header">
+<h3 class="report-name"></h3>
+<div class="meta">
+<span class="report-date"></span>
+<span class="report-room"></span>
+</div>
+</div>
+<div class="card-body">
+<p class="report-desc"></p>
+<a class="foto-link" target="_blank">Lihat Foto</a>
+</div>
+<div class="card-footer">
+<label>Teknisi
+<input class="input-teknisi" />
+</label>
+<label>Status
+<select class="select-status">
+<option value="Proses">Proses</option>
+<option value="Selesai">Selesai</option>
+</select>
+</label>
+<button class="btn-update">Update</button>
+</div>
+</article>
+</template>
+
+
+<script src="script/dashboard.js"></script>
 </body>
 </html>
