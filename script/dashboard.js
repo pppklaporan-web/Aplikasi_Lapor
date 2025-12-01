@@ -62,3 +62,4 @@ reportsList.innerHTML = '<div class="muted">Gagal memuat data.</div>';
 
 
 window.addEventListener('load', loadReports);
+
