@@ -1,0 +1,58 @@
+<!-- pelapor.html -->
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Form Lapor Kendala — Kantor</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="container">
+<header class="header">
+<h1>Laporkan Kendala</h1>
+<p class="muted">Buka di perangkat apa saja — isi form, foto, dan submit.</p>
+</header>
+
+
+<main class="card">
+<form id="reportForm">
+<label>Nama Pelapor
+<input type="text" name="nama" id="nama" required />
+</label>
+
+
+<label>Ruangan / Divisi
+<input type="text" name="ruangan" id="ruangan" required />
+</label>
+
+
+<label>Keterangan Kendala
+<textarea name="keterangan" id="keterangan" rows="4" required></textarea>
+</label>
+
+
+<label>Foto Bukti (opsional)
+<input type="file" id="foto" accept="image/*" />
+</label>
+
+
+<div class="actions">
+<button type="submit">Kirim Laporan</button>
+</div>
+
+
+<div id="statusMsg" class="muted"></div>
+</form>
+</main>
+
+
+<footer class="footer">
+<small>Versi uji coba — data disimpan ke Google Sheets & Drive.</small>
+</footer>
+</div>
+
+
+<script src="script/pelapor.js"></script>
+</body>
+</html>
