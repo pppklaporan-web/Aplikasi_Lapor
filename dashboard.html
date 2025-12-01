@@ -4,37 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Public Dashboard - Laporan Kendala</title>
-<style>
-  body { font-family: Arial, sans-serif; background:#f5f5f5; padding:10px; margin:0; }
-  .container { max-width:1200px; margin:auto; background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-  h2 { text-align:center; margin-bottom:10px; }
-  .table-container { overflow-x:auto; margin-top:15px; }
-  table { width:100%; border-collapse: collapse; min-width:700px; }
-  th, td { padding:10px; border:1px solid #ccc; background:white; text-align:center; cursor:pointer; }
-  th { background:#333; color:white; }
-  img { width:80px; border-radius:6px; cursor:pointer; transition:0.2s; }
-  img:hover { transform: scale(1.5); z-index:10; position:relative; }
-  #loading { text-align:center; font-weight:bold; margin-top:20px; }
-  select { padding:5px; margin-bottom:10px; }
-  .status-menunggu { background: #ffeb3b; color:#000; font-weight:bold; border-radius:4px; padding:2px 6px; }
-  .status-selesai { background: #4caf50; color:#fff; font-weight:bold; border-radius:4px; padding:2px 6px; }
-
-  @media (max-width: 600px) {
-    table, th, td { font-size:12px; }
-    img { width:50px; }
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
-  <h2>📋 Public Dashboard - Laporan Kendala Pegawai</h2>
+  <div class="header">
+    <h1>📋 Public Dashboard - Laporan Kendala Pegawai</h1>
+    <p class="muted">Menampilkan laporan terkini dari pegawai</p>
+  </div>
 
-  <!-- Filter Ruangan -->
-  <label for="filterRuangan">Filter Ruangan:</label>
-  <select id="filterRuangan">
-    <option value="all">Semua Ruangan</option>
-  </select>
+  <div class="filter-container">
+    <label for="filterRuangan">Filter Ruangan:</label>
+    <select id="filterRuangan">
+      <option value="all">Semua Ruangan</option>
+    </select>
+  </div>
 
   <div id="loading">Memuat data...</div>
 
@@ -56,13 +41,18 @@
   </div>
 </div>
 
+<!-- Modal Foto -->
+<div id="modalFoto" class="modal">
+  <img id="modalImg" src="">
+</div>
+
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxcvVSxw6liSor0zj03SjbxBiMryQ9PE2vGYQOY786K6-GauDstEnsRUZ_zid5An3uZtA/exec"; // ganti sesuai deploy Apps Script
+const API_URL = "GANTI_DENGAN_URL_EXEC_WEB_APP"; // ganti sesuai deploy Apps Script
 let rawData = [];
 let sortColumn = null;
 let sortAsc = true;
 
-// Fungsi load data
+// Load Data
 async function loadData() {
   const loading = document.getElementById("loading");
   const table = document.getElementById("tabel");
@@ -79,44 +69,42 @@ async function loadData() {
 
     rawData = json.data;
 
-    // Isi filter ruangan otomatis
-    const ruanganSet = new Set(rawData.map(d => d.ruangan).filter(r => r));
+    // Populate filter ruangan
+    const ruanganSet = new Set(rawData.map(d => d.ruangan).filter(r=>r));
     filterSelect.innerHTML = '<option value="all">Semua Ruangan</option>';
-    ruanganSet.forEach(r => {
-      filterSelect.innerHTML += `<option value="${r}">${r}</option>`;
-    });
+    ruanganSet.forEach(r => filterSelect.innerHTML += `<option value="${r}">${r}</option>`);
 
     renderTable(rawData);
 
-  } catch (e) {
+  } catch(e) {
     loading.innerText = "Terjadi error saat memuat data: " + e;
   }
 }
 
-// Fungsi render tabel
-function renderTable(data) {
+// Render Table
+function renderTable(data){
   const loading = document.getElementById("loading");
   const table = document.getElementById("tabel");
-  loading.style.display = "none";
-  table.style.display = "table";
+  loading.style.display="none";
+  table.style.display="table";
 
   const tb = table.querySelector("tbody");
-  tb.innerHTML = "";
+  tb.innerHTML="";
 
-  if (!data || data.length === 0) {
-    tb.innerHTML = "<tr><td colspan='7'>Tidak ada data</td></tr>";
+  if(!data || data.length===0){
+    tb.innerHTML="<tr><td colspan='7'>Tidak ada data</td></tr>";
     return;
   }
 
-  data.forEach(r => {
-    let statusClass = r.status.toLowerCase() === "selesai" ? "status-selesai" : "status-menunggu";
+  data.forEach(r=>{
+    let statusClass = r.status.toLowerCase()==="selesai" ? "status-selesai" : r.status.toLowerCase()==="tertunda"?"status-tertunda":"status-menunggu";
     tb.innerHTML += `
       <tr>
         <td>${r.waktu}</td>
         <td>${r.nama}</td>
         <td>${r.ruangan}</td>
         <td>${r.keterangan}</td>
-        <td>${r.foto ? `<img src="${r.foto}" alt="foto">` : "-"}</td>
+        <td>${r.foto ? `<img src="${r.foto}" class="foto-thumb" onclick="showModal('${r.foto}')">`:"-"}</td>
         <td><span class="${statusClass}">${r.status}</span></td>
         <td>${r.teknisi}</td>
       </tr>
@@ -124,33 +112,41 @@ function renderTable(data) {
   });
 }
 
-// Filter ruangan
-document.getElementById("filterRuangan").addEventListener("change", function() {
-  const value = this.value;
-  let filtered = value === "all" ? rawData : rawData.filter(d => d.ruangan === value);
+// Filter Ruangan
+document.getElementById("filterRuangan").addEventListener("change",function(){
+  const value=this.value;
+  let filtered = value==="all"? rawData : rawData.filter(d=>d.ruangan===value);
   renderTable(filtered);
 });
 
 // Sort kolom
-document.querySelectorAll("th[data-column]").forEach(th => {
-  th.addEventListener("click", () => {
-    const col = th.getAttribute("data-column");
-    if(sortColumn === col) sortAsc = !sortAsc;
-    else { sortColumn = col; sortAsc = true; }
+document.querySelectorAll("th[data-column]").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const col=th.getAttribute("data-column");
+    if(sortColumn===col) sortAsc=!sortAsc;
+    else { sortColumn=col; sortAsc=true; }
 
-    const dataCopy = [...rawData];
-    dataCopy.sort((a,b) => {
-      let valA = a[col] || "";
-      let valB = b[col] || "";
-      return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    const dataCopy=[...rawData];
+    dataCopy.sort((a,b)=>{
+      let valA=a[col]||"";
+      let valB=b[col]||"";
+      return sortAsc? valA.localeCompare(valB): valB.localeCompare(valA);
     });
 
-    const filterValue = document.getElementById("filterRuangan").value;
-    let finalData = filterValue === "all" ? dataCopy : dataCopy.filter(d => d.ruangan === filterValue);
-
+    const filterValue=document.getElementById("filterRuangan").value;
+    let finalData=filterValue==="all"? dataCopy: dataCopy.filter(d=>d.ruangan===filterValue);
     renderTable(finalData);
   });
 });
+
+// Modal Foto
+function showModal(src){
+  const modal=document.getElementById("modalFoto");
+  const img=document.getElementById("modalImg");
+  img.src=src;
+  modal.style.display="flex";
+  modal.onclick=function(){ modal.style.display="none"; }
+}
 
 loadData();
 </script>
