@@ -1,6 +1,6 @@
 // script/pelapor.js
 // GANTI nilai WEB_APP_URL dengan URL Web App Apps Script setelah kamu deploy
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwDVdO4HSX9fecZToS7tmPJifr3Lzbwso7qJ_MkXqSerlav7iwcdqAD7XDqIoWnLl7LRQ/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxcvVSxw6liSor0zj03SjbxBiMryQ9PE2vGYQOY786K6-GauDstEnsRUZ_zid5An3uZtA/exec';
 
 const form = document.getElementById('reportForm');
 const statusMsg = document.getElementById('statusMsg');
