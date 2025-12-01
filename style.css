@@ -1,4 +1,4 @@
-/* style.css — tampilan A (profesional & interaktif) */
+/* style.css — tampilan dashboard profesional & interaktif */
 :root {
   --bg: #f4f7fb;
   --card: #ffffff;
@@ -24,7 +24,7 @@ body {
 }
 
 .container {
-  max-width: 980px;
+  max-width: 1200px;
   margin: 28px auto;
   padding: 16px;
 }
@@ -43,112 +43,41 @@ body {
   font-size: 0.95rem;
 }
 
-/* Card */
-.card {
-  background: var(--card);
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Filter */
+.filter-container {
+  margin-bottom: 12px;
 }
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(16, 24, 40, 0.12);
-}
-
-/* Form Elements */
-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-input[type=text],
-textarea,
-select,
-input[type=file],
-.input-teknisi {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #e6e9ef;
+select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
   font-size: 0.95rem;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
-}
-input[type=text]:focus,
-textarea:focus,
-select:focus,
-input[type=file]:focus,
-.input-teknisi:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--glass);
-  outline: none;
 }
 
-/* Buttons */
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
+/* Table */
+.table-container {
+  overflow-x: auto;
 }
-button {
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+th, td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: var(--card);
+  text-align: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+th {
   background: var(--accent);
   color: white;
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: 0;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s ease, transform 0.2s ease;
 }
-button:hover {
-  background: var(--accent-hover);
-  transform: translateY(-2px);
-}
+th:hover { opacity: 0.9; }
 
-/* Grid layout */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin-top: 12px;
-}
-
-/* Report Card */
-.report-card {
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 500;
-}
-.card-body {
-  margin-top: 8px;
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-.card-footer {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 12px;
-}
-
-/* Foto link / thumbnail */
-.foto-link {
-  display: inline-block;
-  margin-top: 8px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.foto-link:hover {
-  transform: scale(1.1);
-}
-
-/* Status badge */
+/* Status Badge */
 .status {
   display: inline-block;
   padding: 4px 8px;
@@ -161,6 +90,37 @@ button:hover {
 .status-menunggu { background: var(--warning); color:#000; }
 .status-tertunda { background: var(--danger); }
 
+/* Foto Thumbnail */
+img.foto-thumb {
+  width: 70px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+img.foto-thumb:hover { transform: scale(1.2); }
+
+/* Modal Fullscreen Foto */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+}
+.modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+}
+.modal:target {
+  display: flex;
+}
+
 /* Footer */
 .footer {
   margin-top: 24px;
@@ -169,12 +129,9 @@ button:hover {
   font-size: 0.9rem;
 }
 
-/* Responsive */
-@media (max-width: 560px) {
-  .container {
-    padding: 12px;
-  }
-  .card { padding: 12px; border-radius: 12px; }
-  button { width: 100%; }
-  .grid { gap: 12px; }
+/* Responsif */
+@media(max-width: 600px){
+  .container { padding: 12px; }
+  table, th, td { font-size: 12px; }
+  img.foto-thumb { width: 50px; }
 }
