@@ -1,65 +1,72 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Daftar Laporan — Publik</title>
-
-  <link rel="stylesheet" href="style.css" />
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    .card {
-      background: #fff;
-      padding: 16px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .meta {
-      font-size: 13px;
-      color: gray;
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .foto-link {
-      margin-top: 10px;
-      display: inline-block;
-      color: #0b63d6;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Public Dashboard - Laporan Kendala</title>
+<style>
+  body { font-family: Arial; background:#f5f5f5; padding:20px; }
+  table { width:100%; border-collapse: collapse; margin-top:20px; }
+  th, td { padding:10px; border:1px solid #ccc; background:white; }
+  th { background:#333; color:white; }
+  img { width:100px; border-radius:6px; }
+</style>
 </head>
-
 <body>
-  <h1>Daftar Laporan Publik</h1>
-  <p style="text-align:center;margin-bottom:25px;color:gray">Semua laporan terbaru akan tampil di sini.</p>
 
-  <div id="publicList" class="grid"></div>
+<h2>📋 Public Dashboard - Laporan Kendala Pegawai</h2>
 
-  <script src="script/public-dashboard.js"></script>
+<table id="tabel">
+  <thead>
+    <tr>
+      <th>Waktu</th>
+      <th>Nama</th>
+      <th>Ruangan</th>
+      <th>Keterangan</th>
+      <th>Foto</th>
+      <th>Status</th>
+      <th>Teknisi</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const API_URL = "PASTE_WEB_APP_URL_HERE?action=getReports";
+
+async function loadData() {
+  try {
+    const res = await fetch(API_URL);
+    const json = await res.json();
+
+    if (json.status !== "success") {
+      alert("Gagal mengambil data!");
+      return;
+    }
+
+    const tb = document.querySelector("#tabel tbody");
+    tb.innerHTML = "";
+
+    json.data.forEach(r => {
+      tb.innerHTML += `
+        <tr>
+          <td>${r.waktu}</td>
+          <td>${r.nama}</td>
+          <td>${r.ruangan}</td>
+          <td>${r.keterangan}</td>
+          <td>${r.foto ? `<img src="${r.foto}">` : "-"}</td>
+          <td>${r.status}</td>
+          <td>${r.teknisi}</td>
+        </tr>
+      `;
+    });
+
+  } catch (e) {
+    alert("Error: " + e);
+  }
+}
+
+loadData();
+</script>
+
 </body>
 </html>
