@@ -10,7 +10,7 @@ async function loadData() {
   const loading = document.getElementById("loading");
 
   try {
-    const res = await fetch(API_URL);
+    const res = await fetch(API_URL + "?action=getReports");
     const json = await res.json();
 
     if (json.status !== "success") {
@@ -18,20 +18,21 @@ async function loadData() {
       return;
     }
 
-    // ===== FIX PEMETAAN DATA APPS SCRIPT =====
-    rawData = json.data.map(d => ({
-      id: d.id,
-      waktu: d.waktu,
-      nama: d.nama,
-      ruangan: d.ruangan,
-      keterangan: d.keterangan,
-      foto: d.foto,
-      status: d.status,
-      teknisi: d.teknisi
+    // PEMETAAN BARU – SESUAI APPS SCRIPT:
+    // [0]=id, [1]=waktu, [2]=nama, [3]=ruangan, [4]=keterangan,
+    // [5]=foto, [6]=status, [7]=teknisi
+    rawData = json.data.map(r => ({
+      id: r.id || r[0],
+      waktu: r.waktu || r[1],
+      nama: r.nama || r[2],
+      ruangan: r.ruangan || r[3],
+      keterangan: r.keterangan || r[4],
+      foto: r.foto || r[5],
+      status: r.status || r[6],
+      teknisi: r.teknisi || r[7]
     }));
 
-
-    // Populate filter ruangan
+    // Filter ruangan otomatis
     const ruanganSet = new Set(rawData.map(x => x.ruangan).filter(Boolean));
     const filter = document.getElementById("filterRuangan");
     filter.innerHTML = `<option value="all">Semua Ruangan</option>`;
@@ -52,9 +53,9 @@ function applyFilters() {
   const searchVal = document.getElementById("searchInput").value.toLowerCase();
 
   filteredData = rawData.filter(d => {
-    const matchFilter = filterVal === "all" || d.ruangan === filterVal;
-    const matchSearch = Object.values(d).some(v => v?.toLowerCase?.().includes(searchVal));
-    return matchFilter && matchSearch;
+    const f1 = filterVal === "all" || d.ruangan === filterVal;
+    const f2 = Object.values(d).some(v => v?.toString().toLowerCase().includes(searchVal));
+    return f1 && f2;
   });
 
   if (sortColumn) sortData();
@@ -79,13 +80,10 @@ function sortData() {
 // 4. RENDER TABEL
 // ========================================
 function renderTable() {
-  const loading = document.getElementById("loading");
   const table = document.getElementById("tabel");
-
-  loading.style.display = "none";
-  table.style.display = "table";
-
   const tbody = table.querySelector("tbody");
+
+  table.style.display = "table";
   tbody.innerHTML = "";
 
   if (filteredData.length === 0) {
@@ -110,18 +108,18 @@ function renderTable() {
         <td>${r.waktu}</td>
         <td>${r.nama}</td>
         <td>${r.ruangan}</td>
-        <td title="${r.keterangan}">${r.keterangan}</td>
-        
+        <td>${r.keterangan}</td>
+
         <td>
           ${
-            r.foto
+            r.foto 
               ? `<img src="${r.foto}" class="foto-thumb" onclick="showModal('${r.foto}')">`
               : "-"
           }
         </td>
 
         <td><span class="status ${statusClass}">${r.status}</span></td>
-        <td>${r.teknisi}</td>
+        <td>${r.teknisi || "-"}</td>
       </tr>
     `;
   });
@@ -158,16 +156,9 @@ function renderPagination() {
 document.querySelectorAll("th[data-column]").forEach(th => {
   th.addEventListener("click", () => {
     const col = th.getAttribute("data-column");
-
-    if (sortColumn === col) {
-      sortAsc = !sortAsc;
-    } else {
-      sortColumn = col;
-      sortAsc = true;
-    }
-
+    sortAsc = sortColumn === col ? !sortAsc : true;
+    sortColumn = col;
     sortData();
-    currentPage = 1;
     renderTable();
     renderPagination();
   });
@@ -179,17 +170,14 @@ document.querySelectorAll("th[data-column]").forEach(th => {
 function showModal(src) {
   const modal = document.getElementById("modalFoto");
   const img = document.getElementById("modalImg");
+
   img.src = src;
   modal.style.display = "flex";
 
   modal.onclick = () => (modal.style.display = "none");
 }
 
-// Event listeners
 document.getElementById("filterRuangan").addEventListener("change", applyFilters);
 document.getElementById("searchInput").addEventListener("input", applyFilters);
 
-// Load awal
 loadData();
-
-
