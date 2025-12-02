@@ -1,156 +1,21 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Public Dashboard - Laporan Kendala</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Publik</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
+    <h1>Selamat datang di Dashboard Publik</h1>
 
-<div class="container">
-  <div class="header">
-    <h1>📋 Public Dashboard - Laporan Kendala Pegawai</h1>
-    <p class="muted">Menampilkan laporan terkini dari pegawai</p>
-  </div>
-
-  <div class="filter-container">
-    <label for="filterRuangan">Filter Ruangan:</label>
-    <select id="filterRuangan">
-      <option value="all">Semua Ruangan</option>
-    </select>
-  </div>
-
-  <div id="loading">Memuat data...</div>
-
-  <div class="table-container">
-    <table id="tabel" style="display:none;">
-      <thead>
-        <tr>
-          <th data-column="waktu">Waktu ▲▼</th>
-          <th data-column="nama">Nama ▲▼</th>
-          <th data-column="ruangan">Ruangan ▲▼</th>
-          <th data-column="keterangan">Keterangan ▲▼</th>
-          <th>Foto</th>
-          <th data-column="status">Status ▲▼</th>
-          <th data-column="teknisi">Teknisi ▲▼</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Modal Foto -->
-<div id="modalFoto" class="modal">
-  <img id="modalImg" src="">
-</div>
-
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxcvVSxw6liSor0zj03SjbxBiMryQ9PE2vGYQOY786K6-GauDstEnsRUZ_zid5An3uZtA/exec"; // ganti sesuai deploy Apps Script
-let rawData = [];
-let sortColumn = null;
-let sortAsc = true;
-
-// Load Data
-async function loadData() {
-  const loading = document.getElementById("loading");
-  const table = document.getElementById("tabel");
-  const filterSelect = document.getElementById("filterRuangan");
-
-  try {
-    const res = await fetch(API_URL);
-    const json = await res.json();
-
-    if (json.status !== "success") {
-      loading.innerText = "Gagal mengambil data: " + (json.message || "Unknown error");
-      return;
-    }
-
-    rawData = json.data;
-
-    // Populate filter ruangan
-    const ruanganSet = new Set(rawData.map(d => d.ruangan).filter(r=>r));
-    filterSelect.innerHTML = '<option value="all">Semua Ruangan</option>';
-    ruanganSet.forEach(r => filterSelect.innerHTML += `<option value="${r}">${r}</option>`);
-
-    renderTable(rawData);
-
-  } catch(e) {
-    loading.innerText = "Terjadi error saat memuat data: " + e;
-  }
-}
-
-// Render Table
-function renderTable(data){
-  const loading = document.getElementById("loading");
-  const table = document.getElementById("tabel");
-  loading.style.display="none";
-  table.style.display="table";
-
-  const tb = table.querySelector("tbody");
-  tb.innerHTML="";
-
-  if(!data || data.length===0){
-    tb.innerHTML="<tr><td colspan='7'>Tidak ada data</td></tr>";
-    return;
-  }
-
-  data.forEach(r=>{
-    let statusClass = r.status.toLowerCase()==="selesai" ? "status-selesai" : r.status.toLowerCase()==="tertunda"?"status-tertunda":"status-menunggu";
-    tb.innerHTML += `
-      <tr>
-        <td>${r.waktu}</td>
-        <td>${r.nama}</td>
-        <td>${r.ruangan}</td>
-        <td>${r.keterangan}</td>
-        <td>${r.foto ? `<img src="${r.foto}" class="foto-thumb" onclick="showModal('${r.foto}')">`:"-"}</td>
-        <td><span class="${statusClass}">${r.status}</span></td>
-        <td>${r.teknisi}</td>
-      </tr>
-    `;
-  });
-}
-
-// Filter Ruangan
-document.getElementById("filterRuangan").addEventListener("change",function(){
-  const value=this.value;
-  let filtered = value==="all"? rawData : rawData.filter(d=>d.ruangan===value);
-  renderTable(filtered);
-});
-
-// Sort kolom
-document.querySelectorAll("th[data-column]").forEach(th=>{
-  th.addEventListener("click",()=>{
-    const col=th.getAttribute("data-column");
-    if(sortColumn===col) sortAsc=!sortAsc;
-    else { sortColumn=col; sortAsc=true; }
-
-    const dataCopy=[...rawData];
-    dataCopy.sort((a,b)=>{
-      let valA=a[col]||"";
-      let valB=b[col]||"";
-      return sortAsc? valA.localeCompare(valB): valB.localeCompare(valA);
-    });
-
-    const filterValue=document.getElementById("filterRuangan").value;
-    let finalData=filterValue==="all"? dataCopy: dataCopy.filter(d=>d.ruangan===filterValue);
-    renderTable(finalData);
-  });
-});
-
-// Modal Foto
-function showModal(src){
-  const modal=document.getElementById("modalFoto");
-  const img=document.getElementById("modalImg");
-  img.src=src;
-  modal.style.display="flex";
-  modal.onclick=function(){ modal.style.display="none"; }
-}
-
-loadData();
-</script>
-
+    <!-- JS -->
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
-
