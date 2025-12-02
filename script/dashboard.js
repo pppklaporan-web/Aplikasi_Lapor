@@ -1,187 +1,136 @@
+/* ============================================================
+   DASHBOARD TEKNISI – FINAL FIXED
+   ============================================================ */
+
 const API_URL = "https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec";
 
-let rawData = [];
-let filteredData = [];
-let currentPage = 1;
-let rowsPerPage = 10;
+const tbody = document.querySelector("#tabelTeknisi tbody");
+const modal = document.getElementById("modalEdit");
+const editId = document.getElementById("editId");
+const editStatus = document.getElementById("editStatus");
+const editTeknisi = document.getElementById("editTeknisi");
+const btnSimpan = document.getElementById("btnSimpan");
 
-let sortColumn = null;
-let sortAsc = true;
+let dataLaporan = [];
 
-// ----------------------------------------------------
-// 1. LOAD DATA
-// ----------------------------------------------------
+/* ============================================================
+   LOAD DATA
+   ============================================================ */
 async function loadData() {
-  const loading = document.getElementById("loading");
+    tbody.innerHTML = "<tr><td colspan='9'>Memuat data...</td></tr>";
 
-  try {
-    const res = await fetch(API_URL + "?action=getReports");
-    const json = await res.json();
+    try {
+        const res = await fetch(API_URL + "?action=getReports");
+        const json = await res.json();
 
-    if (json.status !== "success") {
-      loading.innerText = "Gagal memuat data";
-      return;
+        if (json.status !== "success") {
+            tbody.innerHTML = "<tr><td colspan='9'>Gagal memuat data</td></tr>";
+            return;
+        }
+
+        dataLaporan = json.data;
+        renderTable();
+
+    } catch (e) {
+        tbody.innerHTML = "<tr><td colspan='9'>Error mengambil data</td></tr>";
     }
-
-    // === DATA FORMAT SUDAH SESUAI APPS SCRIPT (OBJECT) ===
-    rawData = json.data.map(r => ({
-      id: r.id,
-      waktu: r.waktu,
-      nama: r.nama,
-      ruangan: r.ruangan,
-      keterangan: r.keterangan,
-      foto: r.foto,
-      status: r.status,
-      teknisi: r.teknisi
-    }));
-
-    // --- FILL FILTER RUANGAN ---
-    const ruanganSet = new Set(rawData.map(r => r.ruangan).filter(Boolean));
-    const select = document.getElementById("filterRuangan");
-    select.innerHTML = `<option value="all">Semua Ruangan</option>`;
-    ruanganSet.forEach(r => select.innerHTML += `<option value="${r}">${r}</option>`);
-
-    applyFilters();
-
-  } catch (err) {
-    loading.innerText = "Error: " + err;
-  }
 }
 
-// ----------------------------------------------------
-// 2. FILTER & SEARCH
-// ----------------------------------------------------
-function applyFilters() {
-  const filterVal = document.getElementById("filterRuangan").value;
-  const searchVal = document.getElementById("searchInput").value.toLowerCase();
-
-  filteredData = rawData.filter(r => {
-    const matchFilter = filterVal === "all" || r.ruangan === filterVal;
-    const matchSearch = Object.values(r).some(v =>
-      (v + "").toLowerCase().includes(searchVal)
-    );
-    return matchFilter && matchSearch;
-  });
-
-  if (sortColumn) sortData();
-
-  currentPage = 1;
-  renderTable();
-  renderPagination();
-}
-
-// ----------------------------------------------------
-// 3. SORTING
-// ----------------------------------------------------
-function sortData() {
-  filteredData.sort((a, b) => {
-    let vA = (a[sortColumn] || "") + "";
-    let vB = (b[sortColumn] || "") + "";
-    return sortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
-  });
-}
-
-// ----------------------------------------------------
-// 4. RENDER TABLE
-// ----------------------------------------------------
+/* ============================================================
+   RENDER TABLE
+   ============================================================ */
 function renderTable() {
-  const table = document.getElementById("tabel");
-  const tbody = table.querySelector("tbody");
+    tbody.innerHTML = "";
 
-  table.style.display = "table";
-  tbody.innerHTML = "";
+    dataLaporan.forEach(r => {
+        const tr = document.createElement("tr");
 
-  if (filteredData.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7">Tidak ada data</td></tr>`;
-    return;
-  }
+        tr.innerHTML = `
+            <td>${r.id}</td>
+            <td>${r.waktu}</td>
+            <td>${r.nama}</td>
+            <td>${r.ruangan}</td>
+            <td>${r.keterangan}</td>
 
-  const start = (currentPage - 1) * rowsPerPage;
-  const end = start + rowsPerPage;
-  const pageData = filteredData.slice(start, end);
+            <td>
+                ${r.foto ?
+                    `<img src="${r.foto}" class="foto-thumb" 
+                     onclick="window.open('${r.foto}','_blank')">`
+                 : "-"
+                }
+            </td>
 
-  pageData.forEach(r => {
-    let statusClass =
-      r.status?.toLowerCase() === "selesai" ? "status-selesai" :
-      r.status?.toLowerCase() === "tertunda" ? "status-tertunda" :
-      "status-menunggu";
+            <td>${r.status}</td>
+            <td>${r.teknisi || "-"}</td>
 
-    tbody.innerHTML += `
-      <tr>
-        <td>${r.waktu}</td>
-        <td>${r.nama}</td>
-        <td>${r.ruangan}</td>
-        <td>${r.keterangan}</td>
+            <td>
+                <button class="edit-button" onclick="openEditModal('${r.id}')">
+                    Edit
+                </button>
+            </td>
+        `;
 
-        <td>
-          ${
-            r.foto
-              ? `<img src="${r.foto}" class="foto-thumb" onclick="showModal('${r.foto}')">`
-              : "-"
-          }
-        </td>
-
-        <td><span class="status ${statusClass}">${r.status}</span></td>
-        <td>${r.teknisi || "-"}</td>
-      </tr>
-    `;
-  });
+        tbody.appendChild(tr);
+    });
 }
 
-// ----------------------------------------------------
-// 5. PAGINATION
-// ----------------------------------------------------
-function renderPagination() {
-  const box = document.getElementById("pagination");
-  box.innerHTML = "";
+/* ============================================================
+   OPEN MODAL
+   ============================================================ */
+function openEditModal(id) {
+    const item = dataLaporan.find(x => x.id === id);
+    if (!item) return;
 
-  const total = Math.ceil(filteredData.length / rowsPerPage);
-  if (total <= 1) return;
+    editId.value = item.id;
+    editStatus.value = item.status;
+    editTeknisi.value = item.teknisi || "";
 
-  for (let i = 1; i <= total; i++) {
-    const btn = document.createElement("button");
-    btn.className = "page-btn" + (i === currentPage ? " active" : "");
-    btn.innerText = i;
+    modal.style.display = "flex";
+}
 
-    btn.onclick = () => {
-      currentPage = i;
-      renderTable();
-      renderPagination();
+/* ============================================================
+   SAVE UPDATE
+   ============================================================ */
+btnSimpan.onclick = async function () {
+    const payload = {
+        action: "update",
+        id: editId.value,
+        status: editStatus.value,
+        teknisi: editTeknisi.value
     };
 
-    box.appendChild(btn);
-  }
-}
+    btnSimpan.innerText = "Menyimpan...";
+    btnSimpan.disabled = true;
 
-// ----------------------------------------------------
-// 6. SORT EVENT
-// ----------------------------------------------------
-document.querySelectorAll("th[data-column]").forEach(th => {
-  th.addEventListener("click", () => {
-    const col = th.getAttribute("data-column");
-    sortAsc = sortColumn === col ? !sortAsc : true;
-    sortColumn = col;
-    sortData();
-    renderTable();
-    renderPagination();
-  });
-});
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/json" }
+        });
 
-// ----------------------------------------------------
-// 7. MODAL FOTO
-// ----------------------------------------------------
-function showModal(src) {
-  const modal = document.getElementById("modalFoto");
-  const img = document.getElementById("modalImg");
+        const json = await res.json();
 
-  img.src = src;
-  modal.style.display = "flex";
+        if (json.status === "success") {
+            modal.style.display = "none";
+            loadData(); // refresh tabel
+        } else {
+            alert("Gagal update: " + json.message);
+        }
 
-  modal.onclick = () => modal.style.display = "none";
-}
+    } catch (e) {
+        alert("Error menyimpan perubahan");
+    }
 
-// ----------------------------------------------------
-document.getElementById("filterRuangan").addEventListener("change", applyFilters);
-document.getElementById("searchInput").addEventListener("input", applyFilters);
+    btnSimpan.innerText = "Simpan Perubahan";
+    btnSimpan.disabled = false;
+};
+
+/* ============================================================
+   CLOSE MODAL
+   ============================================================ */
+modal.onclick = e => {
+    if (e.target === modal) modal.style.display = "none";
+};
 
 loadData();
