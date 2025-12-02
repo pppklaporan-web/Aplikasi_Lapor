@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Dashboard - Laporan</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>📋 Dashboard Laporan Kendala</h1>
+    <span class="muted">Menampilkan laporan terkini dari pegawai</span>
+  </div>
+
+  <div class="controls">
+    <select id="filterRuangan">
+      <option value="all">Semua Ruangan</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Cari nama, ruangan, keterangan...">
+  </div>
+
+  <div id="loading">Memuat data...</div>
+
+  <div class="table-container">
+    <table id="tabel" style="display:none;">
+      <thead>
+        <tr>
+          <th data-column="waktu">Waktu ▲▼</th>
+          <th data-column="nama">Nama ▲▼</th>
+          <th data-column="ruangan">Ruangan ▲▼</th>
+          <th data-column="keterangan">Keterangan ▲▼</th>
+          <th>Foto</th>
+          <th data-column="status">Status ▲▼</th>
+          <th data-column="teknisi">Teknisi ▲▼</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- Modal Foto -->
+<div id="modalFoto" class="modal">
+  <img id="modalImg" src="">
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
