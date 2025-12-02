@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxcvVSxw6liSor0zj03SjbxBiMryQ9PE2vGYQOY786K6-GauDstEnsRUZ_zid5An3uZtA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec";
 
 let rawData = [], filteredData = [], currentPage = 1, rowsPerPage = 10;
 let sortColumn = null, sortAsc = true;
@@ -191,4 +191,5 @@ document.getElementById("searchInput").addEventListener("input", applyFilters);
 
 // Load awal
 loadData();
+
 
