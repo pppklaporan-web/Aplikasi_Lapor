@@ -1,84 +1,84 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec";
+// ================== dashboard.js ==================
 
-// =============================
-// LOAD DATA
-// =============================
+// Contoh ID sheet / endpoint GAS
+const GAS_URL = "https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec";
+
+// Ambil laporan dari GAS dan tampilkan di tabel
 async function loadReports() {
-    try {
-        const res = await fetch(`${API_URL}?action=getReports`);
-        const json = await res.json();
+  try {
+    const res = await fetch(`${GAS_URL}?action=getReports`);
+    const data = await res.json();
 
-        if (json.status !== "success") {
-            console.error("Gagal load:", json.message);
-            return;
-        }
-
-        renderTable(json.data);
-    } catch (err) {
-        console.error("Fetch error:", err);
+    if (data.status === "success") {
+      renderTable(data.data);
+    } else {
+      console.error("Error getReports:", data.message);
     }
+  } catch (err) {
+    console.error("Fetch error getReports:", err);
+  }
 }
 
-// =============================
-// RENDER TABEL
-// =============================
-function renderTable(data) {
-    const tbody = document.getElementById("data-body");
-    tbody.innerHTML = "";
+// Render data ke tabel HTML (contoh sederhana)
+function renderTable(reports) {
+  const tbody = document.querySelector("#reportTable tbody");
+  tbody.innerHTML = "";
 
-    data.forEach(item => {
-        const row = `
-            <tr>
-                <td>${item.waktu}</td>
-                <td>${item.nama}</td>
-                <td>${item.ruangan}</td>
-                <td>${item.keterangan}</td>
-                <td>${item.status}</td>
-                <td>
-                    ${item.foto ? `<a href="${item.foto}" target="_blank">Lihat Foto</a>` : "-"}
-                </td>
-            </tr>
-        `;
-        tbody.innerHTML += row;
+  reports.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.id}</td>
+      <td>${r.waktu}</td>
+      <td>${r.nama}</td>
+      <td>${r.ruangan}</td>
+      <td>${r.keterangan}</td>
+      <td><a href="${r.foto}" target="_blank">Lihat Foto</a></td>
+      <td>${r.status}</td>
+      <td>${r.teknisi}</td>
+      <td>
+        <button onclick="updateStatus('${r.id}')">Update</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Update status laporan
+async function updateStatus(id) {
+  const status = prompt("Masukkan status baru (Misal: Selesai):");
+  const teknisi = prompt("Masukkan nama teknisi:");
+
+  if (!status || !teknisi) return alert("Status dan teknisi wajib diisi");
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "update",
+        id: id,
+        status: status,
+        teknisi: teknisi
+      }),
+      headers: { "Content-Type": "application/json" }
     });
-}
 
-// =============================
-// UPDATE STATUS (DARI TEKNISI)
-// =============================
-async function updateStatus(id, status, teknisi) {
-    try {
-        const payload = {
-            action: "update",
-            id,
-            status,
-            teknisi
-        };
+    const result = await res.json();
 
-        const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json"        // ★ WAJIB
-            },
-            body: JSON.stringify(payload)                // ★ WAJIB
-        });
-
-        const json = await res.json();
-
-        if (json.status === "success") {
-            alert("Status berhasil diperbarui!");
-            loadReports(); // refresh otomatis
-        } else {
-            alert("Gagal update: " + json.message);
-        }
-    } catch (err) {
-        console.error("Update error:", err);
-        alert("Gagal update (Network Error)");
+    if (result.status === "success") {
+      alert("✅ Update berhasil: " + result.message);
+      // Reload tabel untuk melihat perubahan
+      loadReports();
+    } else {
+      alert("❌ Update gagal: " + result.message);
+      console.error("Update error:", result);
     }
+  } catch (err) {
+    alert("❌ Terjadi error saat update. Cek console.");
+    console.error("Fetch update error:", err);
+  }
 }
 
-// AUTO REFRESH SETIAP 5 DETIK
-setInterval(loadReports, 5000);
-
-// Load pertama kali
-loadReports();
+// Panggil loadReports saat halaman siap
+document.addEventListener("DOMContentLoaded", () => {
+  loadReports();
+});
