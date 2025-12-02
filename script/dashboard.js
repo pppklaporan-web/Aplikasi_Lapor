@@ -20,14 +20,16 @@ async function loadData() {
 
     // ===== FIX PEMETAAN DATA APPS SCRIPT =====
     rawData = json.data.map(d => ({
-      waktu: d.waktu || d[0],
-      nama: d.nama || d[1],
-      ruangan: d.ruangan || d[2],
-      keterangan: d.keterangan || d[3],
-      foto: d.foto || d[4],     // now correct
-      status: d.status || d[5], // now correct
-      teknisi: d.teknisi || d[6]
+      id: d.id,
+      waktu: d.waktu,
+      nama: d.nama,
+      ruangan: d.ruangan,
+      keterangan: d.keterangan,
+      foto: d.foto,
+      status: d.status,
+      teknisi: d.teknisi
     }));
+
 
     // Populate filter ruangan
     const ruanganSet = new Set(rawData.map(x => x.ruangan).filter(Boolean));
@@ -189,3 +191,4 @@ document.getElementById("searchInput").addEventListener("input", applyFilters);
 
 // Load awal
 loadData();
+
