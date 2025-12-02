@@ -1,4 +1,4 @@
-const API_URL = "GANTI_DENGAN_URL_EXEC_WEB_APP";
+const API_URL = "https://script.google.com/macros/s/AKfycbxcvVSxw6liSor0zj03SjbxBiMryQ9PE2vGYQOY786K6-GauDstEnsRUZ_zid5An3uZtA/exec";
 let rawData = [], filteredData = [], currentPage = 1, rowsPerPage = 10;
 let sortColumn = null, sortAsc = true;
 
@@ -98,3 +98,4 @@ function showModal(src){
 }
 
 loadData();
+
