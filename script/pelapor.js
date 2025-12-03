@@ -2,45 +2,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("laporForm");
   const statusEl = document.getElementById("status");
 
-  // GANTI URL BERIKUT DENGAN URL APPS SCRIPT ANDA
+  // URL Apps Script Anda
   const API_URL = "https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec";
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     statusEl.innerHTML = "Mengirim laporan...";
 
-    const nama = document.getElementById("nama").value;
-    const ruangan = document.getElementById("ruangan").value;
-    const keterangan = document.getElementById("keterangan").value;
+    const formData = new FormData();
+
+    formData.append("nama", document.getElementById("nama").value);
+    formData.append("ruangan", document.getElementById("ruangan").value);
+    formData.append("keterangan", document.getElementById("keterangan").value);
+    formData.append("action", "add");
+
     const fotoInput = document.getElementById("foto");
 
-    let fotoBase64 = ""; // default
-
-    // Jika ada foto → ubah ke base64
     if (fotoInput.files.length > 0) {
-      fotoBase64 = await toBase64(fotoInput.files[0]);
-    }
+      const file = fotoInput.files[0];
+      const base64 = await toBase64(file);
 
-    const payload = {
-      nama,
-      ruangan,
-      keterangan,
-      foto: fotoBase64
-    };
+      formData.append("foto_base64", base64.split(",")[1]); // hanya isi base64
+      formData.append("foto_name", file.name);
+    }
 
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify(payload)
+        body: formData
       });
 
-      const result = await res.json();
+      const json = await res.json();
 
-      if (result.status === "success") {
+      if (json.status === "success") {
         statusEl.innerHTML = "Laporan berhasil dikirim ✔";
         form.reset();
       } else {
-        statusEl.innerHTML = "Gagal: " + result.message;
+        statusEl.innerHTML = "Gagal: " + json.message;
       }
 
     } catch (err) {
@@ -49,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
 
 function toBase64(file) {
   return new Promise((resolve, reject) => {
