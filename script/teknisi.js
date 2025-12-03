@@ -1,4 +1,4 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyKFTfFmqmBF5YWpL4MOXM8mc0zn0PcK6cEW2M6c_hEdYOr3serYaaJ45kXesux1sLjfw/exec';
 const TBODY = document.querySelector('#lapTable tbody');
 
 async function loadData() {
