@@ -2,7 +2,7 @@
 // CONFIG
 // ==========================
 const GAS_URL =
-  "https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec";
+  "https://script.google.com/macros/s/AKfycbyKFTfFmqmBF5YWpL4MOXM8mc0zn0PcK6cEW2M6c_hEdYOr3serYaaJ45kXesux1sLjfw/exec";
 
 const TABLE = document.querySelector("#laporanTable tbody");
 const modal = document.getElementById("modalForm");
