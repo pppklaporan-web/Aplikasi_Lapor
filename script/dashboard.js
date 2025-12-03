@@ -96,6 +96,17 @@ function renderRows(rows) {
   rows.forEach(r => {
     const tr = document.createElement('tr');
 
+    // Warna baris berdasarkan status
+    const status = (r.status || 'Baru').toLowerCase();
+
+    if (status.includes('selesai') || status.includes('done')) {
+      tr.style.background = '#ddffdd';           // hijau muda
+      tr.style.borderLeft = '6px solid #009900';
+    } else {
+      tr.style.background = '#ffdddd';           // merah muda
+      tr.style.borderLeft = '6px solid #d60000';
+    }
+
     tr.innerHTML = `
       <td>${escapeHtml(r.id)}</td>
       <td>${escapeHtml(r.timestamp)}</td>
@@ -110,6 +121,7 @@ function renderRows(rows) {
     TABLE.appendChild(tr);
   });
 }
+
 // ==========================
     //  WARNA BARIS BERDASARKAN STATUS
     // ==========================
