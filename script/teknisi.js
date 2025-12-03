@@ -3,15 +3,11 @@ const TBODY = document.querySelector('#lapTable tbody');
 
 async function loadData() {
   TBODY.innerHTML = '<tr><td colspan="6">Memuat...</td></tr>';
-
   try {
     const res = await fetch(GAS_URL);
     const json = await res.json();
-
-    if (json.status !== "success") throw new Error("Data gagal diambil");
-
+    if (json.status !== 'success') throw new Error('Data gagal diambil');
     render(json.data || []);
-
   } catch (err) {
     TBODY.innerHTML = `<tr><td colspan="6">Error: ${err.message}</td></tr>`;
   }
@@ -25,23 +21,30 @@ function render(rows) {
 
   TBODY.innerHTML = '';
 
-  rows.forEach((r, i) => {
+  rows.forEach((r, index) => {
+    const idFix = r.id || (index + 2); // ID fallback otomatis
+
     const tr = document.createElement('tr');
 
-    // === Warna baris ===
-    if (r.status === "Selesai") tr.style.background = "#b4ffb4";      // hijau
-    else tr.style.background = "#ffb4b4";                              // merah
+    // Warna status
+    if ((r.status || '').toLowerCase().includes('selesai')) {
+      tr.style.background = '#ddffdd';
+      tr.style.borderLeft = '6px solid #009900';
+    } else {
+      tr.style.background = '#ffdddd';
+      tr.style.borderLeft = '6px solid #d60000';
+    }
 
     tr.innerHTML = `
-      <td>${r.id}</td>
+      <td>${idFix}</td>
       <td>${r.timestamp}</td>
       <td>${r.nama} (${r.ruangan})</td>
       <td>${r.keterangan}</td>
-      <td>${r.status || "Baru"}</td>
+      <td>${r.status || 'Baru'}</td>
       <td>
         <div class="form-inline">
-          <input type="text" placeholder="Nama Teknisi" class="teknisiInput" data-id="${r.id}">
-          <button class="btn" onclick="setSelesai('${r.id}')">Selesai</button>
+          <input type="text" placeholder="Nama Teknisi" class="teknisiInput" data-id="${idFix}">
+          <button class="btn" onclick="setSelesai(${idFix})">Selesai</button>
         </div>
       </td>
     `;
@@ -53,16 +56,11 @@ function render(rows) {
 async function setSelesai(id) {
   const input = document.querySelector(`.teknisiInput[data-id="${id}"]`);
   const teknisi = input.value.trim();
-
   if (!teknisi) return alert("Isi nama teknisi!");
 
   const body = new FormData();
   body.append("action", "update");
-  
-  // 🟢 PERUBAHAN UTAMA (Apps Script kamu memakai "row", bukan "id")
-  body.append("row", id);  
-  // body.append("id", id);  // tidak dipakai lagi
-
+  body.append("id", id);        // Backend meminta ID
   body.append("status", "Selesai");
   body.append("teknisi", teknisi);
 
@@ -70,7 +68,7 @@ async function setSelesai(id) {
     const res = await fetch(GAS_URL, { method: "POST", body });
     const json = await res.json();
 
-    console.log("RESPON UPDATE:", json); // debug
+    console.log("RESPON UPDATE:", json);
 
     if (json.status === "success") {
       alert("Update berhasil");
