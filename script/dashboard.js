@@ -66,7 +66,7 @@ function renderRows(rows) {
 
   TABLE.innerHTML = "";
 
-  rows.forEach((r) => {
+  rows.forEach(r => {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
@@ -80,22 +80,20 @@ function renderRows(rows) {
       <td>${safe(r.teknisi)}</td>
     `;
 
-    // ==========================
-    // WARNA BARIS BERDASARKAN STATUS
-    // ==========================
+    // WARNA STATUS
     const s = (r.status || "").toLowerCase();
 
-    if (s.includes("baru")) {
-      tr.style.background = "#ffe5e5";
+    if (s.includes("baru") || s.includes("pending")) {
+      tr.style.background = "#ffe5e5";          // merah muda
       tr.style.borderLeft = "6px solid #ff0000";
     }
     if (s.includes("proses")) {
-      tr.style.background = "#fff8d1";
-      tr.style.borderLeft = "6px solid #e6b800";
+      tr.style.background = "#fff6d1";          // kuning muda
+      tr.style.borderLeft = "6px solid #d6b000";
     }
     if (s.includes("selesai")) {
-      tr.style.background = "#e6ffe6";
-      tr.style.borderLeft = "6px solid #00b300";
+      tr.style.background = "#e9ffe9";          // hijau muda
+      tr.style.borderLeft = "6px solid #00aa00";
     }
 
     TABLE.appendChild(tr);
