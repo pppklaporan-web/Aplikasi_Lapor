@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Teknisi - Aplikasi Lapor</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:16px}
+    .wrap{max-width:1100px;margin:0 auto}
+    .btn{background:#0b63d6;color:#fff;padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
+    table{width:100%;background:#fff;border-collapse:collapse;border-radius:8px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #eee}
+    .form-inline{display:flex;gap:8px;align-items:center}
+    @media (max-width:600px){.form-inline{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Halaman Teknisi</h1>
+      <a href="index.html" class="btn" style="background:#6c757d;text-decoration:none;color:#fff">Kembali Dashboard</a>
+    </header>
+
+    <section style="margin-top:12px">
+      <label>Filter status:
+        <select id="filterStatusTek">
+          <option value="">Semua</option>
+          <option value="Baru">Baru</option>
+          <option value="Proses">Proses</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+      </label>
+      <table id="lapTable" style="margin-top:8px">
+        <thead><tr><th>ID</th><th>Tgl</th><th>Nama</th><th>Keterangan</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="script/teknisi.js"></script>
+</body>
+</html>
