@@ -42,14 +42,12 @@ async function loadData() {
     if (json.status !== "success")
       throw new Error("Gagal mengambil data dari server.");
 
-    const data = json.data || [];
+    let rows = json.data || [];
+
     const filter = filterStatus.value;
+    if (filter) rows = rows.filter(r => r.status === filter);
 
-    const filtered = filter
-      ? data.filter((r) => r.status === filter)
-      : data;
-
-    renderRows(filtered);
+    renderRows(rows);
   } catch (err) {
     TABLE.innerHTML = `<tr><td colspan="8">Error: ${err.message}</td></tr>`;
   }
@@ -70,31 +68,21 @@ function renderRows(rows) {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${safe(r.id)}</td>
-      <td>${safe(r.timestamp)}</td>
-      <td>${safe(r.nama)}</td>
-      <td>${safe(r.ruangan)}</td>
-      <td>${safe(r.keterangan)}</td>
+      <td>${r.id}</td>
+      <td>${r.timestamp}</td>
+      <td>${r.nama}</td>
+      <td>${r.ruangan}</td>
+      <td>${r.keterangan}</td>
       <td>${renderFoto(r.foto)}</td>
-      <td>${safe(r.status)}</td>
-      <td>${safe(r.teknisi)}</td>
+      <td>${r.status}</td>
+      <td>${r.teknisi}</td>
     `;
 
-    // WARNA STATUS
     const s = (r.status || "").toLowerCase();
 
-    if (s.includes("baru") || s.includes("pending")) {
-      tr.style.background = "#ffe5e5";          // merah muda
-      tr.style.borderLeft = "6px solid #ff0000";
-    }
-    if (s.includes("proses")) {
-      tr.style.background = "#fff6d1";          // kuning muda
-      tr.style.borderLeft = "6px solid #d6b000";
-    }
-    if (s.includes("selesai")) {
-      tr.style.background = "#e9ffe9";          // hijau muda
-      tr.style.borderLeft = "6px solid #00aa00";
-    }
+    if (s.includes("baru")) tr.style.background = "#ffe5e5";
+    if (s.includes("proses")) tr.style.background = "#fff7cc";
+    if (s.includes("selesai")) tr.style.background = "#e6ffe6";
 
     TABLE.appendChild(tr);
   });
@@ -107,28 +95,25 @@ function renderFoto(url) {
   if (!url) return "-";
 
   let fileId = "";
-
   try {
     fileId = url.split("id=")[1].split("&")[0];
   } catch (e) {
     return "-";
   }
 
-  const thumb = `https://drive.google.com/thumbnail?id=${fileId}`;
-  const view = `https://drive.google.com/uc?export=view&id=${fileId}`;
-
   return `
-    <a href="${view}" target="_blank">
-      <img src="${thumb}" style="width:60px;border-radius:6px;cursor:pointer;" />
-    </a>
+    <img src="https://drive.google.com/thumbnail?id=${fileId}"
+    style="width:60px;border-radius:6px;cursor:pointer"
+    onclick="window.open('https://drive.google.com/uc?export=view&id=${fileId}')">
   `;
 }
 
 // ==========================
-// FORM KIRIM LAPORAN
+// KIRIM LAPORAN
 // ==========================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   statusDiv.textContent = "Mengirim...";
 
   const formData = new FormData(form);
@@ -143,11 +128,7 @@ form.addEventListener("submit", async (e) => {
   formData.append("action", "add");
 
   try {
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: formData,
-    });
-
+    const res = await fetch(GAS_URL, { method: "POST", body: formData });
     const json = await res.json();
 
     if (json.status === "success") {
@@ -157,43 +138,28 @@ form.addEventListener("submit", async (e) => {
       setTimeout(() => {
         modal.style.display = "none";
         statusDiv.textContent = "";
-      }, 800);
+      }, 600);
 
       loadData();
     } else {
-      statusDiv.textContent =
-        "Gagal: " + (json.message || "Server error");
+      statusDiv.textContent = "Gagal: " + json.message;
     }
   } catch (err) {
-    statusDiv.textContent = "Error koneksi: " + err.message;
+    statusDiv.textContent = "Error: " + err.message;
   }
 });
 
 // ==========================
-// FILE TO BASE64
+// FILE → BASE64
 // ==========================
 function toBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () =>
-      resolve(reader.result.split(",")[1]);
+    reader.onload = () => resolve(reader.result.split(",")[1]);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }
 
-// ==========================
-// HTML ESCAPE
-// ==========================
-function safe(s) {
-  if (!s) return "";
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-// ==========================
 // START
-// ==========================
 loadData();
