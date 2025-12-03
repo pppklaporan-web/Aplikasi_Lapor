@@ -1,94 +1,81 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard - Aplikasi Lapor</title>
-  <link rel="manifest" href="manifest.json" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Laporan</title>
+
   <link rel="stylesheet" href="style.css" />
-  <meta name="theme-color" content="#0b63d6" />
-  <style>
-    /* ringkasan style, letakkan lebih lengkap di style.css */
-    body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:16px}
-    .wrap{max-width:1100px;margin:0 auto}
-    header{display:flex;justify-content:space-between;align-items:center}
-    table{width:100%;border-collapse:collapse;background:#fff;margin-top:12px;border-radius:8px;overflow:hidden}
-    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}
-    th{background:#f7f7f7}
-    .btn{background:#0b63d6;color:#fff;padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
-    .small{font-size:13px;padding:6px 10px}
-    .modal{position:fixed;left:0;top:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4)}
-    .modal .card{background:#fff;padding:16px;border-radius:8px;width:95%;max-width:480px}
-    .flex-row{display:flex;gap:8px;flex-wrap:wrap}
-    .foto-thumb{max-width:100px;border-radius:6px}
-    @media (max-width:600px){th,td{font-size:12px}}
-  </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Dashboard Laporan</h1>
-      <div>
-        <button id="btnRefresh" class="btn small">Refresh</button>
-        <button id="btnOpenForm" class="btn small">+ Input Laporan</button>
-        <a href="teknisi.html" class="btn small" style="background:#28a745;text-decoration:none;color:#fff">Halaman Teknisi</a>
-      </div>
-    </header>
 
-    <main>
-      <section id="filters" style="margin-top:12px">
-        <label>
-          Filter status:
-          <select id="filterStatus">
-            <option value="">Semua</option>
-            <option value="Baru">Baru</option>
-            <option value="Proses">Proses</option>
-            <option value="Selesai">Selesai</option>
-          </select>
-        </label>
-      </section>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <h1>Dashboard Laporan</h1>
+    <div class="nav-actions">
+      <button id="btnRefresh" class="btn btn-blue">Refresh</button>
+      <button id="btnOpenForm" class="btn btn-green">+ Input Laporan</button>
+      <a href="teknisi.html" class="btn btn-orange">Halaman Teknisi</a>
+    </div>
+  </header>
 
-      <section id="tableWrap">
-        <table id="laporanTable" aria-live="polite">
-          <thead>
-            <tr>
-              <th>ID</th><th>Tanggal</th><th>Nama</th><th>Ruangan</th><th>Keterangan</th><th>Foto</th><th>Status</th><th>Teknisi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </section>
-    </main>
+  <!-- FILTER -->
+  <section class="filter-box">
+    <label>Status: </label>
+    <select id="filterStatus">
+      <option value="">Semua</option>
+      <option value="Baru">Baru</option>
+      <option value="Proses">Proses</option>
+      <option value="Selesai">Selesai</option>
+    </select>
+  </section>
+
+  <!-- TABLE -->
+  <div class="table-wrapper">
+    <table id="laporanTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tanggal</th>
+          <th>Nama</th>
+          <th>Ruangan</th>
+          <th>Keterangan</th>
+          <th>Foto</th>
+          <th>Status</th>
+          <th>Teknisi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <!-- Modal Input -->
+  <!-- MODAL -->
   <div id="modalForm" class="modal">
-    <div class="card">
-      <h3>Input Laporan</h3>
-      <form id="laporForm" enctype="multipart/form-data">
-        <label>Nama Pelapor</label>
-        <input type="text" id="nama" name="nama" required />
-        <label>Ruangan</label>
-        <input type="text" id="ruangan" name="ruangan" required />
-        <label>Keterangan</label>
-        <textarea id="keterangan" name="keterangan" rows="4" required></textarea>
-        <label>Foto (opsional)</label>
-        <input type="file" id="foto" name="foto" accept="image/*" />
-        <div style="margin-top:10px" class="flex-row">
-          <button type="submit" class="btn">Kirim</button>
-          <button type="button" id="btnCloseModal" class="btn" style="background:#6c757d">Batal</button>
-        </div>
-        <div id="status" style="margin-top:8px;font-weight:600"></div>
+    <div class="modal-content">
+      <h2>Input Laporan</h2>
+
+      <form id="laporForm">
+        <label>Nama Pegawai:</label>
+        <input type="text" name="nama" required />
+
+        <label>Ruangan:</label>
+        <input type="text" name="ruangan" required />
+
+        <label>Deskripsi Kendala:</label>
+        <textarea name="keterangan" rows="3" required></textarea>
+
+        <label>Foto (opsional):</label>
+        <input type="file" id="foto" accept="image/*" />
+
+        <div id="status"></div>
+
+        <button type="submit" class="btn btn-green full">Kirim</button>
+        <button type="button" id="btnCloseModal" class="btn btn-gray full">Tutup</button>
       </form>
     </div>
   </div>
 
-  <script src="script/dashboard.js"></script>
-  <script>
-    // register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js').catch(()=>console.log('sw failed'));
-    }
-  </script>
+  <script src="dashboard.js"></script>
 </body>
 </html>
