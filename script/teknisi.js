@@ -1,28 +1,32 @@
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec';
 const TBODY = document.querySelector('#lapTable tbody');
-const filterTek = document.getElementById('filterStatusTek');
-filterTek.onchange = loadData;
 
-async function loadData(){
+async function loadData() {
   TBODY.innerHTML = '<tr><td colspan="6">Memuat...</td></tr>';
   try {
     const res = await fetch(GAS_URL);
     const json = await res.json();
-    if (json.status !== 'success') throw new Error('Gagal ambil');
-    let rows = json.data || [];
-    const filt = filterTek.value;
-    if (filt) rows = rows.filter(r=>r.status===filt);
-    render(rows);
-  } catch(err){
-    TBODY.innerHTML = `<tr><td colspan="6">Gagal: ${err.message}</td></tr>`;
+
+    if (json.status !== 'success') throw new Error('Data gagal diambil');
+
+    render(json.data || []);
+
+  } catch (err) {
+    TBODY.innerHTML = `<tr><td colspan="6">Error: ${err.message}</td></tr>`;
   }
 }
 
-function render(rows){
-  if(!rows.length){ TBODY.innerHTML = '<tr><td colspan="6">Tidak ada laporan</td></tr>'; return; }
+function render(rows) {
+  if (!rows.length) {
+    TBODY.innerHTML = '<tr><td colspan="6">Tidak ada laporan</td></tr>';
+    return;
+  }
+
   TBODY.innerHTML = '';
-  rows.forEach(r=>{
+
+  rows.forEach(r => {
     const tr = document.createElement('tr');
+
     tr.innerHTML = `
       <td>${r.id}</td>
       <td>${r.timestamp}</td>
@@ -31,61 +35,43 @@ function render(rows){
       <td>${r.status || 'Baru'}</td>
       <td>
         <div class="form-inline">
-          <input placeholder="Nama teknisi" data-id="${r.id}" class="techname" />
-          <select data-id="${r.id}" class="statusSel">
-            <option value="Baru">Baru</option>
-            <option value="Proses">Proses</option>
-            <option value="Selesai">Selesai</option>
-          </select>
-          <button class="btn" data-id="${r.id}" onclick="ambilKerja('${r.id}')">Ambil</button>
-          <button class="btn" data-id="${r.id}" onclick="updateStatus('${r.id}')">Update</button>
+          <input type="text" placeholder="Nama Teknisi" class="teknisiInput" data-id="${r.id}">
+          <button class="btn" onclick="setSelesai('${r.id}')">Selesai</button>
         </div>
       </td>
     `;
+
     TBODY.appendChild(tr);
   });
 }
 
-// helper to find inputs
-function getInputsById(id){
-  const te = document.querySelector(`.techname[data-id="${id}"]`);
-  const st = document.querySelector(`.statusSel[data-id="${id}"]`);
-  return {te, st};
-}
+async function setSelesai(id) {
+  const input = document.querySelector(`.teknisiInput[data-id="${id}"]`);
+  const teknisi = input.value.trim();
 
-async function ambilKerja(id){
-  const {te, st} = getInputsById(id);
-  if(!te.value) return alert('Masukkan nama teknisi');
-  st.value = 'Proses';
-  await sendUpdate(id, st.value, te.value);
-}
+  if (!teknisi) return alert("Isi nama teknisi!");
 
-async function updateStatus(id){
-  const {te, st} = getInputsById(id);
-  if(!st.value) return alert('Pilih status');
-  await sendUpdate(id, st.value, te.value || '');
-}
+  // Kirim hanya status 'Selesai'
+  const body = new FormData();
+  body.append("action", "update");
+  body.append("id", id);
+  body.append("status", "Selesai");
+  body.append("teknisi", teknisi);
 
-async function sendUpdate(id, status, teknisi){
   try {
-    const body = new FormData();
-    body.append('action','update');
-    body.append('id', id);
-    body.append('status', status);
-    body.append('teknisi', teknisi);
-    const res = await fetch(GAS_URL, { method:'POST', body });
+    const res = await fetch(GAS_URL, { method: "POST", body });
     const json = await res.json();
-    if (json.status === 'success') {
-      alert('Berhasil update');
+
+    if (json.status === "success") {
+      alert("Update berhasil");
       loadData();
-      // optionally notify public dashboard by forcing reload or rely on clients to refresh
     } else {
-      alert('Gagal: '+(json.message||'error'));
+      alert("Gagal: " + json.message);
     }
+
   } catch (err) {
-    alert('Gagal koneksi: '+err.message);
+    alert("Gagal koneksi: " + err.message);
   }
 }
 
-// initial
 loadData();
