@@ -3,11 +3,12 @@ const TBODY = document.querySelector('#lapTable tbody');
 
 async function loadData() {
   TBODY.innerHTML = '<tr><td colspan="6">Memuat...</td></tr>';
+
   try {
     const res = await fetch(GAS_URL);
     const json = await res.json();
 
-    if (json.status !== 'success') throw new Error('Data gagal diambil');
+    if (json.status !== "success") throw new Error("Data gagal diambil");
 
     render(json.data || []);
 
@@ -24,15 +25,19 @@ function render(rows) {
 
   TBODY.innerHTML = '';
 
-  rows.forEach(r => {
+  rows.forEach((r, i) => {
     const tr = document.createElement('tr');
+
+    // === Warna baris ===
+    if (r.status === "Selesai") tr.style.background = "#b4ffb4";      // hijau
+    else tr.style.background = "#ffb4b4";                              // merah
 
     tr.innerHTML = `
       <td>${r.id}</td>
       <td>${r.timestamp}</td>
       <td>${r.nama} (${r.ruangan})</td>
       <td>${r.keterangan}</td>
-      <td>${r.status || 'Baru'}</td>
+      <td>${r.status || "Baru"}</td>
       <td>
         <div class="form-inline">
           <input type="text" placeholder="Nama Teknisi" class="teknisiInput" data-id="${r.id}">
@@ -51,10 +56,13 @@ async function setSelesai(id) {
 
   if (!teknisi) return alert("Isi nama teknisi!");
 
-  // Kirim hanya status 'Selesai'
   const body = new FormData();
   body.append("action", "update");
-  body.append("id", id);
+  
+  // 🟢 PERUBAHAN UTAMA (Apps Script kamu memakai "row", bukan "id")
+  body.append("row", id);  
+  // body.append("id", id);  // tidak dipakai lagi
+
   body.append("status", "Selesai");
   body.append("teknisi", teknisi);
 
@@ -62,13 +70,14 @@ async function setSelesai(id) {
     const res = await fetch(GAS_URL, { method: "POST", body });
     const json = await res.json();
 
+    console.log("RESPON UPDATE:", json); // debug
+
     if (json.status === "success") {
       alert("Update berhasil");
       loadData();
     } else {
       alert("Gagal: " + json.message);
     }
-
   } catch (err) {
     alert("Gagal koneksi: " + err.message);
   }
