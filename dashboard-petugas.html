@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard Petugas</title>
+</head>
+<body>
+  <h2>Dashboard Petugas</h2>
+  <button onclick="go('public')">Dashboard Publik</button>
+  <button onclick="go('submit')">Submit Laporan</button>
+
+  <table border="1" id="laporanTable">
+    <thead>
+      <tr>
+        <th>ID</th><th>Nama</th><th>Deskripsi</th><th>Status</th><th>Petugas</th><th>Catatan</th><th>Update</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    function go(page){
+      window.location.href="?page=" + page;
+    }
+
+    function loadData(){
+      google.script.run.withSuccessHandler(function(data){
+        const tbody = document.querySelector("#laporanTable tbody");
+        tbody.innerHTML = "";
+        data.forEach(row=>{
+          tbody.innerHTML += `<tr>
+            <td>${row.ID}</td>
+            <td>${row['Nama Pelapor']}</td>
+            <td>${row.Deskripsi}</td>
+            <td>
+              <select id="status_${row.ID}">
+                <option value="Menunggu" ${row.Status=="Menunggu"?'selected':''}>Menunggu</option>
+                <option value="Proses" ${row.Status=="Proses"?'selected':''}>Proses</option>
+                <option value="Selesai" ${row.Status=="Selesai"?'selected':''}>Selesai</option>
+              </select>
+            </td>
+            <td><input type="text" id="petugas_${row.ID}" value="${row.Petugas || ''}"></td>
+            <td><input type="text" id="catatan_${row.ID}" value="${row['Catatan Petugas'] || ''}"></td>
+            <td><button onclick="update(${row.ID})">Update</button></td>
+          </tr>`;
+        });
+      }).getData();
+    }
+
+    function update(id){
+      const status = document.getElementById(`status_${id}`).value;
+      const petugas = document.getElementById(`petugas_${id}`).value;
+      const catatan = document.getElementById(`catatan_${id}`).value;
+
+      google.script.run.withSuccessHandler(loadData)
+        .updateLaporan(id, status, petugas, catatan);
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

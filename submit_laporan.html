@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Submit Laporan</title>
+</head>
+<body>
+  <h2>Form Laporan Kendala</h2>
+  <button onclick="go('public')">Dashboard Publik</button>
+  <button onclick="go('petugas')">Dashboard Petugas</button>
+
+  <form id="formLapor">
+    <input type="text" name="nama" placeholder="Nama Pelapor" required><br>
+    <input type="text" name="lokasi" placeholder="Lokasi/Kantor" required><br>
+    <input type="text" name="jenis" placeholder="Jenis Kendala" required><br>
+    <textarea name="deskripsi" placeholder="Deskripsi" required></textarea><br>
+    <input type="file" id="foto" accept="image/*"><br>
+    <button type="submit">Kirim Laporan</button>
+  </form>
+
+  <script>
+    function go(page){
+      window.location.href="?page=" + page;
+    }
+
+    document.getElementById("formLapor").onsubmit = function(e){
+      e.preventDefault();
+      const file = document.getElementById("foto").files[0];
+      
+      if(file){
+        const reader = new FileReader();
+        reader.onload = function(){
+          const fotoBase64 = reader.result.split(",")[1];
+          submitForm(fotoBase64);
+        }
+        reader.readAsDataURL(file);
+      } else {
+        submitForm("");
+      }
+    }
+
+    function submitForm(fotoBase64){
+      const form = document.getElementById("formLapor");
+      const nama = form.nama.value;
+      const lokasi = form.lokasi.value;
+      const jenis = form.jenis.value;
+      const deskripsi = form.deskripsi.value;
+
+      google.script.run.withSuccessHandler(function(id){
+        alert("Laporan berhasil dikirim! ID: " + id);
+        form.reset();
+      }).addLaporan(nama, lokasi, jenis, deskripsi, fotoBase64);
+    }
+  </script>
+</body>
+</html>

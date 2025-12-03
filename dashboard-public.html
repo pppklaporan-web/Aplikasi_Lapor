@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard Publik</title>
+</head>
+<body>
+  <h2>Dashboard Laporan Kendala</h2>
+  <button onclick="go('submit')">Submit Laporan</button>
+  <button onclick="go('petugas')">Dashboard Petugas</button>
+  <table border="1" id="laporanTable">
+    <thead>
+      <tr>
+        <th>ID</th><th>Nama</th><th>Lokasi</th><th>Jenis</th><th>Deskripsi</th><th>Foto</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    function go(page){
+      window.location.href="?page=" + page;
+    }
+
+    function loadData(){
+      google.script.run.withSuccessHandler(function(data){
+        const tbody = document.querySelector("#laporanTable tbody");
+        tbody.innerHTML = "";
+        data.forEach(row=>{
+          tbody.innerHTML += `<tr>
+            <td>${row.ID}</td>
+            <td>${row['Nama Pelapor']}</td>
+            <td>${row['Lokasi/Kantor']}</td>
+            <td>${row['Jenis Kendala']}</td>
+            <td>${row.Deskripsi}</td>
+            <td>${row['Foto URL'] ? `<a href="${row['Foto URL']}" target="_blank">Lihat Foto</a>` : ""}</td>
+            <td>${row.Status}</td>
+          </tr>`;
+        });
+      }).getData();
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
