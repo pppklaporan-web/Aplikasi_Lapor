@@ -1,46 +1,84 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Teknisi - Aplikasi Lapor</title>
-  <link rel="stylesheet" href="css/style.css" />
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbye-HYr7mlljZBqn5ucGfAXUGx3UN_7PHuLsuc3maPchJ3d9rnrl_Io6Oq5FUw50eee8Q/exec';
+const TBODY = document.querySelector('#lapTable tbody');
 
-  <style>
-    body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:16px; }
-    .wrap { max-width:1100px; margin:0 auto; }
-    .btn { background:#0b63d6; color:#fff; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
-    table { width:100%; background:#fff; border-collapse:collapse; border-radius:8px; overflow:hidden; }
-    th,td { padding:10px; border-bottom:1px solid #eee; }
-    input { padding:6px; width:150px; }
-    .form-inline { display:flex; gap:8px; align-items:center; }
-    @media(max-width:600px){ .form-inline{flex-direction:column;align-items:stretch;} }
-  </style>
+async function loadData() {
+  TBODY.innerHTML = '<tr><td colspan="6">Memuat...</td></tr>';
+  try {
+    const res = await fetch(GAS_URL);
+    const json = await res.json();
+    if (json.status !== 'success') throw new Error('Data gagal diambil');
+    render(json.data || []);
+  } catch (err) {
+    TBODY.innerHTML = `<tr><td colspan="6">Error: ${err.message}</td></tr>`;
+  }
+}
 
-</head>
-<body>
-  <div class="wrap">
+function render(rows) {
+  if (!rows.length) {
+    TBODY.innerHTML = '<tr><td colspan="6">Tidak ada laporan</td></tr>';
+    return;
+  }
 
-    <header style="display:flex;justify-content:space-between;align-items:center">
-      <h1>Halaman Teknisi</h1>
-      <a href="index.html" class="btn" style="background:#6c757d;text-decoration:none;color:#fff">
-        Kembali Dashboard
-      </a>
-    </header>
+  TBODY.innerHTML = '';
 
-    <section style="margin-top:12px">
-      <table id="lapTable" style="margin-top:8px">
-        <thead>
-          <tr>
-            <th>ID</th><th>Tanggal</th><th>Nama</th><th>Keterangan</th><th>Status</th><th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+  rows.forEach((r, index) => {
+    const idFix = r.id || (index + 2); // ID fallback otomatis
 
-  </div>
+    const tr = document.createElement('tr');
 
-  <script src="script/teknisi.js"></script>
-</body>
-</html>
+    // Warna status
+    if ((r.status || '').toLowerCase().includes('selesai')) {
+      tr.style.background = '#ddffdd';
+      tr.style.borderLeft = '6px solid #009900';
+    } else {
+      tr.style.background = '#ffdddd';
+      tr.style.borderLeft = '6px solid #d60000';
+    }
+
+    tr.innerHTML = `
+      <td>${idFix}</td>
+      <td>${r.timestamp}</td>
+      <td>${r.nama} (${r.ruangan})</td>
+      <td>${r.keterangan}</td>
+      <td>${r.status || 'Baru'}</td>
+      <td>
+        <div class="form-inline">
+          <input type="text" placeholder="Nama Teknisi" class="teknisiInput" data-id="${idFix}">
+          <button class="btn" onclick="setSelesai(${idFix})">Selesai</button>
+        </div>
+      </td>
+    `;
+
+    TBODY.appendChild(tr);
+  });
+}
+
+async function setSelesai(id) {
+  const input = document.querySelector(`.teknisiInput[data-id="${id}"]`);
+  const teknisi = input.value.trim();
+  if (!teknisi) return alert("Isi nama teknisi!");
+
+  const body = new FormData();
+  body.append("action", "update");
+  body.append("id", id);        // Backend meminta ID
+  body.append("status", "Selesai");
+  body.append("teknisi", teknisi);
+
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body });
+    const json = await res.json();
+
+    console.log("RESPON UPDATE:", json);
+
+    if (json.status === "success") {
+      alert("Update berhasil");
+      loadData();
+    } else {
+      alert("Gagal: " + json.message);
+    }
+  } catch (err) {
+    alert("Gagal koneksi: " + err.message);
+  }
+}
+
+loadData();
