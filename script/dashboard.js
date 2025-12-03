@@ -110,7 +110,26 @@ function renderRows(rows) {
     TABLE.appendChild(tr);
   });
 }
+// ==========================
+    //  WARNA BARIS BERDASARKAN STATUS
+    // ==========================
+    const s = (r.status || 'baru').toLowerCase();
 
+    // Belum dikerjakan / Pending / Baru
+    if (s.includes('belum') || s.includes('pending') || s.includes('baru')) {
+      tr.style.background = '#ffdddd';
+      tr.style.borderLeft = '6px solid #d60000';
+    }
+
+    // Selesai / Done
+    if (s.includes('selesai') || s.includes('done')) {
+      tr.style.background = '#ddffdd';
+      tr.style.borderLeft = '6px solid #009900';
+    }
+
+    TABLE.appendChild(tr);
+  });
+}
 // ==========================
 // FORM SUBMIT (ADD LAPORAN)
 // ==========================
