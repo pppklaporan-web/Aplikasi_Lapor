@@ -1,94 +1,61 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Form Pelaporan Kendala</title>
-  <link rel="stylesheet" href="css/style.css" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Lapor</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-    }
-    .container {
-      max-width: 480px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    h2 { 
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    label { 
-      font-weight: bold; 
-      display: block;
-      margin-top: 10px;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #0b63d6;
-      border: none;
-      color: white;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-    button:hover { background: #094faa; }
-    #status { 
-      margin-top: 10px; 
-      text-align: center; 
-      font-weight: bold; 
-    }
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    .container { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
+    button { padding: 10px 20px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .status { margin-top: 10px; }
   </style>
-
 </head>
 <body>
   <div class="container">
-    <h2>Form Pelaporan Kendala</h2>
-
-    <form id="laporForm" method="POST" enctype="multipart/form-data">
-
-      <label>Nama Pegawai:</label>
-      <input type="text" id="nama" name="nama" required />
-
-      <label>Ruangan:</label>
-      <input type="text" id="ruangan" name="ruangan" required />
-
-      <label>Deskripsi Kendala:</label>
-      <textarea id="keterangan" name="keterangan" rows="4" required></textarea>
-
-      <label>Foto (opsional):</label>
-
-      <!-- FOTO DARI KAMERA & GALERI -->
-      <input 
-        type="file" 
-        id="foto" 
-        name="foto" 
-        accept="image/*" 
-        capture="environment"
-      />
-
-      <button type="submit">Kirim Laporan</button>
-    </form>
-
-    <div id="status"></div>
+    <h2>Form Laporan Kerusakan</h2>
+    <input type="text" id="nama" placeholder="Nama">
+    <input type="text" id="unit" placeholder="Unit/Bagian">
+    <textarea id="kendala" placeholder="Kendala"></textarea>
+    <button onclick="kirimLaporan()">Kirim Laporan</button>
+    <div class="status" id="status"></div>
   </div>
 
-  <script src="script/pelapor.js"></script>
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyLiUdp9emngrQXkM3taZyr-aktjytU2sU059o7BEPSN-C293OaUkwWLU6gpdEkyL-8/exec"; // Ganti dengan URL Web App GAS
+
+    async function kirimLaporan() {
+      const nama = document.getElementById("nama").value;
+      const unit = document.getElementById("unit").value;
+      const kendala = document.getElementById("kendala").value;
+
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = "Mengirim...";
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify({nama, unit, kendala}),
+          headers: { "Content-Type": "application/json" }
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          statusEl.textContent = "Laporan berhasil dikirim!";
+          document.getElementById("nama").value = "";
+          document.getElementById("unit").value = "";
+          document.getElementById("kendala").value = "";
+        } else {
+          statusEl.textContent = "Error: " + result.message;
+        }
+
+      } catch (err) {
+        statusEl.textContent = "Gagal mengirim laporan: " + err;
+      }
+    }
+  </script>
 </body>
 </html>
