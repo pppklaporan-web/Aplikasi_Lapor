@@ -96,14 +96,14 @@ function renderRows(rows) {
   rows.forEach(r => {
     const tr = document.createElement('tr');
 
-    // Warna baris berdasarkan status
-    const status = (r.status || 'Baru').toLowerCase();
+    // === Warna baris berdasarkan status ===
+    const s = (r.status || 'Baru').toLowerCase();
 
-    if (status.includes('selesai') || status.includes('done')) {
-      tr.style.background = '#ddffdd';           // hijau muda
+    if (s.includes('selesai')) {
+      tr.style.background = '#ddffdd';
       tr.style.borderLeft = '6px solid #009900';
     } else {
-      tr.style.background = '#ffdddd';           // merah muda
+      tr.style.background = '#ffdddd';
       tr.style.borderLeft = '6px solid #d60000';
     }
 
@@ -121,6 +121,7 @@ function renderRows(rows) {
     TABLE.appendChild(tr);
   });
 }
+
 
 // ==========================
     //  WARNA BARIS BERDASARKAN STATUS
