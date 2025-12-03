@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Halaman Teknisi - Aplikasi Lapor</title>
+
+  <!-- STYLE GLOBAL -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 16px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .btn {
+      background: #0b63d6;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .btn-gray {
+      background: #6c757d;
+    }
+
+    table {
+      width: 100%;
+      background: #fff;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    th {
+      background: #0b63d6;
+      color: white;
+      font-weight: bold;
+      text-align: left;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+
+    .form-inline {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input.teknisiInput {
+      padding: 6px;
+      width: 150px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+    }
+
+    @media(max-width:600px) {
+      .form-inline {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      input.teknisiInput {
+        width: 100%;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- HEADER -->
+    <header style="display:flex; justify-content:space-between; align-items:center;">
+      <h1>Halaman Teknisi</h1>
+      <a href="index.html" class="btn btn-gray">Kembali Dashboard</a>
+    </header>
+
+    <!-- TABEL -->
+    <section style="margin-top:16px;">
+      <table id="lapTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tanggal</th>
+            <th>Nama</th>
+            <th>Keterangan</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <script src="script/teknisi.js"></script>
+</body>
+</html>
