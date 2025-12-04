@@ -1,21 +1,79 @@
-<!DOCTYPE html>
+<!-- index.html -->
+
+<!doctype html>
+
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aplikasi Lapor Kerusakan</title>
-<link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aplikasi Lapor — Kirim Laporan</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b74de"/>
 </head>
 <body>
-<main>
-<h1>Aplikasi Lapor Kerusakan</h1>
-<nav>
-  <a href="pelapor.html">Kirim Laporan</a> |
-  <a href="dashboard.html">Dashboard</a>
-</nav>
-</main>
+  <header class="topbar">
+    <h1>Aplikasi Lapor</h1>
+    <nav>
+      <a href="dashboard.html">Dashboard</a> ·
+      <a href="petugas.html">Petugas</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Buat Laporan Baru</h2>
+
+```
+  <form id="laporForm">
+    <label>Nama
+      <input id="nama" name="nama" required placeholder="Nama pelapor" />
+    </label>
+
+    <label>Ruangan
+      <input id="ruangan" name="ruangan" required placeholder="Contoh: Lab Komputasi 1" />
+    </label>
+
+    <label>Keterangan
+      <textarea id="keterangan" name="keterangan" rows="4" placeholder="Jelaskan kendala..."></textarea>
+    </label>
+
+    <div class="foto-section">
+      <label>Foto (opsional)
+        <input id="fotoFile" type="file" accept="image/*" capture="environment" />
+      </label>
+
+      <div id="previewWrap" class="preview hidden">
+        <img id="preview" alt="preview foto" />
+        <button id="clearPhoto" type="button" class="small">Hapus</button>
+      </div>
+    </div>
+
+    <button id="submitBtn" type="submit">Kirim Laporan</button>
+
+    <div id="statusMsg" role="status" aria-live="polite"></div>
+  </form>
+</section>
+
+<section class="card">
+  <h3>Info</h3>
+  <p>Aplikasi ini akan mengirim data ke Google Apps Script (GAS) dan menyimpan foto ke Google Drive otomatis.</p>
+</section>
+```
+
+  </main>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec";
+  </script>
+
+  <script src="assets/js/index.js" defer></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+    }
+  </script>
+
 </body>
 </html>
-
-
