@@ -1,0 +1,54 @@
+<!-- dashboard.html -->
+
+<!doctype html>
+
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard Laporan</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b74de"/>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Dashboard — Laporan</h1>
+    <nav>
+      <a href="index.html">Buat Laporan</a> ·
+      <a href="petugas.html">Petugas</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="row-between">
+        <h2>Daftar Laporan</h2>
+        <div>
+          <input id="search" placeholder="Cari nama / ruangan / status" />
+          <button id="refreshBtn" class="small">Refresh</button>
+        </div>
+      </div>
+
+```
+  <div id="listWrap" class="list"></div>
+  <div id="loading">Memuat...</div>
+</section>
+```
+
+  </main>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec";
+  </script>
+
+  <script src="dashboard.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+    }
+  </script>
+
+</body>
+</html>
