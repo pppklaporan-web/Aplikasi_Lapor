@@ -1,39 +1,31 @@
-const CACHE_NAME = 'aplikasi-lapor-v1';
+/* service-worker.js — caching sederhana untuk PWA */
+const CACHE = 'lapor-v1';
 const ASSETS = [
-  './',
-  './index.html',
-  './teknisi.html',
-  './style.css',
-  './script/dashboard.js',
-  './script/teknisi.js',
-  './manifest.json'
+'index.html','dashboard.html','petugas.html','styles.css',
+'index.js','dashboard.js','petugas.js','manifest.json'
 ];
 
-self.addEventListener('install', ev => {
-  ev.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
-  self.skipWaiting();
+self.addEventListener('install', (e) => {
+e.waitUntil(
+caches.open(CACHE).then(c => c.addAll(ASSETS)).then(()=>self.skipWaiting())
+);
 });
 
-self.addEventListener('activate', ev => {
-  ev.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.map(k => { if (k !== CACHE_NAME) return caches.delete(k); })
-    ))
-  );
-  self.clients.claim();
+self.addEventListener('activate', (e) => {
+e.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('fetch', ev => {
-  const req = ev.request;
-  // network-first for API requests (to always get latest)
-  if (req.url.includes('/macros/') || req.url.includes('/exec')) {
-    ev.respondWith(
-      fetch(req).catch(() => caches.match(req))
-    );
-    return;
-  }
-  // cache-first for static assets
-  ev.respondWith(
-    caches.match(req).then(resp => resp || fetch(req))
-  );
+self.addEventListener('fetch', (e) => {
+const req = e.request;
+// network-first for API calls to GAS
+if (req.url.includes('script.google.com/macros')) {
+e.respondWith(
+fetch(req).catch(()=>caches.match('/offline.html'))
+);
+return;
+}
+// cache-first for static
+e.respondWith(
+caches.match(req).then(r => r || fetch(req))
+);
 });
