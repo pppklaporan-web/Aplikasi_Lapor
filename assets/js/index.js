@@ -9,17 +9,20 @@ const submitBtn = document.getElementById('submitBtn');
 
 let fotoBase64 = '';
 
-fotoFile.addEventListener('change', async (e) => {
+fotoFile.addEventListener('change', (e) => {
 const file = e.target.files[0];
 if (!file) return;
+
+```
 const reader = new FileReader();
 reader.onload = () => {
-const dataUrl = reader.result;
-preview.src = dataUrl;
-previewWrap.classList.remove('hidden');
-fotoBase64 = dataUrl;
+  preview.src = reader.result;
+  previewWrap.classList.remove('hidden');
+  fotoBase64 = reader.result;
 };
 reader.readAsDataURL(file);
+```
+
 });
 
 clearPhoto.addEventListener('click', () => {
@@ -45,7 +48,7 @@ const payload = {
 try {
   const res = await fetch(GAS_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json'},
     body: JSON.stringify(payload)
   });
 
