@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Pelaporan Kendala</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; }
+    label { font-weight: bold; }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0b63d6;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #094faa; }
+    #status { margin-top: 10px; text-align: center; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Form Pelaporan Kendala</h2>
+
+    <form id="laporForm" method="POST" enctype="multipart/form-data">
+      <label>Nama Pegawai:</label>
+      <input type="text" id="nama" name="nama" required />
+
+      <label>Ruangan:</label>
+      <input type="text" id="ruangan" name="ruangan" required />
+
+      <label>Deskripsi Kendala:</label>
+      <textarea id="keterangan" name="keterangan" rows="4" required></textarea>
+
+      <label>Foto (opsional):</label>
+      <input type="file" id="foto" name="foto" accept="image/*" />
+
+      <button type="submit">Kirim Laporan</button>
+    </form>
+
+    <div id="status"></div>
+  </div>
+
+  <script src="script/pelapor.js"></script>
+</body>
+</html>
