@@ -1,4 +1,4 @@
-/* === URL WebApp Apps Script === */
+/* === GANTI DENGAN URL WEBAPP KAMU === */
 const GAS_URL = "[https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec](https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec)";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -12,36 +12,32 @@ const submitBtn = document.getElementById("submitBtn");
 
 let fotoBase64 = "";
 
-/* === PREVIEW FOTO === */
-if (fotoFile) {
+// === PREVIEW FOTO ===
 fotoFile.addEventListener("change", () => {
 const file = fotoFile.files[0];
 if (!file) return;
 
 ```
-  const reader = new FileReader();
-  reader.onload = () => {
-    fotoBase64 = reader.result;
-    if (preview) preview.src = reader.result;
-    if (previewWrap) previewWrap.classList.remove("hidden");
-  };
-  reader.readAsDataURL(file);
-});
+const reader = new FileReader();
+reader.onload = () => {
+  fotoBase64 = reader.result;
+  preview.src = reader.result;
+  previewWrap.classList.remove("hidden");
+};
+reader.readAsDataURL(file);
 ```
 
-}
+});
 
-/* === CLEAR FOTO === */
-if (clearPhoto) {
+// === HAPUS FOTO ===
 clearPhoto.addEventListener("click", () => {
 fotoBase64 = "";
-if (fotoFile) fotoFile.value = "";
-if (preview) preview.src = "";
-if (previewWrap) previewWrap.classList.add("hidden");
+fotoFile.value = "";
+preview.src = "";
+previewWrap.classList.add("hidden");
 });
-}
 
-/* === SUBMIT FORM === */
+// === SUBMIT FORM ===
 form.addEventListener("submit", async (ev) => {
 ev.preventDefault();
 
@@ -49,7 +45,6 @@ ev.preventDefault();
 submitBtn.disabled = true;
 statusMsg.textContent = "Mengirim...";
 
-// Kirim via FormData (paling aman untuk CORS GAS)
 const fd = new FormData();
 fd.append("nama", document.getElementById("nama").value.trim());
 fd.append("ruangan", document.getElementById("ruangan").value.trim());
@@ -57,19 +52,18 @@ fd.append("keterangan", document.getElementById("keterangan").value.trim());
 fd.append("foto", fotoBase64);
 
 try {
-  const res = await fetch(GAS_URL, { method: "POST", body: fd });
-  const txt = await res.text();
+  const res = await fetch(GAS_URL, {
+    method: "POST",
+    body: fd
+  });
 
+  const txt = await res.text();
   console.log("GAS response:", txt);
 
   if (txt.includes("OK")) {
     statusMsg.textContent = "Laporan berhasil terkirim!";
     form.reset();
-
-    // Hindari error jika tombol tidak ada
-    if (clearPhoto && typeof clearPhoto.click === "function") {
-      clearPhoto.click();
-    }
+    clearPhoto.click();
   } else {
     statusMsg.textContent = "Gagal: " + txt;
   }
