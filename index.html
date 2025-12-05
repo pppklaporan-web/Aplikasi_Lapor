@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Laporan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Form Laporan</h1>
+  <form id="laporForm">
+    <input type="hidden" id="laporanId">
+    <label>Nama:</label>
+    <input type="text" id="nama" required><br>
+    <label>Ruangan:</label>
+    <input type="text" id="ruangan" required><br>
+    <label>Keterangan:</label>
+    <textarea id="kendala" required></textarea><br>
+    <label>Foto (opsional):</label>
+    <input type="file" id="fotoFile" accept="image/*"><br>
+    <button type="submit">Kirim Laporan</button>
+  </form>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
