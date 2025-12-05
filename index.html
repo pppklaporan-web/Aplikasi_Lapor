@@ -7,69 +7,88 @@
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#0b74de"/>
 </head>
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f7f7f7;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: #0275d8;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #025aa5;
+    }
+
+    #previewWrap {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #preview {
+      display: none;
+      width: 200px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    #statusMsg {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+  </style>
+</head>
 <body>
-<header class="topbar">
-<h1>Aplikasi Lapor</h1>
-<nav>
-<a href="dashboard.html">Dashboard</a> ·
-<a href="petugas.html">Petugas</a>
-</nav>
-</header>
 
+  <div class="container">
+    <h2>Laporan Kendala</h2>
 
-<main class="container">
-<section class="card">
-<h2>Buat Laporan Baru</h2>
+    <form id="laporForm">
+      <input type="text" id="nama" placeholder="Nama" required>
+      <textarea id="kendala" placeholder="Kendala" required></textarea>
+      <input type="text" id="lokasi" placeholder="Lokasi (opsional)">
 
+      <label for="fotoFile">Upload Foto (opsional):</label>
+      <input type="file" id="fotoFile" accept="image/*">
 
-<form id="laporForm">
-<label>Nama
-<input id="nama" name="nama" required placeholder="Nama pelapor" />
-</label>
+      <div id="previewWrap">
+        <img id="preview">
+      </div>
 
+      <button type="submit">Kirim Laporan</button>
+    </form>
 
-<label>Ruangan
-<input id="ruangan" name="ruangan" required placeholder="Contoh: Lab Komputasi 1" />
-</label>
+    <div id="statusMsg"></div>
+  </div>
 
-
-<label>Keterangan
-<textarea id="keterangan" name="keterangan" rows="4" placeholder="Jelaskan kendala..."></textarea>
-</label>
-
-
-<div class="foto-section">
-<label>Foto (opsional)
-<input id="fotoFile" type="file" accept="image/*" capture="environment" />
-</label>
-
-
-<div id="previewWrap" class="preview hidden">
-<img id="preview" alt="preview foto" />
-<button id="clearPhoto" type="button" class="small">Hapus</button>
-</div>
-</div>
-
-
-<button id="submitBtn" type="submit">Kirim Laporan</button>
-
-
-<div id="statusMsg" role="status" aria-live="polite"></div>
-</form>
-</section>
-</main>
-
-
-<!-- panggil file js eksternal; jangan mendefinisikan GAS_URL di banyak tempat -->
-<script src="assets/js/index.js" defer></script>
-
-
-<script>
-if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-}
-</script>
-
+  <script src="index.js"></script>
 
 </body>
 </html>
+
