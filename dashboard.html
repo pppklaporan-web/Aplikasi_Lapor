@@ -1,54 +1,65 @@
-<!-- dashboard.html -->
-
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Laporan</title>
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0b74de"/>
-</head>
-<body>
-  <header class="topbar">
-    <h1>Dashboard — Laporan</h1>
-    <nav>
-      <a href="index.html">Buat Laporan</a> ·
-      <a href="petugas.html">Petugas</a>
-    </nav>
-  </header>
 
-  <main class="container">
-    <section class="card">
-      <div class="row-between">
-        <h2>Daftar Laporan</h2>
-        <div>
-          <input id="search" placeholder="Cari nama / ruangan / status" />
-          <button id="refreshBtn" class="small">Refresh</button>
-        </div>
-      </div>
-
-```
-  <div id="listWrap" class="list"></div>
-  <div id="loading">Memuat...</div>
-</section>
-```
-
-  </main>
-
-  <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec";
-  </script>
-
-  <script src="assets/js/dashboard.js"></script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 20px;
     }
-  </script>
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #0275d8;
+      color: white;
+    }
+    .status-menunggu { color: orange; font-weight: bold; }
+    .status-proses { color: blue; font-weight: bold; }
+    .status-selesai { color: green; font-weight: bold; }
+  </style>
+</head>
 
+<body>
+
+<div class="container">
+  <h2>Dashboard Laporan</h2>
+  <p>Lihat status laporan Anda.</p>
+
+  <table id="laporanTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Waktu</th>
+        <th>Ruangan</th>
+        <th>Keterangan</th>
+        <th>Status</th>
+        <th>Foto</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script src="dashboard.js"></script>
 </body>
 </html>
