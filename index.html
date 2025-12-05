@@ -1,94 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aplikasi Lapor — Kirim Laporan</title>
-<link rel="stylesheet" href="assets/css/styles.css">
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#0b74de"/>
-</head>
-<style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f7f7f7;
-    }
-
-    .container {
-      max-width: 480px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    input, textarea, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      background: #0275d8;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-
-    button:hover {
-      background: #025aa5;
-    }
-
-    #previewWrap {
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    #preview {
-      display: none;
-      width: 200px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-
-    #statusMsg {
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lapor Kendala</title>
 </head>
 <body>
+  <h2>Laporan Kendala</h2>
 
-  <div class="container">
-    <h2>Laporan Kendala</h2>
+  <form id="laporForm">
+    <label>Nama:</label><br>
+    <input type="text" id="nama" required><br><br>
 
-    <form id="laporForm">
-      <input type="text" id="nama" placeholder="Nama" required>
-      <textarea id="kendala" placeholder="Kendala" required></textarea>
-      <input type="text" id="lokasi" placeholder="Lokasi (opsional)">
+    <label>Kendala:</label><br>
+    <textarea id="kendala" required></textarea><br><br>
 
-      <label for="fotoFile">Upload Foto (opsional):</label>
-      <input type="file" id="fotoFile" accept="image/*">
+    <label>Foto (opsional):</label><br>
+    <input type="file" id="fotoFile" accept="image/*"><br><br>
 
-      <div id="previewWrap">
-        <img id="preview">
-      </div>
+    <button type="submit">Kirim</button>
+  </form>
 
-      <button type="submit">Kirim Laporan</button>
-    </form>
-
-    <div id="statusMsg"></div>
-  </div>
+  <p id="status"></p>
 
   <script src="index.js"></script>
-
 </body>
 </html>
-
