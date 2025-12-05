@@ -1,0 +1,91 @@
+/* style.css */
+
+/* --- Reset & dasar --- */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+body {
+background-color: #f5f5f5;
+color: #333;
+line-height: 1.5;
+padding: 20px;
+min-height: 100vh;
+}
+
+h2 {
+text-align: center;
+margin-bottom: 20px;
+color: #007bff;
+}
+
+/* --- Form container --- */
+form#laporForm {
+background-color: #fff;
+max-width: 500px;
+margin: 0 auto;
+padding: 20px;
+border-radius: 12px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+/* --- Label & input --- */
+form label {
+font-weight: 600;
+}
+
+form input[type="text"],
+form textarea,
+form input[type="file"] {
+width: 100%;
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 8px;
+font-size: 1rem;
+}
+
+form textarea {
+resize: vertical;
+min-height: 80px;
+}
+
+/* --- Tombol submit --- */
+form button {
+background-color: #007bff;
+color: #fff;
+font-size: 1.1rem;
+padding: 12px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+
+form button:hover {
+background-color: #0056b3;
+}
+
+/* --- Status pesan --- */
+#status {
+text-align: center;
+margin-top: 15px;
+font-weight: 600;
+}
+
+/* --- Responsif --- */
+@media (max-width: 600px) {
+body {
+padding: 10px;
+}
+
+form#laporForm {
+padding: 15px;
+}
+}
