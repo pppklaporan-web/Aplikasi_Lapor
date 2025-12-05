@@ -1,3 +1,5 @@
+const GAS_URL = "[https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec](https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec)";
+
 document.addEventListener('DOMContentLoaded', () => {
 const form = document.getElementById('laporForm');
 const fotoFile = document.getElementById('fotoFile');
@@ -48,7 +50,7 @@ const payload = {
 try {
   const res = await fetch(GAS_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
 
@@ -64,7 +66,7 @@ try {
   statusMsg.textContent = 'Error jaringan: ' + err.message;
 } finally {
   submitBtn.disabled = false;
-  setTimeout(() => statusMsg.textContent = '', 5000);
+  setTimeout(() => statusMsg.textContent = '', 4000);
 }
 ```
 
