@@ -33,12 +33,12 @@ form.addEventListener("submit", async (e) => {
   statusMsg.style.color = "black";
 
   const data = {
-    action: "submit_laporan",
     nama: document.getElementById("nama").value,
-    kendala: document.getElementById("kendala").value,
-    lokasi: document.getElementById("lokasi").value,
+    kendala: document.getElementById("kendala").value, // Keterangan
+    lokasi: document.getElementById("lokasi").value,   // Ruangan
     fotoBase64: fotoBase64
   };
+
 
   try {
     const res = await fetch(GAS_URL, {
@@ -64,3 +64,4 @@ form.addEventListener("submit", async (e) => {
     statusMsg.style.color = "red";
   }
 });
+
