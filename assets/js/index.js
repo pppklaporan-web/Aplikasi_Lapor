@@ -1,4 +1,4 @@
-const GAS_URL = "[https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec](https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec)";
+const GAS_URL = "(https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec)";
 
 document.addEventListener('DOMContentLoaded', () => {
 const form = document.getElementById('laporForm');
@@ -72,3 +72,4 @@ try {
 
 });
 });
+
