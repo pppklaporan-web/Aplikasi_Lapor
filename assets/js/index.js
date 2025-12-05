@@ -1,5 +1,5 @@
 // === GANTI INI DENGAN URL WEBAPP APPS SCRIPT KAMU SETELAH DEPLOY ===
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec";
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -76,4 +76,5 @@ submitBtn.disabled = false;
 setTimeout(() => statusMsg.textContent = '', 4000);
 }
 });
+
 });
