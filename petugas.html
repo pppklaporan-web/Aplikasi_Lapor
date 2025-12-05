@@ -1,43 +1,95 @@
-<!-- petugas.html -->
-
 <!doctype html>
-
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Petugas — Kelola Laporan</title>
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0b74de"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Petugas</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background:#f5f5f5; }
+    h1 { margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; background:white; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align:left; }
+    th { background:#007bff; color:white; }
+    .status-select, .petugas-input { width:100%; padding:5px; }
+    .btn { padding:6px 10px; background:#28a745; color:white; border:none; cursor:pointer; }
+  </style>
 </head>
 <body>
-  <header class="topbar">
-    <h1>Area Petugas</h1>
-    <nav>
-      <a href="index.html">Buat Laporan</a> ·
-      <a href="dashboard.html">Dashboard</a>
-    </nav>
-  </header>
+  <h1>Dashboard Petugas - Update Status Laporan</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Nama Pelapor</th>
+        <th>Unit</th>
+        <th>Deskripsi</th>
+        <th>Foto</th>
+        <th>Status</th>
+        <th>Petugas</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="dataBody"></tbody>
+  </table>
 
-  <main class="container">
-    <section class="card">
-      <h2>Daftar Laporan</h2>
-      <div id="listWrap"></div>
-    </section>
-  </main>
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec";
 
-  <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxYCbIQWF1cMCXEHXg8iEREhbMhqZXiPj58Vtb-neJjDrCAmk4F4jkOYhtGR87TGy7ubw/exec";
-  </script>
+async function loadData() {
+  try {
+    const res = await fetch(GAS_URL + "?action=read");
+    const data = await res.json();
+    const body = document.getElementById('dataBody');
+    body.innerHTML = "";
 
-  <script src="assets/js/petugas.js"></script>
+    data.forEach((row, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.timestamp}</td>
+        <td>${row.nama}</td>
+        <td>${row.unit}</td>
+        <td>${row.deskripsi}</td>
+        <td><a href="${row.foto}" target="_blank">Lihat</a></td>
+        <td>
+          <select class="status-select" id="st_${index}">
+            <option value="Diterima" ${row.status === 'Diterima' ? 'selected':''}>Diterima</option>
+            <option value="Diproses" ${row.status === 'Diproses' ? 'selected':''}>Diproses</option>
+            <option value="Selesai" ${row.status === 'Selesai' ? 'selected':''}>Selesai</option>
+          </select>
+        </td>
+        <td>
+          <input type="text" class="petugas-input" id="pt_${index}" value="${row.petugas || ''}" />
+        </td>
+        <td>
+          <button class="btn" onclick="updateRow(${index})">Update</button>
+        </td>
+      `;
+      body.appendChild(tr);
+    });
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-    }
-  </script>
+  } catch (e) {
+    alert("Gagal memuat data");
+    console.log(e);
+  }
+}
 
+async function updateRow(i) {
+  const status = document.getElementById(`st_${i}`).value;
+  const petugas = document.getElementById(`pt_${i}`).value;
+
+  const body = new FormData();
+  body.append("action", "update");
+  body.append("row", i+2); // +2 karena row 1 header, row 2 data pertama
+  body.append("status", status);
+  body.append("petugas", petugas);
+
+  const res = await fetch(GAS_URL, { method:"POST", body });
+  const out = await res.text();
+  alert(out);
+  loadData();
+}
+
+loadData();
+</script>
 </body>
 </html>
