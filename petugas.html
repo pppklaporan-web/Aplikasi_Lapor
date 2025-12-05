@@ -2,94 +2,227 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Petugas</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard Petugas (Mobile Friendly)</title>
+  <meta name="theme-color" content="#0b74de" />
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background:#f5f5f5; }
-    h1 { margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; background:white; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align:left; }
-    th { background:#007bff; color:white; }
-    .status-select, .petugas-input { width:100%; padding:5px; }
-    .btn { padding:6px 10px; background:#28a745; color:white; border:none; cursor:pointer; }
+    :root{--blue:#007bff;--green:#28a745;--orange:#ff9f1a;--red:#d9534f;--muted:#6c757d}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial,sans-serif;background:#f4f6f8;margin:0;padding:16px}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    header h1{font-size:20px;margin:0}
+    .card{background:#fff;border-radius:10px;padding:12px;box-shadow:0 6px 18px rgba(20,20,30,0.06);margin-bottom:12px}
+
+    /* table style - responsive */
+    table{width:100%;border-collapse:collapse}
+    thead{display:none}
+    tr{display:block;border-bottom:1px solid #eee;padding:12px 0}
+    td{display:flex;justify-content:space-between;padding:6px 0}
+    td > .label{font-weight:600;color:var(--muted);width:40%}
+    td > .value{width:60%;text-align:right}
+
+    .row-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
+    select, input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd}
+    .btn{background:var(--green);color:#fff;padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+    .btn.secondary{background:#007bff}
+
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:600;font-size:13px}
+    .badge.menunggu{background: #fff3cd;color:#856404;border:1px solid #ffeeba}
+    .badge.proses{background:#cfe2ff;color:#084298;border:1px solid:#b6d4fe}
+    .badge.selesai{background:#d1e7dd;color:#0f5132;border:1px solid:#bcd9c6}
+
+    /* wide screens use table layout */
+    @media(min-width:720px){
+      thead{display:table-header-group}
+      tr{display:table-row}
+      td{display:table-cell;padding:10px;border-bottom:1px solid #eee}
+      td > .label{display:none}
+      td > .value{text-align:left}
+      .row-actions{justify-content:flex-start}
+    }
+
+    .photo-link{color:var(--blue);text-decoration:none}
+    .small{font-size:13px;color:#666}
   </style>
 </head>
 <body>
-  <h1>Dashboard Petugas - Update Status Laporan</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Tanggal</th>
-        <th>Nama Pelapor</th>
-        <th>Unit</th>
-        <th>Deskripsi</th>
-        <th>Foto</th>
-        <th>Status</th>
-        <th>Petugas</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="dataBody"></tbody>
-  </table>
+  <div class="wrap">
+    <header>
+      <h1>Dashboard Petugas — Update Status</h1>
+    </header>
+
+    <div class="card">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input id="filterText" type="text" placeholder="Cari ID / Nama / Ruangan" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd">
+        <select id="filterStatus" style="padding:8px;border-radius:8px;border:1px solid #ddd">
+          <option value="">Semua Status</option>
+          <option value="Menunggu">Menunggu</option>
+          <option value="Diproses">Diproses</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+        <button id="refreshBtn" class="btn secondary">Refresh</button>
+      </div>
+    </div>
+
+    <div id="list"></div>
+
+    <div style="text-align:center;margin-top:12px;" class="small">Auto-refresh setiap 15 detik — bisa dimatikan di pengaturan.</div>
+  </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec";
+// ---------- CONFIG ----------
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec"; // Ganti dengan URL /exec kamu
+const AUTO_REFRESH_MS = 15000; // 15 detik
 
-async function loadData() {
-  try {
-    const res = await fetch(GAS_URL + "?action=read");
-    const data = await res.json();
-    const body = document.getElementById('dataBody');
-    body.innerHTML = "";
+// ---------- Utility to tolerate different header names ----------
+function valueFor(row, possibles){
+  for(const k of possibles){ if(row[k] !== undefined) return row[k]; }
+  return "";
+}
 
-    data.forEach((row, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${row.timestamp}</td>
-        <td>${row.nama}</td>
-        <td>${row.unit}</td>
-        <td>${row.deskripsi}</td>
-        <td><a href="${row.foto}" target="_blank">Lihat</a></td>
-        <td>
-          <select class="status-select" id="st_${index}">
-            <option value="Diterima" ${row.status === 'Diterima' ? 'selected':''}>Diterima</option>
-            <option value="Diproses" ${row.status === 'Diproses' ? 'selected':''}>Diproses</option>
-            <option value="Selesai" ${row.status === 'Selesai' ? 'selected':''}>Selesai</option>
-          </select>
-        </td>
-        <td>
-          <input type="text" class="petugas-input" id="pt_${index}" value="${row.petugas || ''}" />
-        </td>
-        <td>
-          <button class="btn" onclick="updateRow(${index})">Update</button>
-        </td>
-      `;
-      body.appendChild(tr);
+// ---------- Fetch data ----------
+async function fetchData(){
+  const url = GAS_URL; // expects GET returning JSON array of rows
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('Gagal fetch: '+res.status);
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+// ---------- Render single item card ----------
+function renderItem(row, index){
+  // try multiple header name variants to be robust
+  const id = valueFor(row, ['ID','ID Laporan','id','Id']) || `#${index+1}`;
+  const waktu = valueFor(row, ['Timestamp','Tanggal/Waktu','Tanggal','waktu','waktu_lapor','Timestamp']) || '-';
+  const nama = valueFor(row, ['Nama','Nama Pelapor','nama']) || '-';
+  const ruangan = valueFor(row, ['Ruangan','Unit','lokasi','Ruangan']) || '-';
+  const keterangan = valueFor(row, ['Keterangan','Deskripsi','kendala','Keterangan']) || '-';
+  const foto = valueFor(row, ['FotoURL','Link Foto','Foto','foto']) || '';
+  const status = valueFor(row, ['Status','status']) || 'Menunggu';
+  const petugas = valueFor(row, ['Petugas','petugas']) || '';
+
+  // choose badge
+  let badgeClass = 'menunggu';
+  if(/selesai/i.test(status)) badgeClass='selesai';
+  else if(/proses|diproses/i.test(status)) badgeClass='proses';
+
+  const fotoHtml = foto ? `<a class=\"photo-link\" href=\"${foto}\" target=\"_blank\">Lihat</a>` : '-';
+
+  return `
+    <div class=\"card\" data-index=\"${index}\">
+      <table>
+        <tbody>
+          <tr>
+            <td><div class=\"label\">ID</div><div class=\"value\">${id}</div></td>
+            <td><div class=\"label\">Waktu</div><div class=\"value\">${waktu}</div></td>
+          </tr>
+          <tr>
+            <td><div class=\"label\">Nama</div><div class=\"value\">${nama}</div></td>
+            <td><div class=\"label\">Ruangan</div><div class=\"value\">${ruangan}</div></td>
+          </tr>
+          <tr>
+            <td colspan=\"2\"><div class=\"label\">Keterangan</div><div class=\"value\">${keterangan}</div></td>
+          </tr>
+          <tr>
+            <td><div class=\"label\">Foto</div><div class=\"value\">${fotoHtml}</div></td>
+            <td><div class=\"label\">Status</div><div class=\"value\"><span class=\"badge ${badgeClass}\">${status}</span></div></td>
+          </tr>
+          <tr>
+            <td colspan=\"2\">
+              <div style=\"display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between\">
+                <div style=\"flex:1;display:flex;gap:8px\">
+                  <select id=\"status_${index}\"> 
+                    <option value=\"Menunggu\" ${status==='Menunggu'?'selected':''}>Menunggu</option>
+                    <option value=\"Diproses\" ${status==='Diproses'?'selected':''}>Diproses</option>
+                    <option value=\"Selesai\" ${status==='Selesai'?'selected':''}>Selesai</option>
+                  </select>
+                  <input id=\"petugas_${index}\" type=\"text\" placeholder=\"Nama petugas\" value=\"${petugas}\" style=\"min-width:140px\"> 
+                </div>
+                <div class=\"row-actions\"> 
+                  <button class=\"btn\" onclick=\"updateRow(${index})\">Update</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ---------- Global render ----------
+let currentData = [];
+async function renderList(){
+  try{
+    const all = await fetchData();
+    currentData = all;
+
+    // apply filters
+    const q = (document.getElementById('filterText').value||'').toLowerCase().trim();
+    const statusFilter = document.getElementById('filterStatus').value;
+
+    const filtered = all.filter(row => {
+      const id = (valueFor(row,['ID','ID Laporan','id'])+'').toLowerCase();
+      const nama = (valueFor(row,['Nama','Nama Pelapor','nama'])+'').toLowerCase();
+      const ruangan = (valueFor(row,['Ruangan','Unit','lokasi'])+'').toLowerCase();
+      const status = (valueFor(row,['Status','status'])+'').toLowerCase();
+
+      const matchesQ = !q || id.includes(q) || nama.includes(q) || ruangan.includes(q);
+      const matchesStatus = !statusFilter || status.toLowerCase()===statusFilter.toLowerCase();
+      return matchesQ && matchesStatus;
     });
 
-  } catch (e) {
-    alert("Gagal memuat data");
-    console.log(e);
+    const container = document.getElementById('list');
+    container.innerHTML = filtered.map((r,i)=>renderItem(r, all.indexOf(r))).join('');
+
+  }catch(err){
+    document.getElementById('list').innerHTML = '<div class="card">Gagal memuat data: '+err.message+'</div>';
+    console.error(err);
   }
 }
 
-async function updateRow(i) {
-  const status = document.getElementById(`st_${i}`).value;
-  const petugas = document.getElementById(`pt_${i}`).value;
+// ---------- Update row (POST) ----------
+async function updateRow(index){
+  try{
+    const status = document.getElementById(`status_${index}`).value;
+    const petugas = document.getElementById(`petugas_${index}`).value;
 
-  const body = new FormData();
-  body.append("action", "update");
-  body.append("row", i+2); // +2 karena row 1 header, row 2 data pertama
-  body.append("status", status);
-  body.append("petugas", petugas);
+    // assume sheet row = index + 2 (header row + 1-based)
+    const sheetRow = index + 2;
 
-  const res = await fetch(GAS_URL, { method:"POST", body });
-  const out = await res.text();
-  alert(out);
-  loadData();
+    const payload = { action: 'update', row: sheetRow, status: status, petugas: petugas };
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json().catch(()=>null);
+
+    if(result && result.status==='success'){
+      alert('Update berhasil');
+      renderList();
+    } else {
+      alert('Update gagal: '+(result? result.message : 'Response tidak valid'));
+    }
+
+  }catch(err){
+    alert('Error: '+err.message);
+  }
 }
 
-loadData();
+// ---------- events ----------
+document.getElementById('filterText').addEventListener('input', ()=>renderList());
+document.getElementById('filterStatus').addEventListener('change', ()=>renderList());
+document.getElementById('refreshBtn').addEventListener('click', ()=>renderList());
+
+// auto refresh
+let autoTimer = setInterval(renderList, AUTO_REFRESH_MS);
+
+// initial
+renderList();
 </script>
 </body>
 </html>
