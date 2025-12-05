@@ -1,66 +1,50 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec"; // Ganti dengan URL WebApp kamu
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec";
 
-const form = document.getElementById("laporForm");
-const fotoFile = document.getElementById("fotoFile");
-const preview = document.getElementById("preview");
-const statusMsg = document.getElementById("statusMsg");
-
-let fotoBase64 = "";
-
-// === Preview Foto ===
-fotoFile.addEventListener("change", () => {
-  const file = fotoFile.files[0];
-  if (!file) {
-    preview.style.display = "none";
-    fotoBase64 = "";
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    fotoBase64 = e.target.result;
-    preview.src = fotoBase64;
-    preview.style.display = "block";
-  };
-  reader.readAsDataURL(file);
-});
-
-// === Kirim Laporan ===
-form.addEventListener("submit", async (e) => {
+document.getElementById('laporForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  statusMsg.innerText = "Mengirim laporan...";
-  statusMsg.style.color = "black";
+  const nama = document.getElementById('nama').value;
+  const kendala = document.getElementById('kendala').value;
+  const fotoFile = document.getElementById('fotoFile').files[0];
+
+  let base64Image = null;
+
+  if (fotoFile) {
+    base64Image = await toBase64(fotoFile);
+  }
 
   const data = {
-    action: "submit_laporan",
-    nama: document.getElementById("nama").value,
-    kendala: document.getElementById("kendala").value,
-    lokasi: document.getElementById("lokasi").value,
-    fotoBase64: fotoBase64
+    nama,
+    kendala,
+    image: base64Image
   };
 
-  try {
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify(data)
+  document.getElementById('status').innerText = "Mengirim...";
+
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify(data),
+    muteHttpExceptions: true
+  })
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === "success") {
+        document.getElementById('status').innerText = "Laporan berhasil dikirim!";
+        document.getElementById('laporForm').reset();
+      } else {
+        document.getElementById('status').innerText = "Gagal: " + res.message;
+      }
+    })
+    .catch(err => {
+      document.getElementById('status').innerText = "Error: " + err;
     });
-
-    const result = await res.json();
-
-    if (result.status === "success") {
-      statusMsg.innerText = "Laporan berhasil dikirim ✔️";
-      statusMsg.style.color = "green";
-      form.reset();
-      preview.style.display = "none";
-      fotoBase64 = "";
-    } else {
-      statusMsg.innerText = "Gagal: " + result.message;
-      statusMsg.style.color = "red";
-    }
-
-  } catch (error) {
-    statusMsg.innerText = "Error jaringan: " + error;
-    statusMsg.style.color = "red";
-  }
 });
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = err => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
