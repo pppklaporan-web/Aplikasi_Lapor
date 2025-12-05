@@ -1,80 +1,77 @@
-// === GANTI INI DENGAN URL WEBAPP APPS SCRIPT KAMU SETELAH DEPLOY ===
+/* === GANTI DENGAN URL WEBAPP KAMU === */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec";
 
+document.addEventListener("DOMContentLoaded", () => {
+const form = document.getElementById("laporForm");
+const fotoFile = document.getElementById("fotoFile");
+const previewWrap = document.getElementById("previewWrap");
+const preview = document.getElementById("preview");
+const clearPhoto = document.getElementById("clearPhoto");
+const statusMsg = document.getElementById("statusMsg");
+const submitBtn = document.getElementById("submitBtn");
 
-document.addEventListener('DOMContentLoaded', () => {
-const form = document.getElementById('laporForm');
-const fotoFile = document.getElementById('fotoFile');
-const previewWrap = document.getElementById('previewWrap');
-const preview = document.getElementById('preview');
-const clearPhoto = document.getElementById('clearPhoto');
-const statusMsg = document.getElementById('statusMsg');
-const submitBtn = document.getElementById('submitBtn');
+let fotoBase64 = "";
 
-
-let fotoBase64 = '';
-
-
-fotoFile.addEventListener('change', (e) => {
-const file = e.target.files[0];
+fotoFile.addEventListener("change", () => {
+const file = fotoFile.files[0];
 if (!file) return;
 
-
+```
 const reader = new FileReader();
 reader.onload = () => {
-preview.src = reader.result;
-previewWrap.classList.remove('hidden');
-fotoBase64 = reader.result; // data:image/...;base64,...
+  fotoBase64 = reader.result;
+  preview.src = reader.result;
+  previewWrap.classList.remove("hidden");
 };
 reader.readAsDataURL(file);
+```
+
 });
 
-
-clearPhoto.addEventListener('click', () => {
-fotoFile.value = '';
-preview.src = '';
-previewWrap.classList.add('hidden');
-fotoBase64 = '';
+clearPhoto.addEventListener("click", () => {
+fotoBase64 = "";
+fotoFile.value = "";
+preview.src = "";
+previewWrap.classList.add("hidden");
 });
 
-
-form.addEventListener('submit', async (ev) => {
+form.addEventListener("submit", async (ev) => {
 ev.preventDefault();
+
+```
 submitBtn.disabled = true;
-statusMsg.textContent = 'Mengirim...';
+statusMsg.textContent = "Mengirim...";
 
-
-const payload = {
-nama: document.getElementById('nama').value.trim(),
-ruangan: document.getElementById('ruangan').value.trim(),
-keterangan: document.getElementById('keterangan').value.trim(),
-foto: fotoBase64 || ''
-};
-
+// FormData → NO CORS PROBLEM
+const fd = new FormData();
+fd.append("nama", document.getElementById("nama").value.trim());
+fd.append("ruangan", document.getElementById("ruangan").value.trim());
+fd.append("keterangan", document.getElementById("keterangan").value.trim());
+fd.append("foto", fotoBase64);
 
 try {
-const res = await fetch(GAS_URL, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(payload)
-});
+  const res = await fetch(GAS_URL, {
+    method: "POST",
+    body: fd
+  });
 
+  const txt = await res.text();
+  console.log("GAS response:", txt);
 
-if (!res.ok) throw new Error('HTTP ' + res.status);
-const j = await res.json();
-if (j.status === 'success') {
-statusMsg.textContent = 'Laporan terkirim. Terima kasih!';
-form.reset();
-clearPhoto.click();
-} else {
-statusMsg.textContent = 'Gagal: ' + (j.message || 'unknown');
-}
+  if (txt.includes("OK")) {
+    statusMsg.textContent = "Laporan berhasil terkirim!";
+    form.reset();
+    clearPhoto.click();
+  } else {
+    statusMsg.textContent = "Gagal: " + txt;
+  }
 } catch (err) {
-statusMsg.textContent = 'Error jaringan: ' + err.message;
-} finally {
-submitBtn.disabled = false;
-setTimeout(() => statusMsg.textContent = '', 4000);
+  statusMsg.textContent = "Error jaringan: " + err.message;
 }
-});
 
+submitBtn.disabled = false;
+setTimeout(() => (statusMsg.textContent = ""), 3500);
+```
+
+});
 });
