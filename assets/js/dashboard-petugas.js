@@ -77,12 +77,18 @@ async function updatePetugas(id, petugas) {
       })
     });
     const result = await res.json();
-    if (result.status !== "success") alert("Update gagal: " + result.message);
-    fetchLaporan(); // refresh tabel agar data terbaru terlihat
+    if (result.status !== "success") {
+      alert("Update gagal: " + result.message);
+    } else {
+      // Langsung update value input agar terlihat perubahan
+      const input = document.querySelector(`input[data-id="${id}"]`);
+      if (input) input.value = petugas;
+    }
   } catch (err) {
     alert("Error jaringan: " + err);
   }
 }
+
 
 // === Refresh otomatis setiap 5 detik ===
 fetchLaporan();
