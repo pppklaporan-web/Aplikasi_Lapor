@@ -1,19 +1,20 @@
-const CACHE_NAME = "dashboard-petugas-v1";
-const urlsToCache = [
-  "/dashboard-petugas.html",
-  "/assets/css/styles-dashboard.css",
-  "/assets/js/dashboard-petugas.js",
-  "/manifest.json"
+const CACHE_NAME = "petugas-cache-v1";
+const FILES_TO_CACHE = [
+  "dashboard-petugas.html",
+  "assets/css/styles.css",
+  "assets/js/dashboard-petugas.js",
+  "icons/icon-192.png",
+  "icons/icon-512.png"
 ];
 
-self.addEventListener("install", e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
   );
 });
 
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(response => response || fetch(e.request))
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached || fetch(event.request))
   );
 });
