@@ -4,43 +4,130 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard Petugas</title>
+
+<!-- Gunakan CSS utama -->
 <link rel="stylesheet" href="assets/css/styles.css">
+
+<!-- Tambahan styling khusus tabel -->
 <style>
-  body { font-family: Arial, sans-serif; margin:0; background:#f4f4f4; }
-  header { background:#0b74de; color:white; padding:1rem; text-align:center; }
-  main { padding:1rem; max-width:1200px; margin:auto; }
-  table { width:100%; border-collapse: collapse; background:white; }
-  th, td { padding:0.5rem; border:1px solid #ccc; text-align:left; }
-  th { background:#0b74de; color:white; }
-  img { max-width:80px; max-height:80px; display:block; }
-  select, input { width:100%; padding:0.25rem; box-sizing:border-box; }
+/* ===== RESET ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef2f7;
+}
+
+/* ===== HEADER ===== */
+.topbar {
+  background: linear-gradient(90deg, #0b74de, #20a65e, #ff8c00);
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* ===== LAYOUT ===== */
+main {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+th {
+  padding: 12px;
+  background: #0b74de;
+  color: white;
+  text-align: left;
+  font-size: 14px;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+/* ===== STATUS COLORS ===== */
+.status-menunggu {
+  background: #ffd9d9;
+  color: #b50000;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.status-proses {
+  background: #fff4cc;
+  color: #ff8c00;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.status-selesai {
+  background: #d9ffe5;
+  color: #008f3e;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+/* ===== IMAGE ===== */
+table img {
+  max-width: 80px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ===== INPUTS ===== */
+select, input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
 </style>
+
 </head>
 <body>
-<header>
-<h1>Dashboard Petugas</h1>
+
+<header class="topbar">
+  <h1>Dashboard Petugas</h1>
 </header>
 
 <main>
-<table id="laporanTable">
-<thead>
-<tr>
-  <th>ID</th>
-  <th>Waktu</th>
-  <th>Nama</th>
-  <th>Ruangan</th>
-  <th>Keterangan</th>
-  <th>Foto</th>
-  <th>Status</th>
-  <th>Petugas</th>
-</tr>
-</thead>
-<tbody>
-<tr><td colspan="8" style="text-align:center">Memuat data...</td></tr>
-</tbody>
-</table>
+  <table id="laporanTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Waktu</th>
+        <th>Nama</th>
+        <th>Ruangan</th>
+        <th>Keterangan</th>
+        <th>Foto</th>
+        <th>Status</th>
+        <th>Petugas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="8" style="text-align:center; padding:20px">Memuat data...</td></tr>
+    </tbody>
+  </table>
 </main>
 
 <script src="assets/js/dashboard-petugas.js" defer></script>
+
 </body>
 </html>
