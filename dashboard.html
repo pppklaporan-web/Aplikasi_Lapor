@@ -5,23 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard Laporan</title>
 <link rel="stylesheet" href="assets/css/styles.css">
-<meta name="theme-color" content="#0b74de"/>
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
-  header { background:#0b74de; color:white; padding:1rem; text-align:center; }
-  main { padding:1rem; max-width:1000px; margin:auto; }
-  table { width:100%; border-collapse: collapse; background:white; }
-  th, td { padding:0.5rem; border:1px solid #ccc; text-align:left; }
-  th { background:#0b74de; color:white; }
-  img { max-width:100px; max-height:80px; display:block; }
-  .status { font-weight:bold; }
+  body { font-family: Arial, sans-serif; background:#f4f4f4; color:#333; margin:0; }
+  header { background:#0b74de; color:white; padding:1rem; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  main { max-width:1200px; margin:auto; padding:1rem; }
+  .card { background:white; padding:1rem; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); margin-bottom:1rem; overflow-x:auto; }
+  table { width:100%; border-collapse: collapse; min-width:700px; }
+  th, td { padding:0.5rem 0.75rem; border:1px solid #ccc; text-align:left; }
+  th { background:#0b74de; color:white; position: sticky; top:0; z-index:1; }
+  tr:nth-child(even) { background:#f9f9f9; }
+  img { max-width:80px; max-height:80px; display:block; border-radius:4px; }
+  @media(max-width:600px){
+    th, td { font-size:0.8rem; padding:0.25rem; }
+    img { max-width:50px; max-height:50px; }
+  }
 </style>
 </head>
 <body>
+
 <header>
 <h1>Dashboard Laporan</h1>
+<p>Progres laporan real-time</p>
 </header>
+
 <main>
+<div class="card">
 <table id="laporanTable">
 <thead>
 <tr>
@@ -39,45 +47,9 @@
 <tr><td colspan="8" style="text-align:center">Memuat data...</td></tr>
 </tbody>
 </table>
+</div>
 </main>
 
-<script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec"; // ganti sesuai WebApp
-
-const tableBody = document.querySelector("#laporanTable tbody");
-
-// Fungsi untuk fetch data
-async function fetchLaporan() {
-  try {
-    const res = await fetch(GAS_URL);
-    const data = await res.json();
-
-    if (!Array.isArray(data) || data.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center">Tidak ada laporan</td></tr>';
-      return;
-    }
-
-    tableBody.innerHTML = data.map(row => `
-      <tr>
-        <td>${row.id}</td>
-        <td>${new Date(row.waktu).toLocaleString()}</td>
-        <td>${row.nama}</td>
-        <td>${row.ruangan}</td>
-        <td>${row.keterangan}</td>
-        <td>${row.foto ? `<a href="${row.foto}" target="_blank"><img src="${row.foto}" alt="Foto"/></a>` : 'Tidak ada'}</td>
-        <td class="status">${row.status}</td>
-        <td>${row.petugas}</td>
-      </tr>
-    `).join('');
-
-  } catch (err) {
-    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
-  }
-}
-
-// Refresh setiap 5 detik
-fetchLaporan();
-setInterval(fetchLaporan, 5000);
-</script>
+<script src="assets/js/dashboard-public.js" defer></script>
 </body>
 </html>
