@@ -1,79 +1,74 @@
-/* === GANTI DENGAN URL WEBAPP KAMU === */
-const GAS_URL = "[https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec](https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec)";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec"; // Ganti sesuai deployment WebApp kamu
 
-document.addEventListener("DOMContentLoaded", () => {
 const form = document.getElementById("laporForm");
 const fotoFile = document.getElementById("fotoFile");
 const previewWrap = document.getElementById("previewWrap");
 const preview = document.getElementById("preview");
-const clearPhoto = document.getElementById("clearPhoto");
 const statusMsg = document.getElementById("statusMsg");
-const submitBtn = document.getElementById("submitBtn");
 
 let fotoBase64 = "";
 
-// === PREVIEW FOTO ===
+// === Preview Foto ===
 fotoFile.addEventListener("change", () => {
-const file = fotoFile.files[0];
-if (!file) return;
-
-```
-const reader = new FileReader();
-reader.onload = () => {
-  fotoBase64 = reader.result;
-  preview.src = reader.result;
-  previewWrap.classList.remove("hidden");
-};
-reader.readAsDataURL(file);
-```
-
-});
-
-// === HAPUS FOTO ===
-clearPhoto.addEventListener("click", () => {
-fotoBase64 = "";
-fotoFile.value = "";
-preview.src = "";
-previewWrap.classList.add("hidden");
-});
-
-// === SUBMIT FORM ===
-form.addEventListener("submit", async (ev) => {
-ev.preventDefault();
-
-```
-submitBtn.disabled = true;
-statusMsg.textContent = "Mengirim...";
-
-const fd = new FormData();
-fd.append("nama", document.getElementById("nama").value.trim());
-fd.append("ruangan", document.getElementById("ruangan").value.trim());
-fd.append("keterangan", document.getElementById("keterangan").value.trim());
-fd.append("foto", fotoBase64);
-
-try {
-  const res = await fetch(GAS_URL, {
-    method: "POST",
-    body: fd
-  });
-
-  const txt = await res.text();
-  console.log("GAS response:", txt);
-
-  if (txt.includes("OK")) {
-    statusMsg.textContent = "Laporan berhasil terkirim!";
-    form.reset();
-    clearPhoto.click();
-  } else {
-    statusMsg.textContent = "Gagal: " + txt;
+  const file = fotoFile.files[0];
+  if (!file) {
+    previewWrap.classList.add("hidden");
+    fotoBase64 = "";
+    return;
   }
-} catch (err) {
-  statusMsg.textContent = "Error jaringan: " + err.message;
-}
 
-submitBtn.disabled = false;
-setTimeout(() => (statusMsg.textContent = ""), 3500);
-```
-
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    fotoBase64 = e.target.result;
+    preview.src = fotoBase64;
+    previewWrap.classList.remove("hidden");
+  };
+  reader.readAsDataURL(file);
 });
+
+// Hapus foto
+document.getElementById("clearPhoto").addEventListener("click", () => {
+  fotoFile.value = "";
+  fotoBase64 = "";
+  previewWrap.classList.add("hidden");
+});
+
+// === Kirim Laporan ===
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  statusMsg.innerText = "Mengirim laporan...";
+  statusMsg.style.color = "black";
+
+  const data = {
+    action: "submit_laporan",
+    nama: document.getElementById("nama").value,
+    kendala: document.getElementById("keterangan").value,
+    lokasi: document.getElementById("ruangan").value,
+    fotoBase64: fotoBase64
+  };
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (result.status === "success") {
+      statusMsg.innerText = "Laporan berhasil dikirim ✔️";
+      statusMsg.style.color = "green";
+      form.reset();
+      previewWrap.classList.add("hidden");
+      fotoBase64 = "";
+    } else {
+      statusMsg.innerText = "Gagal: " + result.message;
+      statusMsg.style.color = "red";
+    }
+
+  } catch (error) {
+    statusMsg.innerText = "Error jaringan: " + error;
+    statusMsg.style.color = "red";
+  }
 });
