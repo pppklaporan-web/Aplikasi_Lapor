@@ -1,38 +1,40 @@
 /* =============================
-   GLOBAL
+   GLOBAL STYLE BPS THEME
 ============================= */
 body {
   margin: 0;
   padding: 0;
   font-family: "Inter", Arial, sans-serif;
-  background: #f1f3f4;
-  color: #333;
+  background: #f0f2f4;
+  color: #222;
 }
 
 /* =============================
-   HEADER
+   HEADER GRADIENT BPS COLORS
 ============================= */
 header {
-  background: linear-gradient(90deg, #0b74de, #005bb9);
+  background: linear-gradient(90deg, #005bac, #00a859, #f36f21);
   padding: 16px;
   text-align: center;
   color: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
 }
 
 header h1 {
   margin: 0;
-  font-size: 1.6rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
 }
 
 header p {
-  margin: 4px 0 0;
-  opacity: 0.85;
+  margin: 6px 0 0;
+  opacity: .9;
+  font-size: 0.9rem;
 }
 
 /* =============================
-   CONTAINER / CARD
+   MAIN / CARD
 ============================= */
 .container {
   max-width: 1200px;
@@ -44,13 +46,13 @@ header p {
   background: white;
   border-radius: 12px;
   padding: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 6px solid #005bac;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
   margin-bottom: 20px;
-  overflow: hidden;
 }
 
 /* =============================
-   TABLE
+   TABLE STYLING
 ============================= */
 .table-wrapper {
   overflow-x: auto;
@@ -59,37 +61,38 @@ header p {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px;
+  min-width: 850px;
   font-size: 0.95rem;
 }
 
 th {
-  background: #0b74de;
+  background: #005bac;
   color: white;
   padding: 10px;
   text-align: left;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 9;
+  font-weight: 600;
+}
+
+/* Alternating row colors */
+tr:nth-child(even) {
+  background: #f7f7f7;
 }
 
 td {
   padding: 8px;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-tr:nth-child(even) {
-  background: #f7f9fa;
+  border-bottom: 1px solid #ddd;
 }
 
 tr:hover {
-  background: #eef5ff;
+  background: rgba(0,91,172,0.08);
 }
 
 /* =============================
-   STATUS COLORS
+   STATUS COLORS (BPS COLOR)
 ============================= */
-
 .status-menunggu {
   font-weight: 600;
   color: #555;
@@ -97,35 +100,34 @@ tr:hover {
 
 .status-proses {
   font-weight: 700;
-  color: #d60000; /* merah */
+  color: #f36f21;   /* Orange BPS */
 }
 
 .status-selesai {
   font-weight: 700;
-  color: #008e19; /* hijau */
+  color: #00a859;   /* Green BPS */
 }
 
 /* =============================
-   BUTTONS
+   BUTTONS + INPUT
 ============================= */
 button, select, input {
   font-size: 1rem;
-  padding: 6px 10px;
+  padding: 7px 12px;
   border-radius: 8px;
-  border: 1px solid #b8b8b8;
+  border: 1px solid #c7c7c7;
 }
 
 button {
   cursor: pointer;
-  background: #0b74de;
-  border: none;
+  background: #005bac;
   color: white;
-  font-weight: 600;
   transition: 0.2s;
+  font-weight: 600;
 }
 
 button:hover {
-  background: #005bb9;
+  background: #003f7c;
 }
 
 button.small {
@@ -134,24 +136,32 @@ button.small {
 }
 
 /* =============================
-   IMAGE
+   FOTO / IMAGE
 ============================= */
-img.preview-img {
+img.preview-img,
+img {
   max-width: 80px;
   max-height: 80px;
   border-radius: 6px;
   display: block;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
-/* Mobile adjustments */
-@media (max-width: 600px) {
+/* =============================
+   MOBILE RESPONSIVE
+============================= */
+@media (max-width: 650px) {
   th, td {
     padding: 6px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
   }
 
-  img.preview-img {
-    max-width: 50px;
-    max-height: 50px;
+  img {
+    max-width: 55px;
+    max-height: 55px;
+  }
+
+  header h1 {
+    font-size: 1.2rem;
   }
 }
