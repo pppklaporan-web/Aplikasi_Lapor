@@ -104,3 +104,96 @@ img{ max-width:56px; max-height:56px; }
 main{ padding:8px; }
 table{ min-width:520px; }
 }
+
+/* ===== Fix layout: table columns, inputs, textarea, button alignment ===== */
+
+/* Gunakan fixed layout agar kolom konsisten */
+#laporanTable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Trim teks panjang & pastikan cell tidak melebarkan row */
+#laporanTable th,
+#laporanTable td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* untuk sel ID, Nama, Ruangan, dsb */
+  vertical-align: middle;
+  padding: 10px;
+}
+
+/* Izinkan kolom keterangan dan catatan melakukan wrap multiline */
+#laporanTable td:nth-child(5), /* Keterangan */
+#laporanTable td:nth-child(9)  /* Catatan (pastikan index sesuai) */ {
+  white-space: normal;
+}
+
+/* Set lebar kolom yang wajar (ubah % sesuai kebutuhan) */
+#laporanTable th:nth-child(1), #laporanTable td:nth-child(1) { width: 18%; } /* ID */
+#laporanTable th:nth-child(2), #laporanTable td:nth-child(2) { width: 10%; } /* Waktu */
+#laporanTable th:nth-child(3), #laporanTable td:nth-child(3) { width: 8%; }  /* Nama */
+#laporanTable th:nth-child(4), #laporanTable td:nth-child(4) { width: 8%; }  /* Ruangan */
+#laporanTable th:nth-child(5), #laporanTable td:nth-child(5) { width: 18%; } /* Keterangan */
+#laporanTable th:nth-child(6), #laporanTable td:nth-child(6) { width: 6%; }  /* Foto */
+#laporanTable th:nth-child(7), #laporanTable td:nth-child(7) { width: 8%; }  /* Status */
+#laporanTable th:nth-child(8), #laporanTable td:nth-child(8) { width: 8%; }  /* Petugas */
+#laporanTable th:nth-child(9), #laporanTable td:nth-child(9) { width: 12%; } /* Catatan */
+#laporanTable th:nth-child(10), #laporanTable td:nth-child(10) { width: 6%; } /* Edit */
+
+/* Styling khusus untuk input/select agar tidak overflow */
+#laporanTable td input[type="text"],
+#laporanTable td select {
+  width: 100%;
+  max-width: 160px; /* batasi lebar input petugas */
+  box-sizing: border-box;
+  padding: 6px;
+  font-size: 0.95rem;
+}
+
+/* Textarea catatan lebih rapi: tetap terbatas tinggi, bisa scroll */
+#laporanTable td textarea {
+  width: 100%;
+  min-height: 60px;    /* tinggi minimum */
+  max-height: 120px;   /* batasi supaya tidak memecah baris */
+  height: 80px;
+  resize: vertical;    /* biarkan user resize ke vertical */
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 8px;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+/* Tombol Edit: centre dan ukuran konsisten */
+#laporanTable td .edit-btn {
+  display: inline-block;
+  padding: 6px 10px;
+  background: #20a65e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  margin: 0 auto;
+  min-width: 64px;
+  text-align: center;
+}
+
+/* Pastikan foto tidak mendorong tinggi baris */
+#laporanTable td img {
+  max-width: 64px;
+  max-height: 48px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Perbaikan mobile: buat tabel scroll horizontal */
+@media (max-width: 800px) {
+  #laporanTable { display: block; overflow-x: auto; white-space: nowrap; }
+  #laporanTable th, #laporanTable td { white-space: normal; }
+  #laporanTable td input[type="text"], #laporanTable td select { max-width: 220px; }
+  #laporanTable td textarea { min-height: 60px; height: 90px; }
+}
+
