@@ -1,91 +1,98 @@
-/* style.css */
-
-/* --- Reset & dasar --- */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-
-body {
-background-color: #f5f5f5;
-color: #333;
-line-height: 1.5;
-padding: 20px;
-min-height: 100vh;
+/* ===========================
+   GLOBAL COLOR THEME (BPS)
+=========================== */
+:root{
+  --bps-blue:#0B74DE;
+  --bps-green:#00A859;
+  --bps-orange:#F36F21;
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --text:#222;
+  --radius:10px;
+  --shadow:0 4px 14px rgba(0,0,0,0.08);
 }
 
-h2 {
-text-align: center;
-margin-bottom: 20px;
-color: #007bff;
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family:"Segoe UI", Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-/* --- Form container --- */
-form#laporForm {
-background-color: #fff;
-max-width: 500px;
-margin: 0 auto;
-padding: 20px;
-border-radius: 12px;
-box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-display: flex;
-flex-direction: column;
-gap: 15px;
+/* ===========================
+   TOPBAR
+=========================== */
+.topbar{
+  background:linear-gradient(90deg,var(--bps-blue),var(--bps-green),var(--bps-orange));
+  color:#fff;
+  padding:14px 18px;
+  text-align:center;
+  font-weight:700;
+  box-shadow:var(--shadow);
 }
 
-/* --- Label & input --- */
-form label {
-font-weight: 600;
+.topbar nav a{
+  color:white;
+  font-weight:600;
+  text-decoration:none;
 }
 
-form input[type="text"],
-form textarea,
-form input[type="file"] {
-width: 100%;
-padding: 10px;
-border: 1px solid #ccc;
-border-radius: 8px;
-font-size: 1rem;
+/* ===========================
+   FORM STYLE (INDEX.HTML)
+=========================== */
+.container{
+  max-width:600px;
+  margin:22px auto;
+  padding:16px;
 }
 
-form textarea {
-resize: vertical;
-min-height: 80px;
+.card{
+  background:white;
+  padding:18px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
 }
 
-/* --- Tombol submit --- */
-form button {
-background-color: #007bff;
-color: #fff;
-font-size: 1.1rem;
-padding: 12px;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-transition: background-color 0.2s ease;
+label{
+  display:block;
+  margin-bottom:14px;
+  font-weight:600;
 }
 
-form button:hover {
-background-color: #0056b3;
+input, textarea, select{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:white;
+  font-size:1rem;
+  margin-top:6px;
 }
 
-/* --- Status pesan --- */
-#status {
-text-align: center;
-margin-top: 15px;
-font-weight: 600;
+button{
+  padding:12px 16px;
+  border:0;
+  border-radius:8px;
+  background:var(--bps-blue);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  width:100%;
+  margin-top:12px;
 }
 
-/* --- Responsif --- */
-@media (max-width: 600px) {
-body {
-padding: 10px;
+button.small{
+  padding:6px 10px;
+  background:#d9534f;
 }
 
-form#laporForm {
-padding: 15px;
+.preview img{
+  max-width:160px;
+  border-radius:8px;
+  margin-bottom:8px;
 }
+
+.preview.hidden{
+  display:none;
 }
