@@ -1,0 +1,157 @@
+/* =============================
+   GLOBAL
+============================= */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", Arial, sans-serif;
+  background: #f1f3f4;
+  color: #333;
+}
+
+/* =============================
+   HEADER
+============================= */
+header {
+  background: linear-gradient(90deg, #0b74de, #005bb9);
+  padding: 16px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+header p {
+  margin: 4px 0 0;
+  opacity: 0.85;
+}
+
+/* =============================
+   CONTAINER / CARD
+============================= */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+/* =============================
+   TABLE
+============================= */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+  font-size: 0.95rem;
+}
+
+th {
+  background: #0b74de;
+  color: white;
+  padding: 10px;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+td {
+  padding: 8px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+tr:nth-child(even) {
+  background: #f7f9fa;
+}
+
+tr:hover {
+  background: #eef5ff;
+}
+
+/* =============================
+   STATUS COLORS
+============================= */
+
+.status-menunggu {
+  font-weight: 600;
+  color: #555;
+}
+
+.status-proses {
+  font-weight: 700;
+  color: #d60000; /* merah */
+}
+
+.status-selesai {
+  font-weight: 700;
+  color: #008e19; /* hijau */
+}
+
+/* =============================
+   BUTTONS
+============================= */
+button, select, input {
+  font-size: 1rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #b8b8b8;
+}
+
+button {
+  cursor: pointer;
+  background: #0b74de;
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #005bb9;
+}
+
+button.small {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+/* =============================
+   IMAGE
+============================= */
+img.preview-img {
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 6px;
+  display: block;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  th, td {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+
+  img.preview-img {
+    max-width: 50px;
+    max-height: 50px;
+  }
+}
