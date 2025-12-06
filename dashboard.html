@@ -1,65 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Laporan</title>
-
-  <style>
-    body {
-      font-family: Arial;
-      background: #f4f4f4;
-      padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background: #0275d8;
-      color: white;
-    }
-    .status-menunggu { color: orange; font-weight: bold; }
-    .status-proses { color: blue; font-weight: bold; }
-    .status-selesai { color: green; font-weight: bold; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Laporan</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+<meta name="theme-color" content="#0b74de"/>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
+  header { background:#0b74de; color:white; padding:1rem; text-align:center; }
+  main { padding:1rem; max-width:1000px; margin:auto; }
+  table { width:100%; border-collapse: collapse; background:white; }
+  th, td { padding:0.5rem; border:1px solid #ccc; text-align:left; }
+  th { background:#0b74de; color:white; }
+  img { max-width:100px; max-height:80px; display:block; }
+  .status { font-weight:bold; }
+</style>
 </head>
-
 <body>
+<header>
+<h1>Dashboard Laporan</h1>
+</header>
+<main>
+<table id="laporanTable">
+<thead>
+<tr>
+  <th>ID</th>
+  <th>Waktu</th>
+  <th>Nama</th>
+  <th>Ruangan</th>
+  <th>Keterangan</th>
+  <th>Foto</th>
+  <th>Status</th>
+  <th>Petugas</th>
+</tr>
+</thead>
+<tbody>
+<tr><td colspan="8" style="text-align:center">Memuat data...</td></tr>
+</tbody>
+</table>
+</main>
 
-<div class="container">
-  <h2>Dashboard Laporan</h2>
-  <p>Lihat status laporan Anda.</p>
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec"; // ganti sesuai WebApp
 
-  <table id="laporanTable">
-    <thead>
+const tableBody = document.querySelector("#laporanTable tbody");
+
+// Fungsi untuk fetch data
+async function fetchLaporan() {
+  try {
+    const res = await fetch(GAS_URL);
+    const data = await res.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center">Tidak ada laporan</td></tr>';
+      return;
+    }
+
+    tableBody.innerHTML = data.map(row => `
       <tr>
-        <th>ID</th>
-        <th>Waktu</th>
-        <th>Ruangan</th>
-        <th>Keterangan</th>
-        <th>Status</th>
-        <th>Foto</th>
+        <td>${row.id}</td>
+        <td>${new Date(row.waktu).toLocaleString()}</td>
+        <td>${row.nama}</td>
+        <td>${row.ruangan}</td>
+        <td>${row.keterangan}</td>
+        <td>${row.foto ? `<a href="${row.foto}" target="_blank"><img src="${row.foto}" alt="Foto"/></a>` : 'Tidak ada'}</td>
+        <td class="status">${row.status}</td>
+        <td>${row.petugas}</td>
       </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+    `).join('');
 
-<script src="dashboard.js"></script>
+  } catch (err) {
+    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
+  }
+}
+
+// Refresh setiap 5 detik
+fetchLaporan();
+setInterval(fetchLaporan, 5000);
+</script>
 </body>
 </html>
