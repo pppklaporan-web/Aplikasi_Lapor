@@ -3,13 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+
 <title>Dashboard Petugas</title>
+
+<!-- Manifest PWA -->
 <link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#0b74de"/>
-<!-- Gunakan CSS utama -->
+
+<!-- Warna status bar Android -->
+<meta name="theme-color" content="#0b74de">
+
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<!-- CSS utama -->
 <link rel="stylesheet" href="assets/css/styles.css">
 
-<!-- Tambahan styling khusus tabel -->
 <style>
 /* ===== RESET ===== */
 body {
@@ -60,7 +70,6 @@ td {
   vertical-align: top;
 }
 
-/* ===== STATUS COLORS ===== */
 .status-menunggu {
   background: #ffd9d9;
   color: #b50000;
@@ -85,14 +94,14 @@ td {
   font-weight: bold;
 }
 
-/* ===== IMAGE ===== */
+/* Image */
 table img {
   max-width: 80px;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* ===== INPUTS ===== */
+/* Input */
 select, input {
   width: 100%;
   padding: 6px;
@@ -100,8 +109,8 @@ select, input {
   border-radius: 6px;
 }
 </style>
-
 </head>
+
 <body>
 
 <header class="topbar">
@@ -123,12 +132,23 @@ select, input {
       </tr>
     </thead>
     <tbody>
-      <tr><td colspan="8" style="text-align:center; padding:20px">Memuat data...</td></tr>
+      <tr>
+        <td colspan="8" style="text-align:center; padding:20px">Memuat data...</td>
+      </tr>
     </tbody>
   </table>
 </main>
 
 <script src="assets/js/dashboard-petugas.js" defer></script>
+
+<!-- REGISTER SERVICE WORKER -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js")
+  .then(() => console.log("SW Registered"))
+  .catch(err => console.log("SW Failed", err));
+}
+</script>
 
 </body>
 </html>
