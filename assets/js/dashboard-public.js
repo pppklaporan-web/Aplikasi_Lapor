@@ -21,6 +21,7 @@ async function fetchLaporanPublic() {
         <td>${row.foto ? `<a href="${row.foto}" target="_blank"><img src="${row.foto}" alt="Foto"/></a>` : 'Tidak ada'}</td>
         <td style="color:${row.status==='Proses'?'red':row.status==='Selesai'?'green':'black'}">${row.status}</td>
         <td>${row.petugas}</td>
+        <td>${item.catatan || "-"}</td> <!-- 🔥 Tambahan -->
       </tr>
     `).join('');
 
@@ -32,3 +33,4 @@ async function fetchLaporanPublic() {
 // Refresh otomatis setiap 5 detik
 fetchLaporanPublic();
 setInterval(fetchLaporanPublic, 5000);
+
