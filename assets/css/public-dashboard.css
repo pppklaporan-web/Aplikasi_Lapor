@@ -1,3 +1,8 @@
+/* =============================
+ DASHBOARD PUBLIC — SELARAS DENGAN PETUGAS
+ Warna, shadow, radius, tabel, dan foto disamakan
+============================= */
+
 :root {
   --bps-blue:#0B74DE;
   --bps-green:#00A859;
@@ -9,6 +14,7 @@
   --shadow:0 4px 14px rgba(0,0,0,0.08);
 }
 
+/* PAGE */
 body {
   background: var(--bg);
   margin: 0;
@@ -16,22 +22,25 @@ body {
   color: var(--text);
 }
 
+/* HEADER (DISAMAKAN DENGAN PETUGAS) */
 header {
   background: linear-gradient(90deg, var(--bps-blue), var(--bps-green));
   color: white;
-  padding: 1.3rem;
+  padding: 16px;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 700;
   box-shadow: var(--shadow);
 }
 
+/* MAIN */
 main {
   max-width: 1300px;
   margin: 20px auto;
-  padding: 1rem;
+  padding: 12px;
 }
 
+/* CARD WRAPPER */
 .card {
   background: var(--card);
   padding: 1rem;
@@ -40,50 +49,61 @@ main {
   overflow-x: auto;
 }
 
-/* TABLE */
+/* TABLE (DISELARASKAN SEPERTI DASHBOARD PETUGAS) */
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 900px;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
-th {
+/* TABLE HEADER */
+table thead th {
   background: var(--bps-blue);
   color: white;
-  padding: 10px;
-  font-size: 0.9rem;
+  padding: 12px;
+  font-size: 0.95rem;
   text-align: left;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 10;
 }
 
-td {
+/* TABLE BODY */
+table td {
   padding: 10px;
   font-size: 0.9rem;
   border-bottom: 1px solid #e8e8e8;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-tr:nth-child(even) td {
+/* ROW ODD/EVEN */
+table tr:nth-child(even) td {
   background: #f9fbff;
 }
 
 /* FOTO */
-td img {
-  max-width: 70px;
-  max-height: 70px;
+table td img {
+  max-width: 65px;
+  max-height: 55px;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE SMALL */
 @media (max-width: 600px) {
-  th, td {
+  table td, table th {
     padding: 6px;
     font-size: 0.8rem;
   }
 
-  td img {
+  table td img {
     max-width: 45px;
     max-height: 45px;
   }
