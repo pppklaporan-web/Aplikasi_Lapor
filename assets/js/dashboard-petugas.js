@@ -107,10 +107,11 @@ fetchLaporan();
 setInterval(fetchLaporan, 5000);
 
 // ===== MODAL OPEN =====
-function openEdit(id, status, petugas) {
+function openEdit(id, status, petugas, catatan) {
   document.getElementById("editId").value = id;
   document.getElementById("editStatus").value = status;
   document.getElementById("editPetugas").value = petugas;
+  document.getElementById("editCatatan").value = catatan || "";
 
   document.getElementById("editModal").style.display = "block";
 }
@@ -125,6 +126,8 @@ async function updateLaporan() {
   const id = document.getElementById("editId").value;
   const status = document.getElementById("editStatus").value;
   const petugas = document.getElementById("editPetugas").value;
+  const catatan = document.getElementById("editCatatan").value;
+
 
   try {
     const res = await fetch(GAS_URL, {
@@ -151,4 +154,5 @@ async function updateLaporan() {
     alert("Gagal update, cek koneksi.");
   }
 }
+
 
