@@ -5,21 +5,22 @@ const tableBody = document.querySelector("#laporanTable tbody");
 async function fetchLaporan() {
   try {
     const res = await fetch(GAS_URL);
-    const data = await res.json();
+    const json = await res.json();
+    const data = json.laporan || [];
 
     if (!Array.isArray(data) || data.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center">Tidak ada laporan</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center">Tidak ada laporan</td></tr>';
       return;
     }
 
     tableBody.innerHTML = data.map(row => `
       <tr>
         <td>${row.id}</td>
-        <td>${new Date(row.waktu).toLocaleString()}</td>
+        <td>${new Date(row.timestamp).toLocaleString()}</td>
         <td>${row.nama}</td>
         <td>${row.ruangan}</td>
         <td>${row.keterangan}</td>
-        <td>${row.foto ? `<a href="${row.foto}" target="_blank"><img src="${row.foto}" alt="Foto"/></a>` : 'Tidak ada'}</td>
+        <td>${row.foto ? `<a href="${row.foto}" target="_blank"><img src="${row.foto}" alt="Foto" style="max-width:60px; max-height:60px; border-radius:4px;"/></a>` : 'Tidak ada'}</td>
 
         <td>
           <select data-id="${row.id}" onchange="updateStatus('${row.id}', this.value)"
@@ -49,9 +50,11 @@ async function fetchLaporan() {
     `).join('');
 
   } catch (err) {
-    tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
   }
 }
+
+
 
 // === Update status ===
 async function updateStatus(id, status) {
@@ -113,8 +116,24 @@ function openEdit(id, status, petugas, catatan) {
   document.getElementById("editPetugas").value = petugas;
   document.getElementById("editCatatan").value = catatan || "";
 
-  document.getElementById("editModal").style.display = "block";
+  document.getElementById("editModal").style.display = "flex";
+ 
 }
+
+function updateProgressBar(persen){
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+
+  progressBar.style.width = persen + '%';
+
+  progressBar.classList.remove('green','blue','orange');
+  if(persen>=80) progressBar.classList.add('green'); // hijau
+  else if(persen>=50) progressBar.classList.add('blue'); // biru
+  else progressBar.classList.add('orange'); // orange
+
+  progressText.textContent = persen + '% selesai';
+}
+
 
 // ===== MODAL CLOSE =====
 function closeEdit() {
@@ -136,7 +155,7 @@ async function updateLaporan() {
         id,
         status,
         petugas,
-        catatan       // ← PERBAIKAN UTAMA
+        catatan
       })
     });
 
@@ -154,7 +173,3 @@ async function updateLaporan() {
     alert("Gagal update, cek koneksi.");
   }
 }
-
-
-
-
