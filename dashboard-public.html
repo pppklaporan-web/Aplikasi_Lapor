@@ -1,56 +1,70 @@
+# dashboard-public.html
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dashboard Laporan</title>
-<link rel="stylesheet" href="assets/css/public-dashboard.css">
-<style>
-  body { font-family: Arial, sans-serif; background:#f4f4f4; color:#333; margin:0; }
-  header { background:#0b74de; color:white; padding:1rem; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-  main { max-width:1200px; margin:auto; padding:1rem; }
-  .card { background:white; padding:1rem; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); margin-bottom:1rem; overflow-x:auto; }
-  table { width:100%; border-collapse: collapse; min-width:800px; }
-  th, td { padding:0.5rem 0.75rem; border:1px solid #ccc; text-align:left; }
-  th { background:#0b74de; color:white; position: sticky; top:0; z-index:1; }
-  tr:nth-child(even) { background:#f9f9f9; }
-  img { max-width:80px; max-height:80px; display:block; border-radius:4px; }
-  @media(max-width:600px){
-    th, td { font-size:0.8rem; padding:0.25rem; }
-    img { max-width:50px; max-height:50px; }
-  }
-</style>
+<link rel="stylesheet" href="asset/css/dashboard-public.css" />
 </head>
 <body>
-
 <header>
-<h1>Dashboard Laporan</h1>
-<p>Progres laporan real-time</p>
+  <h1>Dashboard Laporan</h1>
+  <p>Progres laporan real-time</p>
 </header>
 
 <main>
-<div class="card">
-<table id="laporanTable">
-<thead>
-<tr>
-  <th>ID</th>
-  <th>Waktu</th>
-  <th>Nama</th>
-  <th>Ruangan</th>
-  <th>Keterangan</th>
-  <th>Foto</th>
-  <th>Status</th>
-  <th>Petugas</th>
-  <th>Catatan</th> <!-- 🔥 Ditambahkan -->
-</tr>
-</thead>
-<tbody>
-<tr><td colspan="9" style="text-align:center">Memuat data...</td></tr>
-</tbody>
-</table>
-</div>
+  <!-- SUMMARY CARDS -->
+  <div class="summary-wrapper">
+    <div class="summary-card total">
+      <h3>Total Laporan</h3>
+      <p id="sumTotal">0</p>
+    </div>
+
+    <div class="summary-card selesai">
+      <h3>Selesai</h3>
+      <p id="sumDone">0</p>
+    </div>
+
+    <div class="summary-card proses">
+      <h3>Diproses</h3>
+      <p id="sumProcess">0</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="card" id="progressCard">
+    <h3>Progress Penyelesaian</h3>
+    <p id="progressText">Menghitung...</p>
+    <div class="progress-bg">
+      <div id="progressBar" class="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table id="laporanTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Waktu</th>
+          <th>Nama</th>
+          <th>Ruangan</th>
+          <th>Keterangan</th>
+          <th>Foto</th>
+          <th>Status</th>
+          <th>Petugas</th>
+          <th>Catatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="9" style="text-align:center">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
 </main>
 
-<script src="assets/js/dashboard-public.js" defer></script>
+<script src="asset/js/dashboard-public.js" defer></script>
 </body>
 </html>
+
+
