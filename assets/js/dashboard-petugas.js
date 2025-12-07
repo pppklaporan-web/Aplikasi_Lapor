@@ -128,7 +128,6 @@ async function updateLaporan() {
   const petugas = document.getElementById("editPetugas").value;
   const catatan = document.getElementById("editCatatan").value;
 
-
   try {
     const res = await fetch(GAS_URL, {
       method: "POST",
@@ -136,7 +135,8 @@ async function updateLaporan() {
         action: "update_status",
         id,
         status,
-        petugas
+        petugas,
+        catatan       // ← PERBAIKAN UTAMA
       })
     });
 
@@ -154,5 +154,7 @@ async function updateLaporan() {
     alert("Gagal update, cek koneksi.");
   }
 }
+
+
 
 
