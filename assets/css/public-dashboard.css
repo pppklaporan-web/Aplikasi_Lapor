@@ -1,7 +1,7 @@
-/* ==========================================
-   PUBLIC DASHBOARD — FIX + SELARASKAN PETUGAS
-   CSS ini akan otomatis menimpa inline style lama
-========================================== */
+/* =============================
+ DASHBOARD PUBLIC — SELARAS DENGAN PETUGAS
+ Warna, shadow, radius, tabel, dan foto disamakan
+============================= */
 
 :root {
   --bps-blue:#0B74DE;
@@ -16,96 +16,101 @@
 
 /* PAGE */
 body {
-  background: var(--bg) !important;
-  font-family: "Segoe UI", Arial, sans-serif !important;
-  color: var(--text) !important;
-  margin: 0 !important;
+  background: var(--bg);
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
 }
 
-/* HEADER */
+/* HEADER (GRADIENT 3 WARNA FIX) */
 header {
-  background: linear-gradient(90deg, var(--bps-blue), var(--bps-green)) !important;
-  color: white !important;
-  padding: 16px !important;
-  text-align: center !important;
-  font-size: 1.4rem !important;
-  font-weight: 700 !important;
-  box-shadow: var(--shadow) !important;
+  background: linear-gradient(
+    90deg,
+    var(--bps-blue) 0%,
+    var(--bps-green) 50%,
+    var(--bps-orange) 100%
+  ) !important;
+  color: white;
+  padding: 16px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  box-shadow: var(--shadow);
 }
+
 
 /* MAIN */
 main {
-  max-width: 1300px !important;
-  margin: 20px auto !important;
-  padding: 12px !important;
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 12px;
 }
 
 /* CARD WRAPPER */
 .card {
-  background: var(--card) !important;
-  padding: 1rem !important;
-  border-radius: var(--radius) !important;
-  box-shadow: var(--shadow) !important;
-  overflow-x: auto !important;
+  background: var(--card);
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
 }
 
-/* TABLE */
+/* TABLE (DISELARASKAN SEPERTI DASHBOARD PETUGAS) */
 table {
-  width: 100% !important;
-  border-collapse: collapse !important;
-  min-width: 900px !important;
-  background: var(--card) !important;
-  border-radius: var(--radius) !important;
-  overflow: hidden !important;
-  box-shadow: var(--shadow) !important;
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
-/* HEADER */
+/* TABLE HEADER */
 table thead th {
-  background: var(--bps-blue) !important;
-  color: white !important;
-  padding: 12px !important;
-  font-size: 0.95rem !important;
-  text-align: left !important;
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 10 !important;
-  border: none !important;
+  background: var(--bps-blue);
+  color: white;
+  padding: 12px;
+  font-size: 0.95rem;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-/* BODY */
+/* TABLE BODY */
 table td {
-  padding: 10px !important;
-  font-size: 0.9rem !important;
-  border-bottom: 1px solid #e8e8e8 !important;
-  vertical-align: middle !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  padding: 10px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #e8e8e8;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* ROW EVEN */
+/* ROW ODD/EVEN */
 table tr:nth-child(even) td {
-  background: #f9fbff !important;
+  background: #f9fbff;
 }
 
 /* FOTO */
 table td img {
-  max-width: 65px !important;
-  max-height: 55px !important;
-  border-radius: 6px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+  max-width: 65px;
+  max-height: 55px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE SMALL */
 @media (max-width: 600px) {
   table td, table th {
-    padding: 6px !important;
-    font-size: 0.8rem !important;
+    padding: 6px;
+    font-size: 0.8rem;
   }
 
   table td img {
-    max-width: 45px !important;
-    max-height: 45px !important;
+    max-width: 45px;
+    max-height: 45px;
   }
 }
