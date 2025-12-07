@@ -1,0 +1,104 @@
+<!doctype html>
+
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Dashboard Petugas</title>
+
+<!-- Manifest PWA -->
+
+<link rel="manifest" href="manifest.json" />
+
+<!-- Warna status bar Android -->
+
+<meta name="theme-color" content="#0b74de">
+
+<!-- iOS PWA -->
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<!-- CSS utama -->
+
+<link rel="stylesheet" href="dashboard-petugas.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+  <h1>Dashboard Petugas</h1>
+</header>
+
+<main>
+  <table id="laporanTable" aria-live="polite">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Waktu</th>
+        <th>Nama</th>
+        <th>Ruangan</th>
+        <th>Keterangan</th>
+        <th>Foto</th>
+        <th>Status</th>
+        <th>Petugas</th>
+        <th>Catatan</th>
+        <th>Edit</th>
+        
+        
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="10" style="text-align:center; padding:20px">Memuat data...</td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+<!-- ========== MODAL EDIT ========== -->
+
+<div id="editModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center;">
+  <div style="background:white; width:92%; max-width:420px; margin:auto; padding:18px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.25);">
+    <h3 style="margin-top:0">Edit Laporan</h3>
+
+```
+<input type="hidden" id="editId">
+
+<label style="font-weight:600; display:block; margin-top:8px;">Status:</label>
+<select id="editStatus" style="width:100%; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #ccc;">
+  <option value="Menunggu">Menunggu</option>
+  <option value="Proses">Proses</option>
+  <option value="Selesai">Selesai</option>
+</select>
+
+<label style="font-weight:600; display:block; margin-top:12px;">Petugas:</label>
+<input id="editPetugas" placeholder="Nama Petugas" style="width:100%; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #ccc;">
+
+<label style="font-weight:600; display:block; margin-top:12px;">Catatan Petugas:</label>
+<textarea id="editCatatan" placeholder="Catatan / tindakan" style="width:100%; height:100px; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #ccc;"></textarea>
+
+<div style="display:flex; gap:10px; margin-top:14px; justify-content:flex-end;">
+  <button onclick="closeEdit()" style="padding:10px 14px; background:#999; color:white; border:none; border-radius:8px;">Batal</button>
+  <button onclick="updateLaporan()" style="padding:10px 14px; background:#0b74de; color:white; border:none; border-radius:8px;">Simpan</button>
+</div>
+```
+
+  </div>
+</div>
+
+<script src="dashboard-petugas.js" defer></script>
+
+<!-- REGISTER SERVICE WORKER (PWA) -->
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{console.warn('SW register failed');});
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard Laporan</title>
+<link rel="stylesheet" href="assets/css/dashboard.css">
+<link rel="manifest" href="manifest.json" />
+
+</style>
+</head>
+
+<body>
+<header>
+  <h1>Dashboard Laporan</h1>
+  <p>Progres laporan real-time</p>
+</header>
+
+<main>
+  <!-- Summary -->
+  <div class="summary-wrapper">
+    <div class="summary-card total">
+      <h3>Total Laporan</h3>
+      <p id="sumTotal">0</p>
+    </div>
+    <div class="summary-card selesai">
+      <h3>Selesai</h3>
+      <p id="sumDone">0</p>
+    </div>
+    <div class="summary-card proses">
+      <h3>Diproses</h3>
+      <p id="sumProcess">0</p>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card">
+    <h3>Progress Penyelesaian</h3>
+    <p id="progressText">Menghitung...</p>
+    <div class="progress-bg">
+      <div id="progressBar" class="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <table id="laporanTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Waktu</th>
+          <th>Nama</th>
+          <th>Ruangan</th>
+          <th>Keterangan</th>
+          <th>Foto</th>
+          <th>Status</th>
+          <th>Petugas</th>
+          <th>Catatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="9" style="text-align:center">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script src="assets/js/dashboard-public.js" defer></script>
+</body>
+</html>
