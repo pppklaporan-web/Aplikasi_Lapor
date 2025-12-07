@@ -2,7 +2,7 @@
 const CACHE_NAME = 'petugas-cache-v1';
 const FILES_TO_CACHE = [
 'dashboard-petugas.html',
-'assets/css/styles.css',
+'assets/css/dashboard-petugas.css',
 'assets/js/dashboard-petugas.js',
 'manifest.json',
 'icons/icon-192.png',
