@@ -7,6 +7,9 @@ async function fetchLaporanPublic() {
 
     const tableBody = document.querySelector("#laporanTable tbody");
 
+    // >>> Tampilkan item terbaru di atas
+    data.laporan.reverse();
+
     if (!Array.isArray(data.laporan) || data.laporan.length === 0) {
       tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center">Tidak ada laporan</td></tr>';
       updateSummary(0,0,0);
@@ -15,7 +18,11 @@ async function fetchLaporanPublic() {
     }
 
     tableBody.innerHTML = data.laporan.map(row => `
-      <tr>
+      <tr class="${
+          row.status === 'Menunggu' ? 'row-menunggu'
+        : row.status === 'Proses'   ? 'row-proses'
+        : 'row-selesai'
+      }">
         <td>${row.id}</td>
         <td>${new Date(row.timestamp).toLocaleString()}</td>
         <td>${row.nama}</td>
@@ -28,13 +35,11 @@ async function fetchLaporanPublic() {
       </tr>
     `).join('');
 
-    // Update summary
     const total = data.summary.total || 0;
     const selesai = data.summary.selesai || 0;
     const proses = data.summary.proses || 0;
     updateSummary(total, selesai, proses);
 
-    // Update progress
     const persen = data.summary.persen || 0;
     updateProgressBar(persen);
 
@@ -56,23 +61,9 @@ function updateProgressBar(persen){
   const progressText = document.getElementById('progressText');
   progressBar.style.width = persen + '%';
 
-  if(persen>=80) progressBar.style.backgroundColor='#28a745'; // hijau
-  else if(persen>=50) progressBar.style.backgroundColor='#007bff'; // biru
-  else progressBar.style.backgroundColor='#FFA500'; // orange
-
-  progressText.textContent = persen + '% selesai';
-}
-
-function updateProgressBar(persen){
-  const progressBar = document.getElementById('progressBar');
-  const progressText = document.getElementById('progressText');
-
-  progressBar.style.width = persen + '%';
-
-  progressBar.classList.remove('green','blue','orange');
-  if(persen>=80) progressBar.classList.add('green'); // hijau
-  else if(persen>=50) progressBar.classList.add('blue'); // biru
-  else progressBar.classList.add('orange'); // orange
+  if(persen>=80) progressBar.style.backgroundColor='#28a745';
+  else if(persen>=50) progressBar.style.backgroundColor='#007bff';
+  else progressBar.style.backgroundColor='#FFA500';
 
   progressText.textContent = persen + '% selesai';
 }
