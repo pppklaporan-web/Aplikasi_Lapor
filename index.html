@@ -2,53 +2,62 @@
 <html lang="id">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Aplikasi Lapor — Kirim Laporan</title>
+
 <link rel="stylesheet" href="assets/css/style.css">
-<link rel="manifest" href="assets/json/manifest.json" />
-<meta name="theme-color" content="#0b74de"/>
+<link rel="manifest" href="assets/json/manifest.json">
+<meta name="theme-color" content="#0b74de">
+
 </head>
 <body>
+
 <header class="topbar">
-<h1>Aplikasi Lapor</h1>
-<nav>
-<a href="dashboard-public.html">Dashboard</a> ·
-<a href="dashboard-petugas.html">Petugas</a>
-</nav>
+  <h1 class="topbar-title">Aplikasi Lapor</h1>
+
+  <div class="nav-buttons">
+    <a href="dashboard-public.html" class="nav-btn">Dashboard</a>
+    <a href="dashboard-petugas.html" class="nav-btn">Petugas</a>
+  </div>
 </header>
 
+
 <main class="container">
-<section class="card">
-<h2>Buat Laporan Baru</h2>
+  <section class="card">
 
-<form id="laporForm">
-<label>Nama
-<input id="nama" name="nama" required placeholder="Nama pelapor" />
-</label>
+    <h2>Buat Laporan Baru</h2>
 
-<label>Ruangan
-<input id="ruangan" name="ruangan" required placeholder="Contoh: Lab Komputasi 1" />
-</label>
+    <form id="laporForm">
 
-<label>Keterangan
-<textarea id="keterangan" name="keterangan" rows="4" placeholder="Jelaskan kendala..."></textarea>
-</label>
+      <label for="nama">Nama
+        <input id="nama" name="nama" required placeholder="Nama pelapor">
+      </label>
 
-<div class="foto-section">
-<label>Foto (opsional)
-<input id="fotoFile" type="file" accept="image/*" capture="environment" />
-</label>
+      <label for="ruangan">Ruangan
+        <input id="ruangan" name="ruangan" required placeholder="Contoh: Lab Komputasi 1">
+      </label>
 
-<div id="previewWrap" class="preview hidden">
-<img id="preview" alt="preview foto" />
-<button id="clearPhoto" type="button" class="small">Hapus</button>
-</div>
-</div>
+      <label for="keterangan">Keterangan
+        <textarea id="keterangan" name="keterangan" rows="4" placeholder="Jelaskan kendala..."></textarea>
+      </label>
 
-<button id="submitBtn" type="submit">Kirim Laporan</button>
-<div id="statusMsg" role="status" aria-live="polite"></div>
-</form>
-</section>
+      <div class="foto-section">
+        <label for="fotoFile">Foto (opsional)
+          <input id="fotoFile" type="file" accept="image/*" capture="environment">
+        </label>
+
+        <div id="previewWrap" class="preview hidden">
+          <img id="preview" alt="preview foto">
+          <button id="clearPhoto" type="button" class="small">Hapus</button>
+        </div>
+      </div>
+
+      <button id="submitBtn" type="submit">Kirim Laporan</button>
+      <div id="statusMsg" role="status" aria-live="polite"></div>
+
+    </form>
+
+  </section>
 </main>
 
 <script src="assets/js/index.js" defer></script>
@@ -57,5 +66,6 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js').catch(()=>{});
 }
 </script>
+
 </body>
 </html>
