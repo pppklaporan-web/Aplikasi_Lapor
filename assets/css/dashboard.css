@@ -215,6 +215,11 @@ table {
     border-radius: 8px;
   }
 }
+/* Sembunyikan kolom ID */
+#laporanTable th:nth-child(1), /* ID */
+#laporanTable td:nth-child(1), {
+  display: none;
+}
 
 .progress-fill.green { background: linear-gradient(90deg, #28a745, #5fd17b); }
 .progress-fill.blue { background: linear-gradient(90deg, #007bff, #5daaff); }
