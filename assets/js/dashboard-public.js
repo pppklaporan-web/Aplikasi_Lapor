@@ -7,7 +7,7 @@ async function fetchLaporanPublic() {
     const data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center">Tidak ada laporan</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center">Tidak ada laporan</td></tr>';
       return;
     }
 
@@ -21,16 +21,14 @@ async function fetchLaporanPublic() {
         <td>${row.foto ? `<a href="${row.foto}" target="_blank"><img src="${row.foto}" alt="Foto"/></a>` : 'Tidak ada'}</td>
         <td style="color:${row.status==='Proses'?'red':row.status==='Selesai'?'green':'black'}">${row.status}</td>
         <td>${row.petugas}</td>
-        <td>${item.catatan || "-"}</td> <!-- 🔥 Tambahan -->
+        <td>${row.catatan || "-"}</td>
       </tr>
     `).join('');
 
   } catch(err) {
-    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
   }
 }
 
-// Refresh otomatis setiap 5 detik
 fetchLaporanPublic();
 setInterval(fetchLaporanPublic, 5000);
-
