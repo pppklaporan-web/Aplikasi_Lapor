@@ -187,6 +187,35 @@ table {
   background: linear-gradient(90deg, #FFA500, #FFB84D); /* default gradient */
 }
 
+/* ===== Besarkan font daftar tabel untuk mobile ===== */
+#laporanTable td, 
+#laporanTable th {
+  font-size: 1rem; /* default desktop */
+  padding: 10px 12px; /* beri ruang supaya nyaman disentuh */
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  #laporanTable td,
+  #laporanTable th {
+    font-size: 1.1rem;  /* lebih besar untuk HP */
+    padding: 12px 10px;  /* buat tombol/tap lebih mudah */
+  }
+
+  /* Foto di tabel lebih besar */
+  #laporanTable td img {
+    max-width: 70px;
+    max-height: 70px;
+  }
+
+  /* Tombol edit lebih nyaman diklik */
+  #laporanTable td button {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+}
+
 .progress-fill.green { background: linear-gradient(90deg, #28a745, #5fd17b); }
 .progress-fill.blue { background: linear-gradient(90deg, #007bff, #5daaff); }
 .progress-fill.orange { background: linear-gradient(90deg, #FFA500, #FFB84D); }
