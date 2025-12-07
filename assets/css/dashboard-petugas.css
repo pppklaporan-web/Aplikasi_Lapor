@@ -240,3 +240,28 @@ tr.status-menunggu {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Row warna otomatis */
+.row-menunggu {
+  background: #fff6cc !important;   /* kuning lembut */
+}
+
+.row-proses {
+  background: #ffe5e5 !important;   /* merah muda */
+}
+
+.row-selesai {
+  background: #e6ffe6 !important;   /* hijau muda */
+}
+
+/* Hover sedikit lebih gelap */
+.row-menunggu:hover {
+  background: #ffef99 !important;
+}
+
+.row-proses:hover {
+  background: #ffcccc !important;
+}
+
+.row-selesai:hover {
+  background: #ccffcc !important;
+}
