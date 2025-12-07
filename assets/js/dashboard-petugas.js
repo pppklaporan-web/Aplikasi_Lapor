@@ -36,12 +36,15 @@ async function fetchLaporan() {
             onchange="updatePetugas('${row.id}', this.value)">
         </td>
 
+        <td>${row.catatan || "-"}</td>
+
         <td>
-          <button onclick="openEdit('${row.id}','${row.status}','${row.petugas || ''}')"
+          <button onclick="openEdit('${row.id}','${row.status}','${row.petugas || ''}','${row.catatan || ''}')"
             style="padding:6px 10px; background:#20a65e; color:white; border-radius:6px;">
             Edit
           </button>
         </td>
+
       </tr>
     `).join('');
 
@@ -148,3 +151,4 @@ async function updateLaporan() {
     alert("Gagal update, cek koneksi.");
   }
 }
+
