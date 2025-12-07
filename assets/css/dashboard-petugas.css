@@ -1,0 +1,158 @@
+/* =============================
+ DASHBOARD PETUGAS — STYLE KHUSUS
+ Tidak bentrok dengan halaman lain
+============================= */
+
+:root {
+  --bps-blue:#0B74DE;
+  --bps-green:#00A859;
+  --bps-orange:#F36F21;
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --text:#222;
+  --radius:10px;
+  --shadow:0 4px 14px rgba(0,0,0,0.08);
+}
+
+/* Page */
+body {
+  background: var(--bg);
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+}
+
+/* Header */
+.topbar {
+  background: linear-gradient(90deg, var(--bps-blue), var(--bps-green));
+  color: #fff;
+  padding: 16px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+}
+
+/* Main container */
+main {
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 12px;
+}
+
+/* TABLE WRAPPER */
+#laporanTable {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+/* Table Header */
+#laporanTable thead th {
+  background: var(--bps-blue);
+  color: white;
+  padding: 12px;
+  font-size: 0.95rem;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Table Rows */
+#laporanTable td {
+  background: #fff;
+  padding: 10px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #e8e8e8;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#laporanTable tr:nth-child(even) td {
+  background: #f9fbff;
+}
+
+/* FOTO */
+#laporanTable td img {
+  max-width: 65px;
+  max-height: 55px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* STATUS SELECT */
+#laporanTable td select {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+/* PETUGAS INPUT */
+#laporanTable td input[type="text"] {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+/* BUTTON EDIT */
+#laporanTable td button {
+  padding: 6px 12px;
+  background: var(--bps-green);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#laporanTable td button:hover {
+  opacity: 0.85;
+}
+
+/* SCROLL MOBILE */
+@media (max-width: 800px) {
+  #laporanTable {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+/* ===================================
+ MODAL EDIT (BIAR TIDAK TERTUTUP HEADER)
+=================================== */
+#editModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+  z-index: 9999 !important;  /* ⭐ FIX utama */
+  align-items: center;
+  justify-content: center;
+}
+
+#editModal > div {
+  background: white;
+  width: 92%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  animation: fadeUp 0.25s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
