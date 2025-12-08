@@ -8,36 +8,33 @@ async function fetchLaporan() {
     const json = await res.json();
     const data = json.laporan || [];
 
-    // >>> tampilkan laporan terbaru di paling atas
+    // Tampilkan terbaru di paling atas
     data.reverse();
 
     if (!Array.isArray(data) || data.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center">Tidak ada laporan</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center">Tidak ada laporan</td></tr>';
+      updateRunningText([]);
       return;
     }
 
     tableBody.innerHTML = data.map(row => `
       <tr class="${
-          row.status === 'Menunggu' ? 'row-menunggu'
-        : row.status === 'Proses'   ? 'row-proses'
-        : 'row-selesai'
+        row.status === 'Menunggu' ? 'row-menunggu'
+      : row.status === 'Proses'   ? 'row-proses'
+      : 'row-selesai'
       }">
 
         <td data-label="ID">${row.id}</td>
-
         <td data-label="Waktu">${new Date(row.timestamp).toLocaleString()}</td>
-
         <td data-label="Nama">${row.nama}</td>
-
         <td data-label="Ruangan">${row.ruangan}</td>
-
         <td data-label="Keterangan">${row.keterangan}</td>
 
         <td data-label="Foto">
-          ${row.foto ? 
+          ${row.foto ?
             `<a href="${row.foto}" target="_blank">
-               <img src="${row.foto}" alt="Foto" style="max-width:60px; max-height:60px; border-radius:4px;"/>
-             </a>` 
+              <img src="${row.foto}" alt="Foto" style="max-width:60px; max-height:60px; border-radius:4px;"/>
+            </a>`
             : 'Tidak ada'}
         </td>
 
@@ -45,8 +42,8 @@ async function fetchLaporan() {
           <select data-id="${row.id}" onchange="updateStatus('${row.id}', this.value)"
             style="color:${row.status==='Proses'?'red':row.status==='Selesai'?'green':'black'}">
             <option value="Menunggu" ${row.status==='Menunggu'?'selected':''}>Menunggu</option>
-            <option value="Proses" ${row.status==='Proses'?'selected':''}>Proses</option>
-            <option value="Selesai" ${row.status==='Selesai'?'selected':''}>Selesai</option>
+            <option value="Proses"   ${row.status==='Proses'?'selected':''}>Proses</option>
+            <option value="Selesai"  ${row.status==='Selesai'?'selected':''}>Selesai</option>
           </select>
         </td>
 
@@ -67,8 +64,11 @@ async function fetchLaporan() {
       </tr>
     `).join('');
 
+    // === UPDATE RUNNING TEXT ===
+    updateRunningText(data);
+
   } catch (err) {
-    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
   }
 }
 
@@ -121,10 +121,6 @@ async function updatePetugas(id, petugas) {
   }
 }
 
-// === Refresh otomatis setiap 5 detik ===
-fetchLaporan();
-setInterval(fetchLaporan, 5000);
-
 // ===== MODAL OPEN =====
 function openEdit(id, status, petugas, catatan) {
   document.getElementById("editId").value = id;
@@ -172,3 +168,34 @@ async function updateLaporan() {
     alert("Gagal update, cek koneksi.");
   }
 }
+
+// ====== 🔥 RUNNING TEXT FUNCTION (FINAL) ======
+function updateRunningText(laporan) {
+  const now = new Date();
+  const today = now.toISOString().split("T")[0];
+
+  // Filter: hari ini + status Menunggu/Proses
+  const filtered = laporan.filter(r => {
+    const tgl = new Date(r.timestamp).toISOString().split("T")[0];
+    return tgl === today && r.status !== "Selesai";
+  });
+
+  let text = "";
+
+  if (filtered.length === 0) {
+    text = "Tidak ada laporan baru hari ini (Menunggu / Proses)";
+  } else {
+    text = filtered
+      .map(r => {
+        const time = new Date(r.timestamp).toLocaleTimeString("id-ID");
+        return `${time} → ${r.nama} (${r.ruangan}) melapor: ${r.keterangan}`;
+      })
+      .join("   |   ");
+  }
+
+  document.getElementById("runningText").textContent = text;
+}
+
+// === Refresh otomatis ===
+fetchLaporan();
+setInterval(fetchLaporan, 5000);
