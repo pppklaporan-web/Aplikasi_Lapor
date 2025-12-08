@@ -1,104 +1,109 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec";
-
-async function fetchLaporanPublic() {
-  try {
-    const res = await fetch(GAS_URL);
-    const data = await res.json();
-
-    const tableBody = document.querySelector("#laporanTable tbody");
-
-    // >>> Tampilkan item terbaru di atas
-    data.laporan.reverse();
-
-    if (!Array.isArray(data.laporan) || data.laporan.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center">Tidak ada laporan</td></tr>';
-      updateSummary(0,0,0);
-      updateProgressBar(0);
-      return;
-    }
-
-    tableBody.innerHTML = data.laporan.map(row => `
-      <tr class="${
-          row.status === 'Menunggu' ? 'row-menunggu'
-        : row.status === 'Proses'   ? 'row-proses'
-        : 'row-selesai'
-      }">
-        <td>${row.id}</td>
-        <td>${new Date(row.timestamp).toLocaleString()}</td>
-        <td>${row.nama}</td>
-        <td>${row.ruangan}</td>
-        <td>${row.keterangan}</td>
-        <td>${row.foto ? `<a href="${row.foto}" target="_blank"><img src="${row.foto}" alt="Foto"/></a>`:'Tidak ada'}</td>
-        <td style="color:${row.status==='Proses'?'#007bff':row.status==='Selesai'?'#28a745':'#FFA500'}">${row.status}</td>
-        <td>${row.petugas || '-'}</td>
-        <td>${row.catatan || '-'}</td>
-      </tr>
-    `).join('');
-
-    const total = data.summary.total || 0;
-    const selesai = data.summary.selesai || 0;
-    const proses = data.summary.proses || 0;
-    updateSummary(total, selesai, proses);
-
-    const persen = data.summary.persen || 0;
-    updateProgressBar(persen);
-    updateRunningText(data.laporan);
-
-  } catch(err) {
-    tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
-    updateSummary(0,0,0);
-    updateProgressBar(0);
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard Laporan</title>
+<link rel="stylesheet" href="assets/css/dashboard.css">
+<link rel="manifest" href="manifest.json" />
+<style>
+  #laporanTable th:nth-child(1),
+  #laporanTable td:nth-child(1) {
+      display: none;
   }
-}
+  /* Running text */
+  .running-text {
+    background: #0057ff;
+    color: white;
+    padding: 8px;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .running-text span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-left 15s linear infinite;
+  }
+  @keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Dashboard Laporan</h1>
+  <p>Progres laporan real-time</p>
+</header>
 
-function updateSummary(total, selesai, proses){
-  document.getElementById('sumTotal').textContent = total;
-  document.getElementById('sumDone').textContent = selesai;
-  document.getElementById('sumProcess').textContent = proses;
-}
+<!-- Running Text: Laporan hari ini -->
+<div class="running-text">
+  <span id="runningText">Memuat laporan hari ini...</span>
+</div>
 
-function updateProgressBar(persen){
-  const progressBar = document.getElementById('progressBar');
-  const progressText = document.getElementById('progressText');
-  progressBar.style.width = persen + '%';
+<main>
+  <div class="summary-wrapper">
+    <div class="summary-card total">
+      <h3>Total Laporan</h3>
+      <p id="sumTotal">0</p>
+    </div>
+    <div class="summary-card selesai">
+      <h3>Selesai</h3>
+      <p id="sumDone">0</p>
+    </div>
+    <div class="summary-card proses">
+      <h3>Diproses</h3>
+      <p id="sumProcess">0</p>
+    </div>
+  </div>
 
-  if(persen>=80) progressBar.style.backgroundColor='#28a745';
-  else if(persen>=50) progressBar.style.backgroundColor='#007bff';
-  else progressBar.style.backgroundColor='#FFA500';
+  <div class="card">
+    <h3>Progress Penyelesaian</h3>
+    <p id="progressText">Menghitung...</p>
+    <div class="progress-bg">
+      <div id="progressBar" class="progress-fill"></div>
+    </div>
+  </div>
 
-  progressText.textContent = persen + '% selesai';
-}
+  <div class="card">
+    <table id="laporanTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Waktu</th>
+          <th>Nama</th>
+          <th>Ruangan</th>
+          <th>Keterangan</th>
+          <th>Foto</th>
+          <th>Status</th>
+          <th>Petugas</th>
+          <th>Catatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="9" style="text-align:center">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
 
+<script src="assets/js/dashboard-public.js" defer></script>
+<script>
+// Update running text setelah data laporan di-load dari dashboard-public.js
 function updateRunningText(laporan) {
-  const now = new Date();
-
-  // Tanggal hari ini dalam format YYYY-MM-DD
-  const today = now.toISOString().split("T")[0];
-
-  // Filter laporan:
-  // 1. Hanya laporan hari ini
-  // 2. Status selain "Selesai"
-  const todayReports = laporan.filter(r => {
-    const tgl = new Date(r.timestamp).toISOString().split("T")[0];
-    return tgl === today && r.status !== "Selesai";
-  });
+  const today = new Date().toLocaleDateString('en-CA'); // format YYYY-MM-DD sesuai tanggal HP/laptop('T')[0];
+  const const todayReports = laporan.filter(item => item.waktu.startsWith(today));
 
   let text = "";
-
   if (todayReports.length === 0) {
-    text = "Tidak ada laporan baru hari ini (Menunggu / Proses)";
+    text = "Belum ada laporan masuk hari ini";
   } else {
-    text = todayReports
-      .map(r => {
-        const time = new Date(r.timestamp).toLocaleTimeString();
-        return `${time} → ${r.nama} (${r.ruangan}) melapor: ${r.keterangan}`;
-      })
-      .join("   |   ");
+    text = todayReports.map(r => `${r.waktu} → ${r.nama} (${r.ruangan}) melapor: ${r.keterangan}`).join("   |   ");
   }
-
   document.getElementById("runningText").textContent = text;
 }
-
-
-fetchLaporanPublic();
-setInterval(fetchLaporanPublic, 5000);
+</script>
+</body>
+</html>
