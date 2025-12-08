@@ -42,6 +42,7 @@ async function fetchLaporanPublic() {
 
     const persen = data.summary.persen || 0;
     updateProgressBar(persen);
+    updateRunningText(data.laporan);
 
   } catch(err) {
     tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:red;">Error: ${err}</td></tr>`;
@@ -67,6 +68,37 @@ function updateProgressBar(persen){
 
   progressText.textContent = persen + '% selesai';
 }
+
+function updateRunningText(laporan) {
+  const now = new Date();
+
+  // Tanggal hari ini dalam format YYYY-MM-DD
+  const today = now.toISOString().split("T")[0];
+
+  // Filter laporan:
+  // 1. Hanya laporan hari ini
+  // 2. Status selain "Selesai"
+  const todayReports = laporan.filter(r => {
+    const tgl = new Date(r.timestamp).toISOString().split("T")[0];
+    return tgl === today && r.status !== "Selesai";
+  });
+
+  let text = "";
+
+  if (todayReports.length === 0) {
+    text = "Tidak ada laporan baru hari ini (Menunggu / Proses)";
+  } else {
+    text = todayReports
+      .map(r => {
+        const time = new Date(r.timestamp).toLocaleTimeString();
+        return `${time} → ${r.nama} (${r.ruangan}) melapor: ${r.keterangan}`;
+      })
+      .join("   |   ");
+  }
+
+  document.getElementById("runningText").textContent = text;
+}
+
 
 fetchLaporanPublic();
 setInterval(fetchLaporanPublic, 5000);
