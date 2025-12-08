@@ -31,8 +31,35 @@
 
 <header class="topbar">
   <h1>Dashboard Petugas</h1>
+  
 </header>
+<!-- Running Text -->
+<div class="running-text">
+  <span id="runningText">Memuat laporan hari ini...</span>
+</div>
 
+<style>
+.running-text {
+  background: #0b74de;
+  color: white;
+  padding: 8px;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.running-text span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scroll-left 15s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+</style>
 <main>
   <table id="laporanTable" aria-live="polite">
     <thead>
