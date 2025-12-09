@@ -11,6 +11,37 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <style>
+
+/* ======================
+   MODAL EDIT FIX
+====================== */
+#editModal {
+  position: fixed;          /* tetap di layar walau scroll */
+  inset: 0;                 /* top:0; right:0; bottom:0; left:0; */
+  background: rgba(0,0,0,0.6);  /* overlay gelap */
+  display: none;            /* default hidden */
+  align-items: center;      /* center secara vertikal */
+  justify-content: center;  /* center secara horizontal */
+  z-index: 2000;            /* pastikan di atas semua elemen */
+}
+.modal-box {
+  background: #1f2937;
+  width: 92%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 14px;
+  color: #ffffff;
+}
+#editModal {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+}
+
+
+
 /* ======================
    GLOBAL DARK UI
 ====================== */
