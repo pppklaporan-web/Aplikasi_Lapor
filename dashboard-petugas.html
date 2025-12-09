@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="id">
 <head>
 <meta charset="utf-8">
@@ -7,61 +6,279 @@
 
 <title>Dashboard Petugas</title>
 
-<!-- Manifest PWA -->
-
 <link rel="manifest" href="assets/json/manifest.json" />
-
-<!-- Warna status bar Android -->
-
 <meta name="theme-color" content="#0b74de">
-
-<!-- iOS PWA -->
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-
-<!-- CSS utama -->
 
 <link rel="stylesheet" href="assets/css/dashboard-petugas.css">
 
-</head>
-
-<body>
-
-<header class="topbar">
-  <h1>Dashboard Petugas</h1>
-  
-</header>
-<!-- Running Text -->
-<div class="running-text">
-  <span id="runningText">Memuat laporan hari ini...</span>
-</div>
-
 <style>
+/* ======================
+   GLOBAL DARK UI
+====================== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #0d1117;
+  color: #e5e7eb;
+  display: flex;
+}
+
+/* ======================
+   SIDEBAR
+====================== */
+.sidebar {
+  width: 240px;
+  background: #111827;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 3px 0 10px rgba(0,0,0,0.4);
+}
+
+.sidebar-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #e5e7eb;
+}
+
+.side-link {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: #e5e7eb;
+  font-size: 15px;
+  display: block;
+  transition: .25s;
+}
+
+.side-link:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* ======================
+   CONTENT AREA
+====================== */
+.main-content {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+}
+
+/* HEADER */
+.topbar {
+  background: #1e293b;
+  padding: 16px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+
+/* ======================
+   RUNNING TEXT
+====================== */
 .running-text {
-  background: #0b74de;
-  color: white;
+  background: #2563eb;
+  color: #ffffff;
   padding: 8px;
   font-size: 15px;
   white-space: nowrap;
   overflow: hidden;
-  box-sizing: border-box;
 }
-
 .running-text span {
   display: inline-block;
   padding-left: 100%;
-  animation: scroll-left 15s linear infinite;
+  animation: scroll-left 12s linear infinite;
+}
+@keyframes scroll-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
 }
 
-@keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+/* ======================
+   TABLE DARK UI
+====================== */
+main { padding: 20px; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111827;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0,0,0,0.25);
+}
+
+thead tr {
+  background: #0b74de;
+}
+
+thead th {
+  padding: 12px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+tbody td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: #e5e7eb; /* teks isi tabel */
+}
+
+tbody tr:hover {
+  background: #1e293b;
+}
+
+tbody tr:hover td {
+  color: #ffffff; /* hover teks lebih kontras */
+}
+
+/* Foto */
+td img {
+  width: 55px;
+  height: 55px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* ======================
+   EDIT MODAL
+====================== */
+#editModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background: #1f2937;
+  width: 92%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 14px;
+  color: #ffffff;
+}
+
+.modal-box input,
+.modal-box select,
+.modal-box textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 6px;
+  background: #111827;
+  border: 1px solid #374151;
+  color: #ffffff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-save {
+  background: #0b74de;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #ffffff;
+}
+
+.btn-cancel {
+  background: #6b7280;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #ffffff;
+}
+
+/* ======================
+   MOBILE VERSION
+====================== */
+@media(max-width:900px){
+  .sidebar {
+    transform: translateX(-100%);
+    transition: 0.3s;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+  .menu-toggle {
+    display: block;
+  }
+}
+
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 26px;
+  background: #1e293b;
+  color: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  z-index: 999;
+}
+
+/* ======================
+   FORCE TEXT COLOR
+====================== */
+table, thead, tbody, tr, th, td {
+  color: #e5e7eb !important;
+}
+
+#laporanTable td {
+  color: #17181a !important;
+}
+
+tbody tr:hover td {
+  color: #e5e7eb !important;
 }
 </style>
+</head>
+
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-title">PPPK</div>
+  <a class="side-link" href="dashboard-public.html">Dashboard Public</a>
+  <a class="side-link" href="dashboard-petugas.html">Dashboard Petugas</a>
+  <a class="side-link" href="index.html">Buat Laporan</a>
+</aside>
+
+<div class="main-content">
+
+<header class="topbar">Dashboard Petugas</header>
+
+<div class="running-text">
+  <span id="runningText">Memuat laporan hari ini...</span>
+</div>
+
 <main>
-  <table id="laporanTable" aria-live="polite">
+  <table id="laporanTable">
     <thead>
       <tr>
         <th>ID</th>
@@ -74,56 +291,48 @@
         <th>Petugas</th>
         <th>Catatan</th>
         <th>Edit</th>
-        
-        
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td colspan="10" style="text-align:center; padding:20px">Memuat data...</td>
-      </tr>
+      <tr><td colspan="10" style="text-align:center; padding:20px;">Memuat data...</td></tr>
     </tbody>
   </table>
 </main>
 
-<!-- ========== MODAL EDIT ========== -->
-
-<div id="editModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center;">
-  <div style="background:white; width:92%; max-width:420px; margin:auto; padding:18px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.25);">
-    <h3 style="margin-top:0">Edit Laporan</h3>
-
-```
-<input type="hidden" id="editId">
-
-<label style="font-weight:600; display:block; margin-top:8px;">Status:</label>
-<select id="editStatus" style="width:100%; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #ccc;">
-  <option value="Menunggu">Menunggu</option>
-  <option value="Proses">Proses</option>
-  <option value="Selesai">Selesai</option>
-</select>
-
-<label style="font-weight:600; display:block; margin-top:12px;">Petugas:</label>
-<input id="editPetugas" placeholder="Nama Petugas" style="width:100%; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #ccc;">
-
-<label style="font-weight:600; display:block; margin-top:12px;">Catatan Petugas:</label>
-<textarea id="editCatatan" placeholder="Catatan / tindakan" style="width:100%; height:100px; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #ccc;"></textarea>
-
-<div style="display:flex; gap:10px; margin-top:14px; justify-content:flex-end;">
-  <button onclick="closeEdit()" style="padding:10px 14px; background:#999; color:white; border:none; border-radius:8px;">Batal</button>
-  <button onclick="updateLaporan()" style="padding:10px 14px; background:#0b74de; color:white; border:none; border-radius:8px;">Simpan</button>
 </div>
-```
 
+<!-- MODAL -->
+<div id="editModal">
+  <div class="modal-box">
+    <h3>Edit Laporan</h3>
+
+    <input type="hidden" id="editId">
+
+    <label>Status:</label>
+    <select id="editStatus">
+      <option value="Menunggu">Menunggu</option>
+      <option value="Proses">Proses</option>
+      <option value="Selesai">Selesai</option>
+    </select>
+
+    <label>Petugas:</label>
+    <input id="editPetugas">
+
+    <label>Catatan Petugas:</label>
+    <textarea id="editCatatan"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEdit()">Batal</button>
+      <button class="btn-save" onclick="updateLaporan()">Simpan</button>
+    </div>
   </div>
 </div>
 
-<script src="assets/js/dashboard-petugas.js" defer></script>
-
-<!-- REGISTER SERVICE WORKER (PWA) -->
+<script src="assets/js/dashboard-petugas.js"></script>
 
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js').catch(()=>{console.warn('SW register failed');});
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("open");
 }
 </script>
 
