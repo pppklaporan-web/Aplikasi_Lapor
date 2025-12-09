@@ -23,6 +23,7 @@ async function fetchLaporan() {
       : row.status === 'Proses'   ? 'row-proses'
       : 'row-selesai'
       }">
+        
 
         <td data-label="ID">${row.id}</td>
         <td data-label="Waktu">${new Date(row.timestamp).toLocaleString()}</td>
