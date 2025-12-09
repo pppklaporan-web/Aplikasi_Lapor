@@ -194,6 +194,26 @@
       flex-direction: column;
     }
   }
+
+  /* Tabel responsive untuk mobile */
+@media (max-width: 768px) {
+  #laporanTable {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .summary-wrapper {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    left: -220px; /* default hide */
+  }
+}
+
 </style>
 </head>
 <body>
@@ -288,6 +308,19 @@ function updateRunningText(laporan) {
   }
   document.getElementById("runningText").textContent = text;
 }
+
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("mainContent");
+  if (sidebar.style.left === "0px") {
+    sidebar.style.left = "-220px";
+    main.style.marginLeft = "0";
+  } else {
+    sidebar.style.left = "0px";
+    main.style.marginLeft = "220px";
+  }
+}
+
 </script>
 </body>
 </html>
