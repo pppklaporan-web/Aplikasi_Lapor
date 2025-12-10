@@ -185,5 +185,15 @@ function drawChart(sum) {
         },
       ],
     },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "60%", 
+      plugins: {
+        legend: {
+          position: "bottom",
+        },
+      },
+    },
   });
 }
