@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwMnRtX47fiyahOf51qRBJeaj8JIif5IVvv5e7t1WSbE_uoDoFpVQlHtq6Q1wvUZAyMDA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxI9egPpN3R3Bck7qAbEjvOc_98QkpCeJsDOL9BYQ72q9tyur6m_SUC-8dtm_2kTTBd8g/exec";
 
 async function fetchLaporanPublic() {
   try {
@@ -102,3 +102,4 @@ function updateRunningText(laporan) {
 
 fetchLaporanPublic();
 setInterval(fetchLaporanPublic, 5000);
+
