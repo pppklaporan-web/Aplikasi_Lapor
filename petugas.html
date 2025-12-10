@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Dashboard Petugas</title>
+
+<link rel="manifest" href="assets/json/manifest.json" />
+<meta name="theme-color" content="#0b74de">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<style>
+
+/* ======================
+   MODAL
+====================== */
+#editModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-box {
+  background: #1f2937;
+  width: 92%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 14px;
+  color: #ffffff;
+}
+.modal-box input,
+.modal-box textarea,
+.modal-box select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #2c2c2c;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.btn-cancel {
+  background: #444;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-save {
+  background: #0057ff;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ======================
+   GLOBAL DARK UI
+====================== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* ======================
+   SIDEBAR
+====================== */
+.sidebar {
+  position: fixed;
+  left: -220px;
+  top: 0;
+  width: 220px;
+  height: 100%;
+  background-color: #1b1b1b;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+  transition: 0.3s;
+  padding-top: 60px;
+  z-index: 1000;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 20px;
+  color: #ccc;
+  border-bottom: 1px solid #333;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  background-color: #0057ff;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  z-index: 1100;
+}
+
+/* ======================
+   HEADER
+====================== */
+header {
+  background-color: #1e1e1e;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+header h1 {
+  margin: 0 0 4px;
+  color: #fff;
+}
+
+header p {
+  margin: 0;
+  font-size: 14px;
+  color: #bbb;
+}
+
+/* ======================
+   RUNNING TEXT
+====================== */
+.running-text {
+  background: #0057ff;
+  color: white;
+  padding: 8px;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.running-text span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scroll-left 15s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* ======================
+   IFRAME CONTENT AREA
+====================== */
+.content {
+  width: 100%;
+  height: calc(100vh - 0px);
+  margin: 0;
+  padding: 0;
+}
+
+.content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #0d1117;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR BUTTON -->
+<button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo" style="padding:20px; color:#fff; font-size:20px; text-align:center;">PPPK</div>
+
+  <a class="menu" onclick="loadPage('petugas-content.html')">Home</a>
+  <a class="menu" onclick="loadPage('dashboard-content.html')">Dashboard Public</a>
+  <a class="menu" onclick="loadPage('index-content.html')">Buat Laporan</a>
+</aside>
+
+<!-- MAIN HEADER -->
+<header>
+  <h1></h1>
+  <p></p>
+</header>
+
+<!-- IFRAME PAGE LOADER -->
+<div class="content">
+  <iframe id="viewFrame" src="petugas-content.html"></iframe>
+</div>
+
+<!-- MODAL -->
+<div id="editModal">
+  <div class="modal-box">
+    <h3>Edit Laporan</h3>
+
+    <input type="hidden" id="editId">
+
+    <label>Status:</label>
+    <select id="editStatus">
+      <option value="Menunggu">Menunggu</option>
+      <option value="Proses">Proses</option>
+      <option value="Selesai">Selesai</option>
+    </select>
+
+    <label>Petugas:</label>
+    <input id="editPetugas">
+
+    <label>Catatan Petugas:</label>
+    <textarea id="editCatatan"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEdit()">Batal</button>
+      <button class="btn-save" onclick="updateLaporan()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar(){
+  const sidebar = document.getElementById("sidebar");
+  if(sidebar.style.left === "0px"){
+    sidebar.style.left = "-220px";
+  } else {
+    sidebar.style.left = "0px";
+  }
+}
+
+function loadPage(file){
+  document.getElementById("viewFrame").src = file;
+  document.getElementById("sidebar").style.left = "-220px";
+}
+</script>
+
+<script src="assets/js/dashboard-petugas.js"></script>
+
+</body>
+</html>
